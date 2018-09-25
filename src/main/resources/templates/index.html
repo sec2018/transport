@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>用户列表</title>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var msg = /*[[${hello}]]*/ 'login success';
+        /*]]>*/
+        alert(msg);
+    </script>
+</head>
+<body>
+    <h1 th:text="${hello}">主页！</h1>
+    <input th:value="${hello}"/>
+</body>
+</html>

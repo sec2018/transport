@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8"></meta>
+<title>Insert title here</title>
+	<script>var secretKey = 'jeesite';</script>
+    <script src="./js/util/jquery-1.12.4.js"></script>
+    <script src="./js/util/toastr.min.js"></script>
+    <script src="./js/util/des.js"></script>
+    <script>//引用
+        $("#username, #password").on("focus blur", function () {
+            var a = this;
+            setTimeout(function () {
+                var b = $(a).css("borderColor");
+                if (b != "") {
+                    $(a).prev().css("color", b);
+                }
+            }, 100)
+        }).blur();
+
+        $(function () {
+            $("#btnSubmit").click(function(){
+                var u = $("#username").val();
+                var p = $("#password").val();
+                try{
+                    p = DesUtils.encode(p, secretKey);
+                }catch (e){
+                    alert("系统维护中......");
+                    return;
+                }
+                var data = {};
+                data.u = u;
+                data.p = p;
+                $.ajax({
+                    url:"sublogin",  //请求路径
+                    method: "post",
+                    async: false,
+                    data: data,
+                    success:function(res){
+                        res = JSON.parse(res);
+                        //请求成功时处理
+                        if(res.status!="failed"){
+                            alert("登录成功！");
+                            location.href = res.url;
+                        }else{
+                            alert(res.message_login);
+                        }
+                    }
+                })
+            });
+        })
+	</script>
+</head>
+<body>
+	<h1>欢迎登录!</h1>
+	<!--<form action="sublogin" method="post">-->
+	<form id="loginForm">
+	    <input type="text" name="username" id="username"><br>
+	    <input type="password" name="password" id="password"><br>
+	    <input type="button" id="btnSubmit" value="提交">
+	</form>
+</body>
+</html>
