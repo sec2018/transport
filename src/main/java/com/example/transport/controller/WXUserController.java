@@ -52,7 +52,7 @@ public class WXUserController {
 
     private static Logger logger = LoggerFactory.getLogger(WXUserController.class);
 
-    protected static boolean initialized = false;
+    private static boolean initialized = false;
 
     @Autowired
     private UserService userService;
