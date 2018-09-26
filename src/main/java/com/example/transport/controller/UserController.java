@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import net.sf.json.JSONObject;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Date;
 
@@ -86,7 +84,7 @@ public class UserController {
     public String index(HttpServletRequest request, Model model){
         //此处可以访问到
         HttpSession session=request.getSession();
-        if(session.getAttribute("currentUser")==null){;
+        if(session.getAttribute("currentUser")==null){
             return "redirect:/login.html";
         }
         model.addAttribute("hello","Hello, Spring Boot!");
@@ -103,7 +101,6 @@ public class UserController {
     @RequestMapping(value = "/logout")
     public String logout(HttpServletRequest request){
         Subject subject = SecurityUtils.getSubject();
-        subject.logout();
 
         HttpSession session=request.getSession();
         //这里并没有session.getAttribute("currentUserToken")。。。。。（待核查）
@@ -113,6 +110,7 @@ public class UserController {
             userToken.setExpire_time(new Date());
             sysUserTokenService.updateToken(userToken);
         }
+        subject.logout();
         System.out.println("logout...");
         return "redirect:/login.html";
     }

@@ -7,11 +7,12 @@ public interface Constant {
     public final static String WX_OAUTH_URL = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&redirect_uri=REDIRECT_URI&response_type=code&scope=SCOPE&state=STATE#wechat_redirect";
     // 用户同意授权,回调url
     public final static String WX_REDIRECT_URL = "回调url";
-    // 拉去用户信息url
+    // 拉取用户信息url
     public final static String WX_SNSAPI_URL = "https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
     //微信openId
-    public final static String WX_OPEN_ID = "公众好id";
+    public final static String WX_OPEN_ID = "wxdee53430e84ef6ad";
     //微信appSecret
-    public final static String WX_APP_SECRET = "appSecret";
+    public final static String WX_APP_SECRET = "e49c4c59187af413c5cf20dcf0949008";
+
 
 }

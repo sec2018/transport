@@ -39,6 +39,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/css/**", "anon");
         filterChainDefinitionMap.put("/img/**","anon");
         filterChainDefinitionMap.put("/js/**", "anon");
+        filterChainDefinitionMap.put("/wx/**", "anon");
         filterChainDefinitionMap.put("/sublogin", "anon");
         filterChainDefinitionMap.put("/test/", "anon");
         //其余接口一律拦截
