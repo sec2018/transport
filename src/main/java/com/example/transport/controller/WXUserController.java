@@ -3,15 +3,16 @@ package com.example.transport.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.transport.pojo.WeChatAppLoginReq;
-import com.example.transport.pojo.WxUser;
 import com.example.transport.service.Constant;
 import com.example.transport.service.UserService;
 import com.example.transport.util.HmacUtil;
 import com.example.transport.util.XcxUtils;
 import com.google.gson.Gson;
+import com.sun.jndi.toolkit.url.UrlUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Base64;
 import org.omg.CORBA.SystemException;
 import org.slf4j.Logger;
@@ -33,220 +34,293 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.*;
+import java.security.spec.InvalidParameterSpecException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 @RequestMapping("wx")
 @Controller
 public class WXUserController {
 
+
+
     private static Logger logger = LoggerFactory.getLogger(WXUserController.class);
 
-    private static boolean initialized = false;
+    protected static boolean initialized = false;
 
     @Autowired
     private UserService userService;
 
+    //region 策略1
+//    @RequestMapping("wxlogin")
+//    @ResponseBody
+//    public Map<String,Object> login(WeChatAppLoginReq req)
+//    {
+//        String code = req.getCode();
+//        //获取 session_key 和 openId
+//        String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+Constant.WX_OPEN_ID+"&secret="+Constant.WX_APP_SECRET+"&js_code="+code+"&grant_type=authorization_code";
+//        RestTemplate restTemplate = new RestTemplate();
+//        ResponseEntity<String>  responseEntity = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+//        if(responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK)
+//        {
+//            String sessionData = responseEntity.getBody();
+//            logger.info("sessionData = "+ sessionData);
+//            JSONObject jsonObj = JSON.parseObject(sessionData);
+//            String openId = jsonObj.getString("openid");
+//            String sessionKey = jsonObj.getString("session_key");
+//
+//            String signature = HmacUtil.SHA1(req.getRawData()+sessionKey);
+//            if(!signature.equals(req.getSignature()))
+//            {
+//                logger.info(" req signature="+req.getSignature());
+//                logger.info(" java signature="+signature);
+//            }
+//            byte[] resultByte = null;
+//            try {
+//                resultByte = decrypt(Base64.decode(req.getEncryptedData()), Base64.decode(sessionKey), Base64.decode(req.getIv()));
+//            } catch (Exception e) {
+//                System.out.println(e.getMessage());
+//                return null;
+//            }
+//            if(null != resultByte && resultByte.length > 0)
+//            {
+//                String userInfoStr = "";
+//                try {
+//                    userInfoStr = new String(resultByte, "UTF-8");
+//                } catch (UnsupportedEncodingException e)
+//                {
+//                    logger.error(e.getMessage());
+//                }
+//                logger.info("userInfo = "+ userInfoStr);
+//                JSONObject userInfoObj = JSON.parseObject(userInfoStr);
+//                WxUser userPo = new WxUser();
+////                userPo.setName(userInfoObj.getString("nickName"));
+////                userPo.setCreatedTime(new Date());
+//                userPo.setGender(userInfoObj.getString("gender"));
+////                userPo.setIcon(userInfoObj.getString("avatarUrl"));
+////                userPo.setLoginId(userInfoObj.getString("unionId"));
+////                userPo.setType((short)UserType.WeiXin);
+////                userPo.setLoginType(UserType.WeChatApp);
+////                userPo.setNation(userInfoObj.getString("city"));
+//                userInfoObj.getString("city");
+//                userInfoObj.getString("province");
+//                userInfoObj.getString("country");
+//
+//
+//                Map<String,Object> data = new HashedMap();
+//                data.put("data", 0);
+//                return data;
+//            }else
+//            {
+//                return null;
+//            }
+//        }else
+//        {
+//            return null;
+//        }
+//    }
+////
+//    private byte[] decrypt(byte[] content, byte[] keyByte, byte[] ivByte) throws InvalidAlgorithmParameterException {
+//        initialize();
+//        try {
+//            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
+//            Key sKeySpec = new SecretKeySpec(keyByte, "AES");
+//
+//            cipher.init(Cipher.DECRYPT_MODE, sKeySpec, generateIV(ivByte));// 初始化
+//            byte[] result = cipher.doFinal(content);
+//            return result;
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        } catch (NoSuchPaddingException e) {
+//            e.printStackTrace();
+//        } catch (InvalidKeyException e) {
+//            e.printStackTrace();
+//        } catch (IllegalBlockSizeException e) {
+//            e.printStackTrace();
+//        } catch (BadPaddingException e) {
+//            e.printStackTrace();
+//        } catch (NoSuchProviderException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (Exception e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+////
+//    public static void initialize(){
+//        if (initialized) return;
+//        Security.addProvider(new BouncyCastleProvider());
+//        initialized = true;
+//    }
+//    //生成iv
+//    public static AlgorithmParameters generateIV(byte[] iv) throws Exception{
+//        AlgorithmParameters params = AlgorithmParameters.getInstance("AES");
+//        params.init(new IvParameterSpec(iv));
+//        return params;
+//    }
+    //endregion
+
+
+    //region 策略2
     /**
-     * 得到用户信息
+     * 获取微信小程序 session_key 和 openid
      *
-     * @param request
-     * @param map
+     * @author zhy
+     * @param code 调用微信登陆返回的Code
      * @return
      */
-    @RequestMapping("getwxuser")
-    @ResponseBody
-    public ModelMap getUser(HttpServletRequest request, ModelMap map){
-
-        String code = request.getParameter("code");
-
-        //获取 session_key 和 openId
-        String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+Constant.WX_OPEN_ID+"&secret="+Constant.WX_APP_SECRET+"&js_code="+code+"&grant_type=authorization_code";
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String>  responseEntity = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
-
-        String encryptedData = request.getParameter("encryptedData");
-        String iv = request.getParameter("iv");
-
-        JSONObject shopAddress=null;
-
-        if(StringUtils.isNotEmpty(code))
-        {
-            String appid = Constant.WX_OPEN_ID;
-            String secret = Constant.WX_APP_SECRET;
-            shopAddress= XcxUtils.getSessionKeyOropenid(code,appid,secret);
-        }
-        String openid = shopAddress.getString("openid");
-        String sessionKey = shopAddress.getString("sessionKey");
-        JSONObject user = XcxUtils.getUserInfo(encryptedData,sessionKey,iv);
-        WxUser wxUser = new WxUser();
-        wxUser.setOpenid(user.getString("openid"));
-        wxUser.setNickname(user.getString("nickName"));
-        wxUser.setGender(user.getString("gender"));
-        wxUser.setProvince(user.getString("province"));
-        wxUser.setCity(user.getString("city"));
-        wxUser.setCountry(user.getString("country"));
-        wxUser.setAvatarurl(user.getString("avatarUrl"));
-        wxUser.setUnionid(user.getString("language"));
-        System.out.println(wxUser.toString());
-//        if(userService.insertWxUser(wxUser))
-//        {
-//            System.out.println("添加小程序信息成功");//添加数据库成功
-//            map.put("data", 0);
-//        }
-//        else
-//        {
-//            System.out.println("添加小程序信息失败");//添加数据库失败
-//            map.put("data", 1);
-//        }
-        return map;
-    }
-
-
-    private String code;
-
-    public String getCode() {
-        return code;
-    }
-    public void setCode(String code) {
-        this.code = code;
-    }
-    //获取凭证校检接口
-
-    public String wxlogin()
-    {
-        //微信的接口
-        String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+Constant.WX_OPEN_ID+
-                "&secret="+Constant.WX_APP_SECRET+"&js_code="+ code +"&grant_type=authorization_code";
-        RestTemplate restTemplate = new RestTemplate();
-        //进行网络请求,访问url接口
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
-        //根据返回值进行后续操作
-        if(responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK)
-        {
-            String sessionData = responseEntity.getBody();
-            Gson gson = new Gson();
-            //解析从微信服务器获得的openid和session_key;
-            WxUser weChatSession = gson.fromJson(sessionData,WxUser.class);
-            //获取用户的唯一标识
-            String openid = weChatSession.getOpenid();
-            //获取会话秘钥
-//            String session_key = weChatSession.getSession_key();
-            //下面就可以写自己的业务代码了
-            //最后要返回一个自定义的登录态,用来做后续数据传输的验证
-        }
-
-        return null;
-
-    }
-
     @RequestMapping("wxlogin")
-    public Map<String,Object> login(WeChatAppLoginReq req)
-    {
-        String code = req.getCode();
-        //获取 session_key 和 openId
-        String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+Constant.WX_OPEN_ID+"&secret="+Constant.WX_APP_SECRET+"&js_code="+code+"&grant_type=authorization_code";
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String>  responseEntity = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
-        if(responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK)
-        {
-            String sessionData = responseEntity.getBody();
-            logger.info("sessionData = "+ sessionData);
-            JSONObject jsonObj = JSON.parseObject(sessionData);
-            String openId = jsonObj.getString("openid");
-            String sessionKey = jsonObj.getString("session_key");
+    @ResponseBody
+    public static JSONObject getSessionKeyOropenid(String code,String encryptedData,String iv){
+        //微信端登录code值
+        String wxCode = code;
+        String requestUrl = "https://api.weixin.qq.com/sns/jscode2session";	//请求地址 https://api.weixin.qq.com/sns/jscode2session
+        Map<String,String> requestUrlParam = new HashMap<String,String>();
+        requestUrlParam.put("appid", Constant.WX_OPEN_ID);	//开发者设置中的appId
+        requestUrlParam.put("secret", Constant.WX_APP_SECRET);	//开发者设置中的appSecret
+        requestUrlParam.put("js_code", wxCode);	//小程序调用wx.login返回的code
+        requestUrlParam.put("grant_type", "authorization_code");	//默认参数
 
-            String signature = HmacUtil.SHA1(req.getRawData()+sessionKey);
-            if(!signature.equals(req.getSignature()))
-            {
-                logger.info(" req signature="+req.getSignature());
-                logger.info(" java signature="+signature);
-            }
-            byte[] resultByte = null;
-            try {
-                resultByte = decrypt(Base64.decode(req.getEncryptedData()), Base64.decode(sessionKey), Base64.decode(req.getIv()));
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                return null;
-            }
-            if(null != resultByte && resultByte.length > 0)
-            {
-                String userInfoStr = "";
-                try {
-                    userInfoStr = new String(resultByte, "UTF-8");
-                } catch (UnsupportedEncodingException e)
-                {
-                    logger.error(e.getMessage());
-                }
-                logger.info("userInfo = "+ userInfoStr);
-                JSONObject userInfoObj = JSON.parseObject(userInfoStr);
-                WxUser userPo = new WxUser();
-//                userPo.setName(userInfoObj.getString("nickName"));
-//                userPo.setCreatedTime(new Date());
-                userPo.setGender(userInfoObj.getString("gender"));
-//                userPo.setIcon(userInfoObj.getString("avatarUrl"));
-//                userPo.setLoginId(userInfoObj.getString("unionId"));
-//                userPo.setType((short)UserType.WeiXin);
-//                userPo.setLoginType(UserType.WeChatApp);
-//                userPo.setNation(userInfoObj.getString("city"));
-                userInfoObj.getString("city");
-                userInfoObj.getString("province");
-                userInfoObj.getString("country");
+        //发送post请求读取调用微信 https://api.weixin.qq.com/sns/jscode2session 接口获取openid用户唯一标识
+        JSONObject jsonObject = JSON.parseObject(sendPost(requestUrl, requestUrlParam));
 
-                Map<String,Object> data = new HashedMap();
-                data.put("data", 0);
-                return data;
-            }else
-            {
-                return null;
-            }
-        }else
-        {
-            return null;
-        }
+        //获取用户信息
+        JSONObject  WxUserInfo = getUserInfo(encryptedData,jsonObject.getString("session_key"),iv);
+        logger.info(WxUserInfo.toJSONString());
+        return jsonObject;
     }
 
-
-
-    private byte[] decrypt(byte[] content, byte[] keyByte, byte[] ivByte) throws InvalidAlgorithmParameterException {
-        initialize();
+    /**
+     * 解密用户敏感数据获取用户信息
+     *
+     * @author zhy
+     * @param sessionKey 数据进行加密签名的密钥
+     * @param encryptedData 包括敏感数据在内的完整用户信息的加密数据
+     * @param iv 加密算法的初始向量
+     * @return
+     */
+    public static JSONObject getUserInfo(String encryptedData,String sessionKey,String iv){
+        // 被加密的数据
+        byte[] dataByte = Base64.decode(encryptedData);
+        // 加密秘钥
+        byte[] keyByte = Base64.decode(sessionKey);
+        // 偏移量
+        byte[] ivByte = Base64.decode(iv);
         try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
-            Key sKeySpec = new SecretKeySpec(keyByte, "AES");
-
-            cipher.init(Cipher.DECRYPT_MODE, sKeySpec, generateIV(ivByte));// 初始化
-            byte[] result = cipher.doFinal(content);
-            return result;
+            // 如果密钥不足16位，那么就补足.  这个if 中的内容很重要
+            int base = 16;
+            if (keyByte.length % base != 0) {
+                int groups = keyByte.length / base + (keyByte.length % base != 0 ? 1 : 0);
+                byte[] temp = new byte[groups * base];
+                Arrays.fill(temp, (byte) 0);
+                System.arraycopy(keyByte, 0, temp, 0, keyByte.length);
+                keyByte = temp;
+            }
+            // 初始化
+            Security.addProvider(new BouncyCastleProvider());
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding","BC");
+            SecretKeySpec spec = new SecretKeySpec(keyByte, "AES");
+            AlgorithmParameters parameters = AlgorithmParameters.getInstance("AES");
+            parameters.init(new IvParameterSpec(ivByte));
+            cipher.init(Cipher.DECRYPT_MODE, spec, parameters);// 初始化
+            byte[] resultByte = cipher.doFinal(dataByte);
+            if (null != resultByte && resultByte.length > 0) {
+                String result = new String(resultByte, "UTF-8");
+                return JSON.parseObject(result);
+            }
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        } catch (InvalidParameterSpecException e) {
+            logger.error(e.getMessage(), e);
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } catch (BadPaddingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage(), e);
+        } catch (InvalidKeyException e) {
+            logger.error(e.getMessage(), e);
+        } catch (InvalidAlgorithmParameterException e) {
+            logger.error(e.getMessage(), e);
         } catch (NoSuchProviderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return null;
     }
 
-    public static void initialize(){
-        if (initialized) return;
-        Security.addProvider(new BouncyCastleProvider());
-        initialized = true;
+    /**
+     * 向指定 URL 发送POST方法的请求
+     *
+     * @param url 发送请求的 URL
+     * @param
+     * @return 所代表远程资源的响应结果
+     */
+    public static String sendPost(String url, Map<String, ?> paramMap) {
+        PrintWriter out = null;
+        BufferedReader in = null;
+        String result = "";
+
+        String param = "";
+        Iterator<String> it = paramMap.keySet().iterator();
+
+        while(it.hasNext()) {
+            String key = it.next();
+            param += key + "=" + paramMap.get(key) + "&";
+        }
+
+        try {
+            URL realUrl = new URL(url);
+            // 打开和URL之间的连接
+            URLConnection conn = realUrl.openConnection();
+            // 设置通用的请求属性
+            conn.setRequestProperty("accept", "*/*");
+            conn.setRequestProperty("connection", "Keep-Alive");
+            conn.setRequestProperty("Accept-Charset", "utf-8");
+            conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            // 发送POST请求必须设置如下两行
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            // 获取URLConnection对象对应的输出流
+            out = new PrintWriter(conn.getOutputStream());
+            // 发送请求参数
+            out.print(param);
+            // flush输出流的缓冲
+            out.flush();
+            // 定义BufferedReader输入流来读取URL的响应
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            String line;
+            while ((line = in.readLine()) != null) {
+                result += line;
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        //使用finally块来关闭输出流、输入流
+        finally{
+            try{
+                if(out!=null){
+                    out.close();
+                }
+                if(in!=null){
+                    in.close();
+                }
+            }
+            catch(IOException ex){
+                ex.printStackTrace();
+            }
+        }
+        return result;
     }
-    //生成iv
-    public static AlgorithmParameters generateIV(byte[] iv) throws Exception{
-        AlgorithmParameters params = AlgorithmParameters.getInstance("AES");
-        params.init(new IvParameterSpec(iv));
-        return params;
-    }
+    //endregion
+
 }

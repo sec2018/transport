@@ -15,4 +15,5 @@ public interface Constant {
     public final static String WX_APP_SECRET = "e49c4c59187af413c5cf20dcf0949008";
 
 
+
 }
