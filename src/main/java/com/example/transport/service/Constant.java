@@ -10,7 +10,9 @@ public interface Constant {
     // 拉取用户信息url
     public final static String WX_SNSAPI_URL = "https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
     //微信openId
-    public final static String WX_OPEN_ID = "wxdee53430e84ef6ad";
+    public final static String WX_OPEN_ID = "oDLUf5cFGMF4FjEUMjBJessKXitI";
+    //微信appid
+    public final static String WX_APP_ID = "wxdee53430e84ef6ad";
     //微信appSecret
     public final static String WX_APP_SECRET = "e49c4c59187af413c5cf20dcf0949008";
 

@@ -1,9 +1,29 @@
 package com.example.transport.pojo;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public class WxUser {
     private static final long serialVersionUID = 1L;
+
+    private Long id;
+    private String openid;
+    private String nickname;
+    private Integer gender;
+    private String city;
+    private String province;
+    private String country;
+    private String avatarurl;
+    private String language;
+    private Date timestamp;
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
 
     public Long getId() {
         return id;
@@ -29,11 +49,11 @@ public class WxUser {
         this.nickname = nickname;
     }
 
-    public String getGender() {
+    public Integer getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Integer gender) {
         this.gender = gender;
     }
 
@@ -69,32 +89,13 @@ public class WxUser {
         this.avatarurl = avatarurl;
     }
 
-    public String getUnionid() {
-        return unionid;
+    public String getLanguage() {
+        return language;
     }
 
-    public void setUnionid(String unionid) {
-        this.unionid = unionid;
+    public void setLanguage(String language) {
+        this.language = language;
     }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    private Long id;
-    private String openid;
-    private String nickname;
-    private String gender;
-    private String city;
-    private String province;
-    private String country;
-    private String avatarurl;
-    private String unionid;
-    private Timestamp timestamp;
 
     @Override
     public String toString() {
@@ -102,12 +103,12 @@ public class WxUser {
                 "id=" + id +
                 ", openid='" + openid + '\'' +
                 ", nickname='" + nickname + '\'' +
-                ", gender='" + gender + '\'' +
+                ", gender=" + gender +
                 ", city='" + city + '\'' +
                 ", province='" + province + '\'' +
                 ", country='" + country + '\'' +
                 ", avatarurl='" + avatarurl + '\'' +
-                ", unionid='" + unionid + '\'' +
+                ", language='" + language + '\'' +
                 ", timestamp=" + timestamp +
                 '}';
     }

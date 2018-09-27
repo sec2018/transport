@@ -3,6 +3,7 @@ package com.example.transport.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.transport.pojo.WeChatAppLoginReq;
+import com.example.transport.pojo.WxUser;
 import com.example.transport.service.Constant;
 import com.example.transport.service.UserService;
 import com.example.transport.util.HmacUtil;
@@ -39,10 +40,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.*;
 import java.security.spec.InvalidParameterSpecException;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 @RequestMapping("wx")
 @Controller
@@ -64,7 +67,7 @@ public class WXUserController {
 //    {
 //        String code = req.getCode();
 //        //获取 session_key 和 openId
-//        String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+Constant.WX_OPEN_ID+"&secret="+Constant.WX_APP_SECRET+"&js_code="+code+"&grant_type=authorization_code";
+//        String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+Constant.WX_APP_ID+"&secret="+Constant.WX_APP_SECRET+"&js_code="+code+"&grant_type=authorization_code";
 //        RestTemplate restTemplate = new RestTemplate();
 //        ResponseEntity<String>  responseEntity = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
 //        if(responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK)
@@ -179,22 +182,55 @@ public class WXUserController {
      */
     @RequestMapping("wxlogin")
     @ResponseBody
-    public static JSONObject getSessionKeyOropenid(String code,String encryptedData,String iv){
+    public JSONObject getSessionKeyOropenid(String code,String encryptedData,String iv){
         //微信端登录code值
         String wxCode = code;
         String requestUrl = "https://api.weixin.qq.com/sns/jscode2session";	//请求地址 https://api.weixin.qq.com/sns/jscode2session
         Map<String,String> requestUrlParam = new HashMap<String,String>();
-        requestUrlParam.put("appid", Constant.WX_OPEN_ID);	//开发者设置中的appId
+        requestUrlParam.put("appid", Constant.WX_APP_ID);	//开发者设置中的appId
         requestUrlParam.put("secret", Constant.WX_APP_SECRET);	//开发者设置中的appSecret
         requestUrlParam.put("js_code", wxCode);	//小程序调用wx.login返回的code
         requestUrlParam.put("grant_type", "authorization_code");	//默认参数
 
         //发送post请求读取调用微信 https://api.weixin.qq.com/sns/jscode2session 接口获取openid用户唯一标识
         JSONObject jsonObject = JSON.parseObject(sendPost(requestUrl, requestUrlParam));
-
         //获取用户信息
-        JSONObject  WxUserInfo = getUserInfo(encryptedData,jsonObject.getString("session_key"),iv);
-        logger.info(WxUserInfo.toJSONString());
+        JSONObject WxUserInfo = getUserInfo(encryptedData,jsonObject.getString("session_key"),iv);
+        String openid = WxUserInfo.getString("openId");
+        if(openid!=null){
+            WxUser wxUser = userService.getWxUser(openid);
+            if(wxUser!=null){
+                wxUser.setCountry(WxUserInfo.getString("country"));
+                wxUser.setGender(Integer.parseInt(WxUserInfo.getString("gender")));
+                wxUser.setProvince(WxUserInfo.getString("province"));
+                wxUser.setCity(WxUserInfo.getString("city"));
+                wxUser.setAvatarurl(WxUserInfo.getString("avatarUrl"));
+                wxUser.setNickname(WxUserInfo.getString("nickName"));
+                wxUser.setLanguage(WxUserInfo.getString("language"));
+                String time = JSON.parseObject(WxUserInfo.getString("watermark")).getString("timestamp");
+                Date timestamp = timeStampToDate(time+"000");
+                wxUser.setTimestamp(timestamp);
+                boolean flag = userService.updateWxUser(wxUser);
+                if(flag){
+                    logger.info("更新成功！");
+                }
+            }else{
+                wxUser = new WxUser();
+                wxUser.setCountry(WxUserInfo.getString("country"));
+                wxUser.setGender(Integer.parseInt(WxUserInfo.getString("gender")));
+                wxUser.setProvince(WxUserInfo.getString("province"));
+                wxUser.setCity(WxUserInfo.getString("city"));
+                wxUser.setAvatarurl(WxUserInfo.getString("avatarUrl"));
+                wxUser.setOpenid(WxUserInfo.getString("openId"));
+                wxUser.setNickname(WxUserInfo.getString("nickName"));
+                wxUser.setLanguage(WxUserInfo.getString("language"));
+                boolean flag = userService.insertWxUser(wxUser);
+                if(flag){
+                    logger.info("插入成功！");
+                }
+            }
+            logger.info(wxUser.toString());
+        }
         return jsonObject;
     }
 
@@ -320,6 +356,11 @@ public class WXUserController {
             }
         }
         return result;
+    }
+
+    public static Date timeStampToDate(String timeStamp) {
+        Date date = new Date(Long.valueOf(timeStamp));
+        return date;
     }
     //endregion
 

@@ -32,5 +32,13 @@ public class UserServiceImpl implements UserService {
         return userDao.insertWxUser(wxUser)==1?true:false;
     }
 
+    @Override
+    public WxUser getWxUser(String openid) {
+        return userDao.getWxUser(openid);
+    }
 
+    @Override
+    public boolean updateWxUser(WxUser wxUser) {
+        return userDao.updateWxUser(wxUser)==1?true:false;
+    }
 }
