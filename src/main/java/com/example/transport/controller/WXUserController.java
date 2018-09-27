@@ -51,8 +51,6 @@ import java.util.Map;
 @Controller
 public class WXUserController {
 
-
-
     private static Logger logger = LoggerFactory.getLogger(WXUserController.class);
 
     private static boolean initialized = false;

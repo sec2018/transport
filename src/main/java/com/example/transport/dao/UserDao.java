@@ -1,7 +1,6 @@
 package com.example.transport.dao;
 
 import com.example.transport.pojo.User;
-import com.example.transport.pojo.UserToken;
 import com.example.transport.pojo.WxUser;
 import org.apache.ibatis.annotations.*;
 
