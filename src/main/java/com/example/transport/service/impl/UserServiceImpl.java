@@ -41,4 +41,11 @@ public class UserServiceImpl implements UserService {
     public boolean updateWxUser(WxUser wxUser) {
         return userDao.updateWxUser(wxUser)==1?true:false;
     }
+
+    @Override
+    public long getWxUserId(String openid) {
+        return userDao.getWxUserId(openid);
+    }
+
+
 }

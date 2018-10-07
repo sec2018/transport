@@ -33,13 +33,6 @@ public class User implements Serializable{
         this.password = password;
     }
 
-    public String getWechat_name() {
-        return wechat_name;
-    }
-
-    public void setWechat_name(String wechat_name) {
-        this.wechat_name = wechat_name;
-    }
 
     public String getTelephone() {
         return telephone;
@@ -65,23 +58,33 @@ public class User implements Serializable{
         this.shop_name = shop_name;
     }
 
+
+    private Long user_id;
+    private String loginname;
+    private String password;
+
     @Override
     public String toString() {
         return "User{" +
                 "user_id=" + user_id +
                 ", loginname='" + loginname + '\'' +
                 ", password='" + password + '\'' +
-                ", wechat_name='" + wechat_name + '\'' +
+                ", openid='" + openid + '\'' +
                 ", telephone='" + telephone + '\'' +
                 ", create_time=" + create_time +
                 ", shop_name='" + shop_name + '\'' +
                 '}';
     }
 
-    private Long user_id;
-    private String loginname;
-    private String password;
-    private String wechat_name;
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
+    private String openid;
     private String telephone;
     private Date create_time;
     private String shop_name;

@@ -7,7 +7,10 @@ import com.example.transport.pojo.WxUser;
 import com.example.transport.service.Constant;
 import com.example.transport.service.UserService;
 import com.example.transport.util.HmacUtil;
+import com.example.transport.util.R;
+import com.example.transport.util.TokenGenerator;
 import com.example.transport.util.XcxUtils;
+import com.example.transport.util.redis.RedisService;
 import com.google.gson.Gson;
 import com.sun.jndi.toolkit.url.UrlUtil;
 import org.apache.commons.collections.map.HashedMap;
@@ -35,6 +38,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -57,6 +61,9 @@ public class WXUserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisService redisService;
 
     //region 策略1
 //    @RequestMapping("wxlogin")
@@ -180,7 +187,7 @@ public class WXUserController {
      */
     @RequestMapping("wxlogin")
     @ResponseBody
-    public JSONObject getSessionKeyOropenid(String code,String encryptedData,String iv){
+    public R getSessionKeyOropenid(String code, String encryptedData, String iv){
         //微信端登录code值
         String wxCode = code;
         String requestUrl = "https://api.weixin.qq.com/sns/jscode2session";	//请求地址 https://api.weixin.qq.com/sns/jscode2session
@@ -193,9 +200,15 @@ public class WXUserController {
         //发送post请求读取调用微信 https://api.weixin.qq.com/sns/jscode2session 接口获取openid用户唯一标识
         JSONObject jsonObject = JSON.parseObject(sendPost(requestUrl, requestUrlParam));
         //获取用户信息
-        JSONObject WxUserInfo = getUserInfo(encryptedData,jsonObject.getString("session_key"),iv);
+        String session_key = jsonObject.getString("session_key");
+        JSONObject WxUserInfo = getUserInfo(encryptedData,session_key,iv);
         String openid = WxUserInfo.getString("openId");
         if(openid!=null){
+            String sesssiontoken = TokenGenerator.generateValue();
+            redisService.set(sesssiontoken, openid+"|"+session_key);
+            jsonObject.remove("openid");
+            jsonObject.remove("session_key");
+            jsonObject.put("token", sesssiontoken);
             WxUser wxUser = userService.getWxUser(openid);
             if(wxUser!=null){
                 wxUser.setCountry(WxUserInfo.getString("country"));
@@ -208,6 +221,8 @@ public class WXUserController {
                 String time = JSON.parseObject(WxUserInfo.getString("watermark")).getString("timestamp");
                 Date timestamp = timeStampToDate(time+"000");
                 wxUser.setTimestamp(timestamp);
+
+
                 boolean flag = userService.updateWxUser(wxUser);
                 if(flag){
                     logger.info("更新成功！");
@@ -229,7 +244,7 @@ public class WXUserController {
             }
             logger.info(wxUser.toString());
         }
-        return jsonObject;
+        return R.ok(jsonObject);
     }
 
     /**

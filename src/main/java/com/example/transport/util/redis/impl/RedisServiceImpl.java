@@ -21,7 +21,7 @@ public class RedisServiceImpl implements RedisService {
     private RedisTemplate<String, ?> redisTemplate;
 	
 	private String prefix = "trans_";
-	private Expiration expire = Expiration.seconds(60);//60秒后数据过期
+	private Expiration expire = Expiration.seconds(7200);//7200秒后数据过期
 	
     @Override
     public boolean set(final String key, final String value) {
