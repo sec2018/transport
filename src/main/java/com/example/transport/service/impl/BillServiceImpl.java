@@ -43,4 +43,14 @@ public class BillServiceImpl implements BillService{
     public boolean deleteBill(long id) {
         return billDao.deleteBill(id)==1?true:false;
     }
+
+    @Override
+    public List<SysBill> selectUnfinishBill(long sender_id) {
+        return billDao.selectUnfinishBill(sender_id);
+    }
+
+    @Override
+    public List<SysBill> selectUnfinishBillByTelOrName(String sender_param) {
+        return billDao.selectUnfinishBillByTelOrName(sender_param);
+    }
 }

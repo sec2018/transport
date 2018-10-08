@@ -82,6 +82,8 @@ public class SenderBillController {
         return R.ok(map).put("code",200);
     }
 
+
+
     @RequestMapping("updatebill")
     @Transactional
     @ResponseBody
@@ -150,5 +152,24 @@ public class SenderBillController {
             return r;
         }
         return r;
+    }
+
+
+    @RequestMapping("getuserunfinishbill")
+    @ResponseBody
+    public R searchunfinishBillByUserId(@RequestParam(value = "sender_id") long sender_id){
+        List<SysBill> billList = billService.selectUnfinishBill(sender_id);
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("data",billList);
+        return R.ok(map).put("code",200);
+    }
+
+    @RequestMapping("getbillbynameortel")
+    @ResponseBody
+    public R searchBillByNameOrTel(@RequestParam(value = "sender_param") String sender_param){
+        List<SysBill> billList = billService.selectUnfinishBillByTelOrName(sender_param);
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("data",billList);
+        return R.ok(map).put("code",200);
     }
 }

@@ -23,4 +23,9 @@ public interface BillService {
 
     //删除订单
     boolean deleteBill(long id);
+
+    List<SysBill>  selectUnfinishBill(long sender_id);
+
+    //承运员根据名称和电话查询所有已完成订单
+    List<SysBill>  selectUnfinishBillByTelOrName(String sender_param);
 }

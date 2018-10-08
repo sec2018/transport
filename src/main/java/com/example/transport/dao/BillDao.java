@@ -31,4 +31,12 @@ public interface BillDao {
     //删除订单
     @Delete({"delete from sys_bill where id = #{id}"})
     int deleteBill(long id);
+
+    //承运员根据sender_id和状态bill_status = 2 或 3 来查询未完成订单
+    @Select({"select * from sys_bill where sender_id = #{sender_id} and (bill_status = 2 or bill_status = 3)"})
+    List<SysBill>  selectUnfinishBill(@Param("sender_id")long sender_id);
+
+    //承运员根据名称和电话查询所有已完成订单
+    @Select({"select * from sys_bill where (sender_name = #{sender_param} or sender_tel = #{sender_param}) and bill_status = 4"})
+    List<SysBill>  selectUnfinishBillByTelOrName(@Param("sender_param")String sender_param);
 }
