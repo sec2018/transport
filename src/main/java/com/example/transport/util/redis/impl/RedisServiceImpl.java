@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.example.transport.service.Constant;
 import com.example.transport.util.redis.RedisService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisStringCommands;
@@ -21,7 +22,7 @@ public class RedisServiceImpl implements RedisService {
     private RedisTemplate<String, ?> redisTemplate;
 	
 	private String prefix = "trans_";
-	private Expiration expire = Expiration.seconds(7200);//7200秒后数据过期
+	private Expiration expire = Constant.expire;//3600秒后数据过期
 	
     @Override
     public boolean set(final String key, final String value) {

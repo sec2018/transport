@@ -5,7 +5,7 @@ public class SysBill {
     private String bill_code;
     private long sender_id;
     private String sender_name;
-    private String send_tel;
+    private String sender_tel;
     private String shop_name;
     private long company_id;
     private String company_name;
@@ -46,12 +46,12 @@ public class SysBill {
         this.sender_name = sender_name;
     }
 
-    public String getSend_tel() {
-        return send_tel;
+    public String getSender_tel() {
+        return sender_tel;
     }
 
-    public void setSend_tel(String send_tel) {
-        this.send_tel = send_tel;
+    public void setSender_tel(String sender_tel) {
+        this.sender_tel = sender_tel;
     }
 
     public String getShop_name() {
@@ -117,7 +117,7 @@ public class SysBill {
                 ", bill_code='" + bill_code + '\'' +
                 ", sender_id=" + sender_id +
                 ", sender_name='" + sender_name + '\'' +
-                ", send_tel='" + send_tel + '\'' +
+                ", sender_tel='" + sender_tel + '\'' +
                 ", shop_name='" + shop_name + '\'' +
                 ", company_id=" + company_id +
                 ", company_name='" + company_name + '\'' +

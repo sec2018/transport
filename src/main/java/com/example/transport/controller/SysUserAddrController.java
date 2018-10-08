@@ -2,6 +2,7 @@ package com.example.transport.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.transport.pojo.SysUserAddr;
+import com.example.transport.service.Constant;
 import com.example.transport.service.SysUserAddrService;
 import com.example.transport.service.UserService;
 import com.example.transport.util.R;
@@ -48,17 +49,17 @@ public class SysUserAddrController {
         try {
             tokenvalue = redisService.get(token);
         } catch (Exception e) {
-            return r.error(1003,"服务超时");
+            return r.error(Constant.Redis_TIMEDOWN.getCode(),Constant.Redis_TIMEDOWN.getMsg());
         }
         if(tokenvalue != null){
-            redisService.expire(token, Expiration.seconds(1800).getExpirationTime());
+            redisService.expire(token, Constant.expire.getExpirationTime());
             String openid = tokenvalue.split("\\|")[0];
             String session_key = tokenvalue.split("\\|")[1];
             //获取当前微信用户id
             long wxuserid = userService.getWxUserId(openid);
             //判断用户已存在地址数是否大于10
             if(sysUserAddrService.getAddrCount(wxuserid)>=10){
-                return r.error(1001,"最多存放10个收货地址");
+                return r.error(Constant.Addr_BEYOND.getCode(),Constant.Addr_BEYOND.getMsg());
             }
 
             SysUserAddr sysUserAddr = new SysUserAddr();
@@ -71,11 +72,12 @@ public class SysUserAddrController {
 
             boolean flag = sysUserAddrService.insertSysUserAddr(sysUserAddr);
             if(flag){
-                return r.ok().put("code",1000).put("msg","保存地址成功！");
+                return r.ok().put("code",Constant.Addr_SAVESUCCESS.getCode()).put("msg",Constant.Addr_SAVESUCCESS.getMsg());
+
             }
 
         }else{
-            return r.error(1002,"当前登录已失效，请先登录！");
+            return r.error(Constant.TOKEN_ERROR.getCode(),Constant.TOKEN_ERROR.getMsg());
         }
         return r;
     }
@@ -89,10 +91,10 @@ public class SysUserAddrController {
         try {
             tokenvalue = redisService.get(token);
         } catch (Exception e) {
-            return r.error(1003,"服务超时");
+            return r.error(Constant.Redis_TIMEDOWN.getCode(),Constant.Redis_TIMEDOWN.getMsg());
         }
         if(tokenvalue != null){
-            redisService.expire(token, Expiration.seconds(1800).getExpirationTime());
+            redisService.expire(token, Constant.expire.getExpirationTime());
             String openid = tokenvalue.split("\\|")[0];
             String session_key = tokenvalue.split("\\|")[1];
             //获取当前微信用户id
@@ -100,9 +102,9 @@ public class SysUserAddrController {
             List<SysUserAddr> addrList = sysUserAddrService.getAddrList(wxuserid);
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("data",addrList);
-            return R.ok(map).put("code",1000);
+            return R.ok(map).put("code",200);
         }else{
-            return r.error(1002,"当前登录已失效，请先登录！");
+            return r.error(Constant.TOKEN_ERROR.getCode(),Constant.TOKEN_ERROR.getMsg());
         }
     }
 
@@ -117,10 +119,10 @@ public class SysUserAddrController {
         try {
             tokenvalue = redisService.get(token);
         } catch (Exception e) {
-            return r.error(1003,"服务超时");
+            return r.error(Constant.Redis_TIMEDOWN.getCode(),Constant.Redis_TIMEDOWN.getMsg());
         }
         if(tokenvalue != null){
-            redisService.expire(token, Expiration.seconds(1800).getExpirationTime());
+            redisService.expire(token, Constant.expire.getExpirationTime());
             String openid = tokenvalue.split("\\|")[0];
             String session_key = tokenvalue.split("\\|")[1];
 
@@ -133,11 +135,11 @@ public class SysUserAddrController {
 
             boolean flag = sysUserAddrService.updateSysUserAddr(sysUserAddr)==0?false:true;
             if(flag){
-                return r.ok().put("code",1000).put("msg","更新地址成功！");
+                return r.ok().put("code",Constant.Addr_UPDATESUCCESS.getCode()).put("msg",Constant.Addr_UPDATESUCCESS.getMsg());
             }
 
         }else{
-            return r.error(1002,"当前登录已失效，请先登录！");
+            return r.error(Constant.TOKEN_ERROR.getCode(),Constant.TOKEN_ERROR.getMsg());
         }
         return r;
     }
@@ -151,17 +153,17 @@ public class SysUserAddrController {
         try {
             tokenvalue = redisService.get(token);
         } catch (Exception e) {
-            return r.error(1003,"服务超时");
+            return r.error(Constant.Redis_TIMEDOWN.getCode(),Constant.Redis_TIMEDOWN.getMsg());
         }
         if(tokenvalue != null){
-            redisService.expire(token, Expiration.seconds(1800).getExpirationTime());
+            redisService.expire(token, Constant.expire.getExpirationTime());
 
             boolean flag = sysUserAddrService.deleteAddrById(id)==0?false:true;
             if(flag){
-                return r.ok().put("code",1000).put("msg","删除地址成功！");
+                return r.ok().put("code",Constant.Addr_DELETESUCCESS.getCode()).put("msg",Constant.Addr_DELETESUCCESS.getMsg());
             }
         }else{
-            return r.error(1002,"当前登录已失效，请先登录！");
+            return r.error(Constant.TOKEN_ERROR.getCode(),Constant.TOKEN_ERROR.getMsg());
         }
         return r;
     }
