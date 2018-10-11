@@ -10,9 +10,48 @@ public class SysBill {
     private long company_id;
     private String company_name;
     private long trans_id;
+
+    @Override
+    public String toString() {
+        return "SysBill{" +
+                "id=" + id +
+                ", bill_code='" + bill_code + '\'' +
+                ", sender_id=" + sender_id +
+                ", sender_name='" + sender_name + '\'' +
+                ", sender_tel='" + sender_tel + '\'' +
+                ", shop_name='" + shop_name + '\'' +
+                ", company_id=" + company_id +
+                ", company_name='" + company_name + '\'' +
+                ", trans_id=" + trans_id +
+                ", trans_name='" + trans_name + '\'' +
+                ", batch_code='" + batch_code + '\'' +
+                ", bill_status=" + bill_status +
+                ", sender_lat='" + sender_lat + '\'' +
+                ", sender_lng='" + sender_lng + '\'' +
+                '}';
+    }
+
     private String trans_name;
     private String batch_code;
     private int bill_status;
+    private String sender_lat;
+    private String sender_lng;
+
+    public String getSender_lat() {
+        return sender_lat;
+    }
+
+    public void setSender_lat(String sender_lat) {
+        this.sender_lat = sender_lat;
+    }
+
+    public String getSender_lng() {
+        return sender_lng;
+    }
+
+    public void setSender_lng(String sender_lng) {
+        this.sender_lng = sender_lng;
+    }
 
     public long getId() {
         return id;
@@ -110,21 +149,4 @@ public class SysBill {
         this.bill_status = bill_status;
     }
 
-    @Override
-    public String toString() {
-        return "SysBill{" +
-                "id=" + id +
-                ", bill_code='" + bill_code + '\'' +
-                ", sender_id=" + sender_id +
-                ", sender_name='" + sender_name + '\'' +
-                ", sender_tel='" + sender_tel + '\'' +
-                ", shop_name='" + shop_name + '\'' +
-                ", company_id=" + company_id +
-                ", company_name='" + company_name + '\'' +
-                ", trans_id=" + trans_id +
-                ", trans_name='" + trans_name + '\'' +
-                ", batch_code='" + batch_code + '\'' +
-                ", bill_status=" + bill_status +
-                '}';
-    }
 }

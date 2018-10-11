@@ -9,7 +9,7 @@ import java.util.List;
 public interface BillDao {
 
     //新增订单
-    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status) values(0,#{bill_code},#{sender_id},#{sender_name},#{sender_tel},#{shop_name},#{company_id},#{company_name},#{trans_id},#{trans_name},#{batch_code},#{bill_status})"})
+    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng) values(0,#{bill_code},#{sender_id},#{sender_name},#{sender_tel},#{shop_name},#{company_id},#{company_name},#{trans_id},#{trans_name},#{batch_code},#{bill_status},#{sender_lat},#{sender_lng})"})
     int insertBill(SysBill sysBill);
 
     //根据sender_id来查询某用户下所有订单
@@ -39,4 +39,8 @@ public interface BillDao {
     //承运员根据名称和电话查询所有已完成订单
     @Select({"select * from sys_bill where (sender_name = #{sender_param} or sender_tel = #{sender_param}) and bill_status = 4"})
     List<SysBill>  selectUnfinishBillByTelOrName(@Param("sender_param")String sender_param);
+
+    //接单
+    @Update({"update sys_bill set trans_id = #{trans_id},bill_status = #{bill_status} where id = #{id}"})
+    int updateBillSetTrans_id(@Param("id")long id,@Param("bill_status")int bill_status,@Param("trans_id")long trans_id);
 }

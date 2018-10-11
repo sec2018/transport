@@ -51,11 +51,17 @@ public class Constant {
     public static Constant BILL_UPDATESUCCESS = new Constant(500405, "更新成功");
     public static Constant BILL_DELETEFAILURE = new Constant(500406, "删除失败");
     public static Constant BILL_DELETESUCCESS = new Constant(500407, "删除成功");
+    public static Constant BILL_RECEIVEFAILURE = new Constant(500404, "您来晚了，订单被别人抢走了");
+    public static Constant BILL_RECEIVESUCCESS = new Constant(500405, "抢单成功");
+
     //订单状态码
     public static Constant BILL_STATUSONE = new Constant(1, "已下单，待接单");
     public static Constant BILL_STATUSTWO = new Constant(2, "已接单，待揽收");
     public static Constant BILL_STATUSTHREE = new Constant(3, "已揽收，托运中");
     public static Constant BILL_STATUSFOUR = new Constant(4, "托运完成");
+
+    //公司模块
+    public static  Constant COMPANY_ADDFAILURE = new Constant(500501, "添加公司失败");
 
     private Constant( ) { }
     private Constant( int code,String msg ) {

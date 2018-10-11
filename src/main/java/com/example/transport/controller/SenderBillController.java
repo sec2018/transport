@@ -25,12 +25,11 @@ public class SenderBillController {
     private BillService billService;
 
     @RequestMapping("createbill")
-    @Transactional
     @ResponseBody
     public R createBill(@RequestParam(value = "sender_id") long sender_id, @RequestParam(value = "sender_name")String sender_name, @RequestParam(value = "sender_tel")String sender_tel,
                         @RequestParam(value = "shop_name")String shop_name, @RequestParam(value = "company_id")int company_id, @RequestParam(value = "company_name")String company_name,
-                        @RequestParam(value = "trans_id")Long trans_id,@RequestParam(value = "trans_name")String trans_name, @RequestParam(value = "batch_code")String batch_code,
-                        @RequestParam(value = "bill_status")int bill_status) {
+                        @RequestParam(value = "batch_code")String batch_code,
+                        @RequestParam(value = "bill_status")int bill_status,@RequestParam(value = "lat")String lat,@RequestParam(value = "lng")String lng) {
         R r = new R();
         r.put("code",Constant.BILL_CREATEFAILURE.getCode()).put("msg",Constant.BILL_CREATEFAILURE.getMsg());
         try {
@@ -45,17 +44,17 @@ public class SenderBillController {
             sysBill.setShop_name(shop_name);
             sysBill.setCompany_id(company_id);
             sysBill.setCompany_name(company_name);
-            sysBill.setTrans_id(trans_id);
-            sysBill.setTrans_name(trans_name);
             sysBill.setBatch_code(batch_code);
             sysBill.setBill_status(bill_status);
+            sysBill.setTrans_id(-1);
+            sysBill.setSender_lat(lat);
+            sysBill.setSender_lng(lng);
             boolean flag = billService.insertBill(sysBill);
             if (flag) {
                 r.put("code",Constant.BILL_CREATESUCCESS.getCode()).put("msg",Constant.BILL_CREATESUCCESS.getMsg());
                 return r;
             }
         } catch (Exception e) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return r;
         }
         return r;
@@ -85,7 +84,6 @@ public class SenderBillController {
 
 
     @RequestMapping("updatebill")
-    @Transactional
     @ResponseBody
     public R updateBill(@RequestParam(value = "id") long id, @RequestParam(value = "sender_tel")String sender_tel,
                         @RequestParam(value = "shop_name")String shop_name, @RequestParam(value = "company_id")int company_id, @RequestParam(value = "company_name")String company_name,
@@ -110,14 +108,12 @@ public class SenderBillController {
                 return r;
             }
         } catch (Exception e) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return r;
         }
         return r;
     }
 
     @RequestMapping("updatebillstatus")
-    @Transactional
     @ResponseBody
     public R updateBillStatus(@RequestParam(value = "bill_status") int bill_status,@RequestParam(value = "id") long id){
         R r = new R();
@@ -129,14 +125,12 @@ public class SenderBillController {
                 return r;
             }
         } catch (Exception e) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return r;
         }
         return r;
     }
 
     @RequestMapping("deletebill")
-    @Transactional
     @ResponseBody
     public R deleteBillById(@RequestParam(value = "id") long id){
         R r = new R();
@@ -171,5 +165,27 @@ public class SenderBillController {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("data",billList);
         return R.ok(map).put("code",200);
+    }
+
+
+    @RequestMapping("receivebill")
+    @ResponseBody
+    public R updateBillSetTrans_id(@RequestParam(value = "id") long id,@RequestParam(value = "bill_status") int bill_status,@RequestParam(value = "trans_id") long trans_id){
+        R r = new R();
+        r.put("code",Constant.BILL_RECEIVEFAILURE.getCode()).put("msg",Constant.BILL_RECEIVEFAILURE.getMsg());
+        SysBill bill = billService.selectSingleBill(id);
+        if(bill.getTrans_id()!=-1){
+            return r;
+        }
+        try {
+            boolean flag = billService.updateBillSetTrans_id(id,bill_status,trans_id);
+            if (flag) {
+                r.put("code",Constant.BILL_RECEIVESUCCESS.getCode()).put("msg",Constant.BILL_RECEIVESUCCESS.getMsg());
+                return r;
+            }
+        } catch (Exception e) {
+            return r;
+        }
+        return r;
     }
 }

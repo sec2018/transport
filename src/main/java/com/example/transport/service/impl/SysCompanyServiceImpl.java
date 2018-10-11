@@ -13,7 +13,7 @@ public class SysCompanyServiceImpl implements SysCompanyService{
     private SysCompanyDao sysCompanyDao;
 
     @Override
-    public boolean insertBill(SysCompany sysCompany) {
-        return sysCompanyDao.insertBill(sysCompany)==1?true:false;
+    public boolean insertCompany(SysCompany sysCompany) {
+        return sysCompanyDao.insertCompany(sysCompany)==1?true:false;
     }
 }

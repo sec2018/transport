@@ -9,6 +9,6 @@ public interface SysCompanyDao {
 
     //新增物流公司
     @Insert({"insert into sys_company(company_id,company_name) values(0,#{company_name})"})
-    int insertBill(SysCompany sysCompany);
+    int insertCompany(SysCompany sysCompany);
 
 }

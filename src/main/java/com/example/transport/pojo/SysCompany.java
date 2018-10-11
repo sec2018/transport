@@ -3,7 +3,7 @@ package com.example.transport.pojo;
 public class SysCompany {
 
     private int company_id;
-    private String company;
+    private String company_name;
 
     public int getCompany_id() {
         return company_id;
@@ -13,11 +13,11 @@ public class SysCompany {
         this.company_id = company_id;
     }
 
-    public String getCompany() {
-        return company;
+    public String getCompany_name() {
+        return company_name;
     }
 
-    public void setCompany(String company) {
-        this.company = company;
+    public void setCompany_name(String company_name) {
+        this.company_name = company_name;
     }
 }

@@ -28,4 +28,7 @@ public interface BillService {
 
     //承运员根据名称和电话查询所有已完成订单
     List<SysBill>  selectUnfinishBillByTelOrName(String sender_param);
+
+    //接单
+    boolean updateBillSetTrans_id(long id, int bill_status,long trans_id);
 }
