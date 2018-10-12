@@ -6,6 +6,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 //@SpringBootApplication
 //public class CityTransportApplication {
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 //for war
 @EnableCaching
 @SpringBootApplication
+@EnableSwagger2
 @EnableTransactionManagement
 public class CityTransportApplication extends SpringBootServletInitializer {
 	@Override

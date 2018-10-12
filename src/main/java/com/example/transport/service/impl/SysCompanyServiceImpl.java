@@ -6,6 +6,8 @@ import com.example.transport.service.SysCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service("sysCompanyService")
 public class SysCompanyServiceImpl implements SysCompanyService{
 
@@ -15,5 +17,10 @@ public class SysCompanyServiceImpl implements SysCompanyService{
     @Override
     public boolean insertCompany(SysCompany sysCompany) {
         return sysCompanyDao.insertCompany(sysCompany)==1?true:false;
+    }
+
+    @Override
+    public List<SysCompany> getCompanies() {
+        return sysCompanyDao.getCompanies();
     }
 }

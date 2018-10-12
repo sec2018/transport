@@ -62,6 +62,7 @@ public class Constant {
 
     //公司模块
     public static  Constant COMPANY_ADDFAILURE = new Constant(500501, "添加公司失败");
+    public static  Constant COMPANY_GETFAILURE = new Constant(500502, "获取公司列表失败");
 
     private Constant( ) { }
     private Constant( int code,String msg ) {

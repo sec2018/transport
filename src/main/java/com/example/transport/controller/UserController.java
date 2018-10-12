@@ -43,7 +43,7 @@ public class UserController {
         try {
             pwd = AESUtil.encryptData(loginname + pwd);
             UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(loginname,pwd);
-            usernamePasswordToken.setRememberMe(true);
+//            usernamePasswordToken.setRememberMe(true);
             subject.login(usernamePasswordToken);//验证角色和权限
             if (subject.isAuthenticated()){
                 HttpSession session = request.getSession();
