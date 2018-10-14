@@ -16,9 +16,11 @@ public interface SysUserAddrService {
 
     List<SysUserAddr> getAddrList(long wxuserid);
 
-    int updateSysUserAddr(SysUserAddr sysUserAddr);
+    boolean updateSysUserAddr(SysUserAddr sysUserAddr);
 
     SysUserAddr getAddrById(long id);
 
-    int deleteAddrById(long id);
+    boolean deleteAddrById(long id);
+
+    boolean updateSysUserAddrDefault(long wxuserid);
 }

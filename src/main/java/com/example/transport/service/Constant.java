@@ -38,10 +38,11 @@ public class Constant {
     public static Constant PASSWORD_ERROR = new Constant(500215, "密码错误");
 
     //收货地址模块 5003XX
-    public static Constant Addr_BEYOND = new Constant(500301, "最多存放10个收货地址");
+    public static Constant Addr_BEYOND = new Constant(500301, "最多存放5个我的地址");
     public static Constant Addr_SAVESUCCESS = new Constant(500302, "保存地址成功");
     public static Constant Addr_UPDATESUCCESS = new Constant(500303, "更新地址成功");
     public static Constant Addr_DELETESUCCESS = new Constant(500304, "删除地址成功");
+    public static Constant TEL_WRONG = new Constant(500305, "电话号码错误");
 
     //订单模块
     public static Constant BILL_CREATESUCCESS = new Constant(500401, "下单成功");

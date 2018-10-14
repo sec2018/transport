@@ -4,6 +4,8 @@ import com.example.transport.dao.SysUserAddrDao;
 import com.example.transport.pojo.SysUserAddr;
 import com.example.transport.service.SysUserAddrService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -16,9 +18,16 @@ public class SysUserAddrServiceImpl implements SysUserAddrService{
     @Resource
     private SysUserAddrDao sysUserAddrDao;
 
+    @Transactional
     @Override
     public boolean insertSysUserAddr(SysUserAddr sysUserAddr) {
-        return sysUserAddrDao.insertSysUserAddr(sysUserAddr)==1?true:false;
+        try{
+            return sysUserAddrDao.insertSysUserAddr(sysUserAddr)==1?true:false;
+        }
+        catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
     }
 
     @Override
@@ -31,9 +40,16 @@ public class SysUserAddrServiceImpl implements SysUserAddrService{
         return sysUserAddrDao.getAddrList(wxuserid);
     }
 
+    @Transactional
     @Override
-    public int updateSysUserAddr(SysUserAddr sysUserAddr) {
-        return sysUserAddrDao.updateSysUserAddr(sysUserAddr);
+    public boolean updateSysUserAddr(SysUserAddr sysUserAddr) {
+        try{
+            return sysUserAddrDao.updateSysUserAddr(sysUserAddr)==1?true:false;
+        }
+        catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
     }
 
     @Override
@@ -41,8 +57,27 @@ public class SysUserAddrServiceImpl implements SysUserAddrService{
         return sysUserAddrDao.getAddrById(id);
     }
 
+    @Transactional
     @Override
-    public int deleteAddrById(long id) {
-        return sysUserAddrDao.deleteAddrById(id);
+    public boolean deleteAddrById(long id) {
+        try{
+            return sysUserAddrDao.deleteAddrById(id)==1?true:false;
+        }
+        catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+    }
+
+    @Transactional
+    @Override
+    public boolean updateSysUserAddrDefault(long wxuserid) {
+        try{
+            return sysUserAddrDao.updateSysUserAddrDefault(wxuserid)==1?true:false;
+        }
+        catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
     }
 }

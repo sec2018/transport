@@ -29,4 +29,8 @@ public interface SysUserAddrDao {
 
     @Delete("delete from sys_user_addr where id = #{id}")
     int deleteAddrById(long id);
+
+    //把原默认地址置为非默认
+    @Update({"update sys_user_addr set isdefault=0 where wxuser_id = #{wxuserid} and isdefault=1"})
+    int updateSysUserAddrDefault(long wxuserid);
 }
