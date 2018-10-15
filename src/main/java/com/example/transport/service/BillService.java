@@ -31,4 +31,7 @@ public interface BillService {
 
     //接单
     boolean updateBillSetTrans_id(long id, int bill_status,long trans_id);
+
+    //根据经纬度得到未接订单
+    List<SysBill> selectBillsByLnglat(String lng,String lat);  //经度lng,维度lat
 }

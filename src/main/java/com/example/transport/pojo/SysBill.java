@@ -10,6 +10,33 @@ public class SysBill {
     private long company_id;
     private String company_name;
     private long trans_id;
+    private String goodsname;
+    private int goodsnum;
+    private String billinfo;
+
+    public String getGoodsname() {
+        return goodsname;
+    }
+
+    public void setGoodsname(String goodsname) {
+        this.goodsname = goodsname;
+    }
+
+    public int getGoodsnum() {
+        return goodsnum;
+    }
+
+    public void setGoodsnum(int goodsnum) {
+        this.goodsnum = goodsnum;
+    }
+
+    public String getBillinfo() {
+        return billinfo;
+    }
+
+    public void setBillinfo(String billinfo) {
+        this.billinfo = billinfo;
+    }
 
     @Override
     public String toString() {

@@ -95,4 +95,9 @@ public class BillServiceImpl implements BillService{
             return false;
         }
     }
+
+    @Override
+    public List<SysBill> selectBillsByLnglat(String lng, String lat) {
+        return billDao.selectBillsByLnglat(lng,lat);
+    }
 }
