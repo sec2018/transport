@@ -13,6 +13,60 @@ public class SysBill {
     private String goodsname;
     private int goodsnum;
     private String billinfo;
+    private String sender_procity;
+    private String sender_detailarea;
+    private String rec_name;
+    private String rec_tel;
+    private String rec_procity;
+    private String rec_detailarea;
+
+    public String getSender_procity() {
+        return sender_procity;
+    }
+
+    public void setSender_procity(String sender_procity) {
+        this.sender_procity = sender_procity;
+    }
+
+    public String getSender_detailarea() {
+        return sender_detailarea;
+    }
+
+    public void setSender_detailarea(String sender_detailarea) {
+        this.sender_detailarea = sender_detailarea;
+    }
+
+    public String getRec_name() {
+        return rec_name;
+    }
+
+    public void setRec_name(String rec_name) {
+        this.rec_name = rec_name;
+    }
+
+    public String getRec_tel() {
+        return rec_tel;
+    }
+
+    public void setRec_tel(String rec_tel) {
+        this.rec_tel = rec_tel;
+    }
+
+    public String getRec_procity() {
+        return rec_procity;
+    }
+
+    public void setRec_procity(String rec_procity) {
+        this.rec_procity = rec_procity;
+    }
+
+    public String getRec_detailarea() {
+        return rec_detailarea;
+    }
+
+    public void setRec_detailarea(String rec_detailarea) {
+        this.rec_detailarea = rec_detailarea;
+    }
 
     public String getGoodsname() {
         return goodsname;

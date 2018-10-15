@@ -9,11 +9,11 @@ import java.util.List;
 public interface BillDao {
 
     //新增订单
-    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng,goodsname,goodsnum,billinfo) values(0,#{bill_code},#{sender_id},#{sender_name},#{sender_tel},#{shop_name},#{company_id},#{company_name},#{trans_id},#{trans_name},#{batch_code},#{bill_status},#{sender_lat},#{sender_lng},#{goodsname},#{goodsnum},#{billinfo})"})
+    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng,goodsname,goodsnum,billinfo,sender_procity,sender_detailarea,rec_name,rec_tel,rec_procity,rec_detailarea) values(0,#{bill_code},#{sender_id},#{sender_name},#{sender_tel},#{shop_name},#{company_id},#{company_name},#{trans_id},#{trans_name},#{batch_code},#{bill_status},#{sender_lat},#{sender_lng},#{goodsname},#{goodsnum},#{billinfo},#{sender_procity},#{sender_detailarea},#{rec_name},#{rec_tel},#{rec_procity},#{rec_detailarea})"})
     int insertBill(SysBill sysBill);
 
     //根据sender_id来查询某用户下所有订单
-    @Select({"select * from sys_bill where sender_id = #{sender_id}"})
+    @Select({"select * from sys_bill where sender_id = #{sender_id} and batch_code != 1"})
     List<SysBill> selectUserBill(long sender_id);
 
     //根据id来查询特定运单
@@ -22,7 +22,7 @@ public interface BillDao {
 
     //根据经纬度,周围2公里来查询未接运单
     //SELECT * FROM transport.sys_bill where (abs(sender_lng - 121.34500) <= (10/111) and abs(sender_lat - 30.34300) <= (10/111) /cos(121.34500 *PI()/180));
-    @Select({"SELECT * FROM sys_bill where (abs(sender_lng - lng) <= (2/111) and abs(sender_lat - lat) <= (2/111) /cos(lng *PI()/180) and trans_id=-1)"})
+    @Select({"SELECT * FROM sys_bill where (abs(sender_lng - lng) <= (2/111) and abs(sender_lat - lat) <= (2/111) /cos(lng *PI()/180) and trans_id=-1 and batch_code != 1)"})
     List<SysBill> selectBillsByLnglat(String lng,String lat);  //经度lng,维度lat
 
     //更新订单内容
@@ -30,7 +30,7 @@ public interface BillDao {
     int updateBill(SysBill sysBill);
 
     //更新订单状态
-    @Update({"update sys_bill set bill_status = #{bill_status} where id = #{id}"})
+    @Update({"update sys_bill set bill_status = #{bill_status} where id = #{id} and batch_code != 1"})
     int updateBillStatus(@Param("bill_status")int bill_status,@Param("id")long id);
 
     //删除订单
