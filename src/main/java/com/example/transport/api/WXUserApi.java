@@ -171,7 +171,7 @@ public class WXUserApi {
     /**
      * 获取微信小程序 session_key 和 openid
      *
-     * @author zhy
+     * @author wzj
      * @param code 调用微信登陆返回的Code
      * @return
      */

@@ -100,4 +100,14 @@ public class BillServiceImpl implements BillService{
     public List<SysBill> selectBillsByLnglat(String lng, String lat) {
         return billDao.selectBillsByLnglat(lng,lat);
     }
+
+    @Override
+    public List<SysBill> selectfinishedBillByCompanyId(Integer company_id) {
+        return billDao.selectfinishedBillByCompanyId(company_id);
+    }
+
+    @Override
+    public List<SysBill> selectunfinishedBillByCompanyId(Integer company_id) {
+        return billDao.selectunfinishedBillByCompanyId(company_id);
+    }
 }

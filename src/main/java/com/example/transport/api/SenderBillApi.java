@@ -13,6 +13,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -178,10 +180,10 @@ public class SenderBillApi {
     }
 
 
-    @ApiOperation(value = "更新订单接口", notes = "更新订单")
+    @ApiOperation(value = "更新订单接口", notes = "更新订单")          //让修改哪些内容？
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
-            @ApiImplicitParam(name = "sender_tel", value = "商家电话", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "sender_tel", value = "下单人电话", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "shop_name", value = "商铺名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "company_id", value = "物流公司id", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "company_name", value = "物流公司名称", required = true, dataType = "String",paramType = "query"),
@@ -333,6 +335,7 @@ public class SenderBillApi {
             @ApiImplicitParam(name = "bill_status", value = "订单状态（1,2,3,4）", required = true, dataType = "Integer",paramType = "query")
     })
     @RequestMapping(value="receivebill",method = RequestMethod.POST)
+    @Transactional
     @ResponseBody
     public ResponseEntity<JsonResult> updateBillSetTrans_id(@RequestParam(value = "id") long id,@RequestParam(value = "trans_id") long trans_id,@RequestParam(value = "bill_status") int bill_status){
         JsonResult r = new JsonResult();
@@ -356,6 +359,7 @@ public class SenderBillApi {
             r.setData(e.getClass().getName() + ":" + e.getMessage());
             r.setMsg(Constant.BILL_RECEIVEFAILURE.getMsg());
             r.setSuccess(false);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
@@ -374,6 +378,55 @@ public class SenderBillApi {
         JsonResult r = new JsonResult();
         try {
             List<SysBill> billList = billService.selectBillsByLnglat(lng,lat);
+            r.setCode("200");
+            r.setMsg("查询成功！");
+            r.setData(billList);
+            r.setSuccess(true);
+        } catch (Exception e) {
+            r.setCode("500");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg("查询失败");
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+    @ApiOperation(value = "物流公司查询本公司所有已完成订单", notes = "物流公司查询本公司所有已完成订单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "company_id", value = "物流公司名称", required = true, dataType = "Integer",paramType = "query")
+    })
+    @RequestMapping(value="getfinishedbillbycompanyid",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> getFinishedBillByCompanyId(@RequestParam(value = "company_id") Integer company_id){
+        JsonResult r = new JsonResult();
+        try {
+            List<SysBill> billList = billService.selectfinishedBillByCompanyId(company_id);
+            r.setCode("200");
+            r.setMsg("查询成功！");
+            r.setData(billList);
+            r.setSuccess(true);
+        } catch (Exception e) {
+            r.setCode("500");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg("查询失败");
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    @ApiOperation(value = "物流公司查询本公司所有未完成订单", notes = "物流公司查询本公司所有未完成订单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "company_id", value = "物流公司名称", required = true, dataType = "Integer",paramType = "query")
+    })
+    @RequestMapping(value="getunfinishedbillbycompanyid",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> getUnFinishedBillByCompanyId(@RequestParam(value = "company_id") Integer company_id){
+        JsonResult r = new JsonResult();
+        try {
+            List<SysBill> billList = billService.selectunfinishedBillByCompanyId(company_id);
             r.setCode("200");
             r.setMsg("查询成功！");
             r.setData(billList);

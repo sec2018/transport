@@ -34,4 +34,10 @@ public interface BillService {
 
     //根据经纬度得到未接订单
     List<SysBill> selectBillsByLnglat(String lng,String lat);  //经度lng,维度lat
+
+    //物流公司查询本公司所有已完成订单
+    List<SysBill>  selectfinishedBillByCompanyId(Integer company_id);
+
+    //物流公司查询本公司所有未完成订单
+    List<SysBill>  selectunfinishedBillByCompanyId(Integer company_id);
 }

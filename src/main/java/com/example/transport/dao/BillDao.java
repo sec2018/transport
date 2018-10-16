@@ -48,4 +48,13 @@ public interface BillDao {
     //接单
     @Update({"update sys_bill set trans_id = #{trans_id},bill_status = #{bill_status} where id = #{id}"})
     int updateBillSetTrans_id(@Param("id")long id,@Param("bill_status")int bill_status,@Param("trans_id")long trans_id);
+
+    //物流公司查询本公司所有已完成订单
+    @Select({"select * from sys_bill where company_id = #{company_id} and bill_status = 4"})
+    List<SysBill>  selectfinishedBillByCompanyId(@Param("company_id")Integer company_id);
+
+    //物流公司查询本公司所有未完成订单
+    @Select({"select * from sys_bill where company_id = #{company_id} and bill_status != 4 and batch_code != 1"})
+    List<SysBill>  selectunfinishedBillByCompanyId(@Param("company_id")Integer company_id);
+
 }
