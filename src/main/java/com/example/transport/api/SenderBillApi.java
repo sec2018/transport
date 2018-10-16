@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
 @RequestMapping("api")
 @Controller
@@ -36,6 +37,8 @@ public class SenderBillApi {
 
     @Autowired
     private UserService userService;
+
+    Semaphore semaphore = new Semaphore(1);
 
     @ApiOperation(value = "商家下单接口", notes = "下单")
     @ApiImplicitParams({
@@ -338,8 +341,20 @@ public class SenderBillApi {
     @Transactional
     @ResponseBody
     public ResponseEntity<JsonResult> updateBillSetTrans_id(@RequestParam(value = "id") long id,@RequestParam(value = "trans_id") long trans_id,@RequestParam(value = "bill_status") int bill_status){
+        int availablePermits = semaphore.availablePermits();
         JsonResult r = new JsonResult();
+        if(availablePermits>0){
+            System.out.println("抢单成功！");
+        }else{
+            System.out.println("抢单失败！");
+            r.setCode(Constant.BILL_RECEIVEFAILURE.getCode()+"");
+            r.setData(null);
+            r.setMsg(Constant.BILL_RECEIVEFAILURE.getMsg());
+            r.setSuccess(false);
+            return ResponseEntity.ok(r);
+        }
         try {
+            semaphore.acquire(1);
             SysBill bill = billService.selectSingleBill(id);
             if(bill.getTrans_id()!=-1){
                 r.setCode(Constant.BILL_RECEIVEFAILURE.getCode()+"");
@@ -361,6 +376,8 @@ public class SenderBillApi {
             r.setSuccess(false);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             e.printStackTrace();
+        }finally {
+            semaphore.release(1);
         }
         return ResponseEntity.ok(r);
     }
