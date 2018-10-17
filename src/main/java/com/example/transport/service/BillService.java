@@ -24,7 +24,11 @@ public interface BillService {
     //删除订单
     boolean deleteBill(long id);
 
+    //商家根据sender_id和状态bill_status 来查询未完成订单
     List<SysBill>  selectUnfinishBill(long sender_id);
+
+    //商家根据sender_id和状态bill_status = 4来查询已完成订单
+    List<SysBill>  selectfinishedBill(long sender_id);
 
     //承运员根据名称和电话查询所有已完成订单
     List<SysBill>  selectUnfinishBillByTelOrName(String sender_param);
@@ -40,4 +44,7 @@ public interface BillService {
 
     //物流公司查询本公司所有未完成订单
     List<SysBill>  selectunfinishedBillByCompanyId(Integer company_id);
+
+    //所有未接订单列表
+    List<SysBill> selectAllUnBills();
 }

@@ -309,6 +309,51 @@ public class SenderBillApi {
     }
 
 
+    @ApiOperation(value = "商家查询所下已完成订单", notes = "商家查询所下已完成订单")
+    @ApiImplicitParam(name = "sender_id", value = "商家id", required = true, dataType = "Long",paramType = "query")
+    @RequestMapping(value="getuserfinishedbill",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> searchFinishedsBillByUserId(@RequestParam(value = "sender_id") long sender_id){
+        JsonResult r = new JsonResult();
+        try {
+            List<SysBill> billList = billService.selectfinishedBill(sender_id);
+            r.setCode("200");
+            r.setMsg("查询成功！");
+            r.setData(billList);
+            r.setSuccess(true);
+        } catch (Exception e) {
+            r.setCode("500");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg("查询失败");
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    @ApiOperation(value = "查询所有所下未接运单", notes = "查询所有所下未接运单")
+    @RequestMapping(value="getallunbills",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> searchAllUnbills(){
+        JsonResult r = new JsonResult();
+        try {
+            List<SysBill> billList = billService.selectAllUnBills();
+            r.setCode("200");
+            r.setMsg("查询成功！");
+            r.setData(billList);
+            r.setSuccess(true);
+        } catch (Exception e) {
+            r.setCode("500");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg("查询失败");
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
     @ApiOperation(value = "根据名称和电话查询订单", notes = "根据名称和电话查询订单")
     @ApiImplicitParam(name = "sender_param", value = "名称或电话", required = true, dataType = "String",paramType = "query")
     @RequestMapping(value="getbillbynameortel",method = RequestMethod.GET)

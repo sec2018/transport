@@ -80,6 +80,11 @@ public class BillServiceImpl implements BillService{
     }
 
     @Override
+    public List<SysBill> selectfinishedBill(long sender_id) {
+        return billDao.selectfinishedBill(sender_id);
+    }
+
+    @Override
     public List<SysBill> selectUnfinishBillByTelOrName(String sender_param) {
         return billDao.selectUnfinishBillByTelOrName(sender_param);
     }
@@ -109,5 +114,10 @@ public class BillServiceImpl implements BillService{
     @Override
     public List<SysBill> selectunfinishedBillByCompanyId(Integer company_id) {
         return billDao.selectunfinishedBillByCompanyId(company_id);
+    }
+
+    @Override
+    public List<SysBill> selectAllUnBills() {
+        return billDao.selectAllUnBills();
     }
 }
