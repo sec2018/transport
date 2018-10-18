@@ -87,7 +87,6 @@ public class CompanyApi {
         JsonResult r = new JsonResult();
         try {
             SysCompanyExample sysCompanyExample = new SysCompanyExample();
-            SysCompanyExample.Criteria criteria = sysCompanyExample.createCriteria();
             int count = sysCompanyMapper.countByExample(sysCompanyExample);
             r.setCode("200");
             r.setMsg("获取物流公司数量成功！");
