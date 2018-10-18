@@ -57,3 +57,23 @@
 
     set mgLng = lng + dlngres;
     set mgLat = lat + dlatres;
+
+
+    ############################多表联查#############################
+    <select id="getListByConfirm" parameterType="int" resultMap="ResultMap2">
+      select * from pmt_schedule_calss_list WHERE confirm=#{confirm}
+    </select>
+    <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
+    <resultMap type="com.sec.demo.pojo.pmt.PmtScheduleCalssList" id="ResultMap2">
+      <id property="id" column="id"/>
+      <result property="cid" column="cid"/>
+      <result property="ctype" column="ctype"/>
+      <result property="shiftstarttime" column="shiftstarttime"/>
+      <result property="confirm" column="confirm"/>
+      <association property="pmtScheduleClassNew" column="cid" select="getPmtScheduleClassNew2">
+      </association>
+    </resultMap>
+    <select id="getPmtScheduleClassNew2" parameterType="string" resultType="com.sec.demo.pojo.pmt.PmtScheduleClassNew">
+      SELECT cname FROM pmt_schedule_class_new WHERE cid=#{cid}
+    </select>
+    ##################################################################

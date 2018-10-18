@@ -26,7 +26,7 @@ spring:
       servlet:
         content-type: text/html; charset=utf-8
       enabled: true
-    devtools: 
+    devtools:
       restart:
         enabled: true
     redis:
@@ -55,11 +55,14 @@ logging:
     org.hibernate: error
   #采用相对路径方式将日志文件输出到【log\myspringboot.log】
   file: log\myspringboot.log
-  
-   
+
+
 #这个插件是mybatis的分页查询
 pagehelper:
    helperDialect: mysql
    reasonable: true
    supportMethodsArguments: true
    params: count=countSql
+
+mybatis:
+  mapperLocations: classpath:mapper/*.xml

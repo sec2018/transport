@@ -1,7 +1,9 @@
 package com.example.transport.api;
 
+import com.example.transport.model.SysCompanyExample;
 import com.example.transport.pojo.SysCompany;
 import com.example.transport.service.Constant;
+import com.example.transport.dao.SysCompanyMapper;
 import com.example.transport.service.SysCompanyService;
 import com.example.transport.util.JsonResult;
 import io.swagger.annotations.ApiImplicitParam;
@@ -23,6 +25,9 @@ public class CompanyApi {
 
     @Autowired
     private SysCompanyService sysCompanyService;
+
+    @Autowired
+    private SysCompanyMapper sysCompanyMapper;
 
 
     @ApiOperation(value = "添加物流公司", notes = "根据物流公司名称添加物流公司")
@@ -63,6 +68,30 @@ public class CompanyApi {
             r.setCode("200");
             r.setMsg("获取物流公司成功！");
             r.setData(companylist);
+            r.setSuccess(true);
+        } catch (Exception e) {
+            r.setCode(Constant.COMPANY_GETFAILURE.getCode()+"");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg(Constant.COMPANY_GETFAILURE.getMsg());
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    @ApiOperation(value = "查询所有物流公司个数", notes = "查询所有物流公司个数")
+    @RequestMapping(value="getcompaniescount",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> GetCompanies1(){
+        JsonResult r = new JsonResult();
+        try {
+            SysCompanyExample sysCompanyExample = new SysCompanyExample();
+            SysCompanyExample.Criteria criteria = sysCompanyExample.createCriteria();
+            int count = sysCompanyMapper.countByExample(sysCompanyExample);
+            r.setCode("200");
+            r.setMsg("获取物流公司数量成功！");
+            r.setData(count);
             r.setSuccess(true);
         } catch (Exception e) {
             r.setCode(Constant.COMPANY_GETFAILURE.getCode()+"");

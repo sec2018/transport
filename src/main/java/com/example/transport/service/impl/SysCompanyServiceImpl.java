@@ -1,6 +1,6 @@
 package com.example.transport.service.impl;
 
-import com.example.transport.dao.SysCompanyDao;
+import com.example.transport.dao.SysUserTokenDao;
 import com.example.transport.pojo.SysCompany;
 import com.example.transport.service.SysCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import java.util.List;
 public class SysCompanyServiceImpl implements SysCompanyService{
 
     @Autowired
-    private SysCompanyDao sysCompanyDao;
+    private SysUserTokenDao.SysCompanyDao sysCompanyDao;
 
     @Override
     public boolean insertCompany(SysCompany sysCompany) {
