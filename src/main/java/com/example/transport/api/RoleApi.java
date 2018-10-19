@@ -27,7 +27,7 @@ public class RoleApi {
     @ApiOperation(value = "查询所有角色列表", notes = "查询所有角色列表")
     @RequestMapping(value="getrolelist",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> GetCompanies1(){
+    public ResponseEntity<JsonResult> GetRoleList(){
         JsonResult r = new JsonResult();
         try {
             SysRoleExample example = new SysRoleExample();
