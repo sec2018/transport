@@ -149,14 +149,27 @@ public class SysUserAddrApi {
         String token = request.getHeader("token");
         JsonResult r = new JsonResult();
         String tokenvalue = null;
-        try {
-            tokenvalue = redisService.get(token);
-        } catch (Exception e) {
-            r.setCode(Constant.Redis_TIMEDOWN.getCode()+"");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg(Constant.Redis_TIMEDOWN.getMsg());
-            r.setSuccess(false);
-            return ResponseEntity.ok(r);
+        int retry = 1;
+        while (retry<=3){
+            try
+            {
+                //业务代码
+                tokenvalue = redisService.get(token);
+                break;
+            }
+            catch(Exception ex)
+            {
+                //重试
+                retry++;
+                if(retry == 4){
+                    //记录错误
+                    r.setCode(Constant.Redis_TIMEDOWN.getCode()+"");
+                    r.setData(null);
+                    r.setMsg(Constant.Redis_TIMEDOWN.getMsg());
+                    r.setSuccess(false);
+                    return ResponseEntity.ok(r);
+                }
+            }
         }
         try {
             if(tokenvalue != null){
