@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RequestMapping("api")
@@ -29,17 +30,26 @@ public class CompanyApi {
     @Autowired
     private SysCompanyMapper sysCompanyMapper;
 
-
+    //角色1,4
     @ApiOperation(value = "添加物流公司", notes = "根据物流公司名称添加物流公司")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "companyname", value = "物流公司名称", required = true, dataType = "String",paramType = "query")
+            @ApiImplicitParam(name = "companyname", value = "物流公司名称", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value="addcompany",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> AddCompany(@RequestParam(value = "companyname")String companyname){
+    public ResponseEntity<JsonResult> AddCompany(@RequestParam(value = "companyname")String companyname, HttpServletRequest request){
+        String roleid = request.getHeader("roleid");
+        JsonResult r = new JsonResult();
+        if(roleid != "1" && roleid != "4"){
+            r.setCode(Constant.ROLE_ERROR.getCode()+"");
+            r.setData(null);
+            r.setMsg(Constant.ROLE_ERROR.getMsg());
+            r.setSuccess(false);
+            return ResponseEntity.ok(r);
+        }
         SysCompany sysCompany = new SysCompany();
         sysCompany.setCompany_name(companyname);
-        JsonResult r = new JsonResult();
         try {
             boolean flag = sysCompanyService.insertCompany(sysCompany);
             if(flag){
@@ -58,6 +68,7 @@ public class CompanyApi {
         return ResponseEntity.ok(r);
     }
 
+    //角色1,2，3,4
     @ApiOperation(value = "查询所有物流公司", notes = "查询所有物流公司")
     @RequestMapping(value="getcompanies",method = RequestMethod.GET)
     @ResponseBody
@@ -79,7 +90,7 @@ public class CompanyApi {
         return ResponseEntity.ok(r);
     }
 
-
+    //角色1,2，3,4
     @ApiOperation(value = "查询所有物流公司个数", notes = "查询所有物流公司个数")
     @RequestMapping(value="getcompaniescount",method = RequestMethod.GET)
     @ResponseBody

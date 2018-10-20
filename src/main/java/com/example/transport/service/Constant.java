@@ -29,6 +29,7 @@ public class Constant {
     public static Constant SERVER_ERROR = new Constant(500100, "服务端异常");
     public static Constant BIND_ERROR = new Constant(500101, "参数校验异常：%s");
     public static Constant Redis_TIMEDOWN = new Constant(500102, "Redis连接超时");
+    public static Constant ROLE_ERROR = new Constant(500103, "您没有该权限");
     //登录模块 5002XX
     public static Constant TOKEN_ERROR = new Constant(500210, "Token不存在或者已经失效，请先登录！");
     public static Constant PASSWORD_EMPTY = new Constant(500211, "登录密码不能为空");
