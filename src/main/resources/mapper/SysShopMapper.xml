@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.example.transport.dao.SysCompanyMapper" >
-  <resultMap id="BaseResultMap" type="com.example.transport.pojo.SysCompany" >
+<mapper namespace="com.example.transport.dao.SysShopMapper" >
+  <resultMap id="BaseResultMap" type="com.example.transport.pojo.SysShop" >
     <constructor >
-      <idArg column="company_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="company_name" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="company_procity" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="company_detailarea" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <idArg column="shop_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="shop_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="shop_procity" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="shop_detailarea" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="wxuser_id" jdbcType="BIGINT" javaType="java.lang.Long" />
     </constructor>
   </resultMap>
@@ -69,15 +69,15 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    company_id, company_name, company_procity, company_detailarea, wxuser_id
+    shop_id, shop_name, shop_procity, shop_detailarea, wxuser_id
   </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.example.transport.model.SysCompanyExample" >
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.example.transport.model.SysShopExample" >
     select
     <if test="distinct" >
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from sys_company
+    from sys_shop
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
@@ -88,82 +88,82 @@
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    from sys_company
-    where company_id = #{companyId,jdbcType=INTEGER}
+    from sys_shop
+    where shop_id = #{shopId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from sys_company
-    where company_id = #{companyId,jdbcType=INTEGER}
+    delete from sys_shop
+    where shop_id = #{shopId,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.example.transport.model.SysCompanyExample" >
-    delete from sys_company
+  <delete id="deleteByExample" parameterType="com.example.transport.model.SysShopExample" >
+    delete from sys_shop
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.example.transport.pojo.SysCompany" >
-    insert into sys_company (company_id, company_name, company_procity, 
-      company_detailarea, wxuser_id)
-    values (#{companyId,jdbcType=INTEGER}, #{companyName,jdbcType=VARCHAR}, #{companyProcity,jdbcType=VARCHAR}, 
-      #{companyDetailarea,jdbcType=VARCHAR}, #{wxuserId,jdbcType=BIGINT})
+  <insert id="insert" parameterType="com.example.transport.pojo.SysShop" >
+    insert into sys_shop (shop_id, shop_name, shop_procity, 
+      shop_detailarea, wxuser_id)
+    values (#{shopId,jdbcType=INTEGER}, #{shopName,jdbcType=VARCHAR}, #{shopProcity,jdbcType=VARCHAR}, 
+      #{shopDetailarea,jdbcType=VARCHAR}, #{wxuserId,jdbcType=BIGINT})
   </insert>
-  <insert id="insertSelective" parameterType="com.example.transport.pojo.SysCompany" >
-    insert into sys_company
+  <insert id="insertSelective" parameterType="com.example.transport.pojo.SysShop" >
+    insert into sys_shop
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="companyId != null" >
-        company_id,
+      <if test="shopId != null" >
+        shop_id,
       </if>
-      <if test="companyName != null" >
-        company_name,
+      <if test="shopName != null" >
+        shop_name,
       </if>
-      <if test="companyProcity != null" >
-        company_procity,
+      <if test="shopProcity != null" >
+        shop_procity,
       </if>
-      <if test="companyDetailarea != null" >
-        company_detailarea,
+      <if test="shopDetailarea != null" >
+        shop_detailarea,
       </if>
       <if test="wxuserId != null" >
         wxuser_id,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="companyId != null" >
-        #{companyId,jdbcType=INTEGER},
+      <if test="shopId != null" >
+        #{shopId,jdbcType=INTEGER},
       </if>
-      <if test="companyName != null" >
-        #{companyName,jdbcType=VARCHAR},
+      <if test="shopName != null" >
+        #{shopName,jdbcType=VARCHAR},
       </if>
-      <if test="companyProcity != null" >
-        #{companyProcity,jdbcType=VARCHAR},
+      <if test="shopProcity != null" >
+        #{shopProcity,jdbcType=VARCHAR},
       </if>
-      <if test="companyDetailarea != null" >
-        #{companyDetailarea,jdbcType=VARCHAR},
+      <if test="shopDetailarea != null" >
+        #{shopDetailarea,jdbcType=VARCHAR},
       </if>
       <if test="wxuserId != null" >
         #{wxuserId,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.example.transport.model.SysCompanyExample" resultType="java.lang.Integer" >
-    select count(*) from sys_company
+  <select id="countByExample" parameterType="com.example.transport.model.SysShopExample" resultType="java.lang.Integer" >
+    select count(*) from sys_shop
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map" >
-    update sys_company
+    update sys_shop
     <set >
-      <if test="record.companyId != null" >
-        company_id = #{record.companyId,jdbcType=INTEGER},
+      <if test="record.shopId != null" >
+        shop_id = #{record.shopId,jdbcType=INTEGER},
       </if>
-      <if test="record.companyName != null" >
-        company_name = #{record.companyName,jdbcType=VARCHAR},
+      <if test="record.shopName != null" >
+        shop_name = #{record.shopName,jdbcType=VARCHAR},
       </if>
-      <if test="record.companyProcity != null" >
-        company_procity = #{record.companyProcity,jdbcType=VARCHAR},
+      <if test="record.shopProcity != null" >
+        shop_procity = #{record.shopProcity,jdbcType=VARCHAR},
       </if>
-      <if test="record.companyDetailarea != null" >
-        company_detailarea = #{record.companyDetailarea,jdbcType=VARCHAR},
+      <if test="record.shopDetailarea != null" >
+        shop_detailarea = #{record.shopDetailarea,jdbcType=VARCHAR},
       </if>
       <if test="record.wxuserId != null" >
         wxuser_id = #{record.wxuserId,jdbcType=BIGINT},
@@ -174,40 +174,40 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update sys_company
-    set company_id = #{record.companyId,jdbcType=INTEGER},
-      company_name = #{record.companyName,jdbcType=VARCHAR},
-      company_procity = #{record.companyProcity,jdbcType=VARCHAR},
-      company_detailarea = #{record.companyDetailarea,jdbcType=VARCHAR},
+    update sys_shop
+    set shop_id = #{record.shopId,jdbcType=INTEGER},
+      shop_name = #{record.shopName,jdbcType=VARCHAR},
+      shop_procity = #{record.shopProcity,jdbcType=VARCHAR},
+      shop_detailarea = #{record.shopDetailarea,jdbcType=VARCHAR},
       wxuser_id = #{record.wxuserId,jdbcType=BIGINT}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.example.transport.pojo.SysCompany" >
-    update sys_company
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.transport.pojo.SysShop" >
+    update sys_shop
     <set >
-      <if test="companyName != null" >
-        company_name = #{companyName,jdbcType=VARCHAR},
+      <if test="shopName != null" >
+        shop_name = #{shopName,jdbcType=VARCHAR},
       </if>
-      <if test="companyProcity != null" >
-        company_procity = #{companyProcity,jdbcType=VARCHAR},
+      <if test="shopProcity != null" >
+        shop_procity = #{shopProcity,jdbcType=VARCHAR},
       </if>
-      <if test="companyDetailarea != null" >
-        company_detailarea = #{companyDetailarea,jdbcType=VARCHAR},
+      <if test="shopDetailarea != null" >
+        shop_detailarea = #{shopDetailarea,jdbcType=VARCHAR},
       </if>
       <if test="wxuserId != null" >
         wxuser_id = #{wxuserId,jdbcType=BIGINT},
       </if>
     </set>
-    where company_id = #{companyId,jdbcType=INTEGER}
+    where shop_id = #{shopId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.example.transport.pojo.SysCompany" >
-    update sys_company
-    set company_name = #{companyName,jdbcType=VARCHAR},
-      company_procity = #{companyProcity,jdbcType=VARCHAR},
-      company_detailarea = #{companyDetailarea,jdbcType=VARCHAR},
+  <update id="updateByPrimaryKey" parameterType="com.example.transport.pojo.SysShop" >
+    update sys_shop
+    set shop_name = #{shopName,jdbcType=VARCHAR},
+      shop_procity = #{shopProcity,jdbcType=VARCHAR},
+      shop_detailarea = #{shopDetailarea,jdbcType=VARCHAR},
       wxuser_id = #{wxuserId,jdbcType=BIGINT}
-    where company_id = #{companyId,jdbcType=INTEGER}
+    where shop_id = #{shopId,jdbcType=INTEGER}
   </update>
 </mapper>

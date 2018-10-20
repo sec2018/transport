@@ -1,41 +1,65 @@
 package com.example.transport.pojo;
 
 public class SysCompany {
+    private Integer companyId;
 
-    private int company_id;
-    private String company_name;
-    private String company_procity;
-    private String company_detailarea;
+    private String companyName;
 
-    public int getCompany_id() {
-        return company_id;
+    private String companyProcity;
+
+    private String companyDetailarea;
+
+    private Long wxuserId;
+
+    public SysCompany(Integer companyId, String companyName, String companyProcity, String companyDetailarea, Long wxuserId) {
+        this.companyId = companyId;
+        this.companyName = companyName;
+        this.companyProcity = companyProcity;
+        this.companyDetailarea = companyDetailarea;
+        this.wxuserId = wxuserId;
     }
 
-    public String getCompany_procity() {
-        return company_procity;
+    public SysCompany() {
+        super();
     }
 
-    public void setCompany_procity(String company_procity) {
-        this.company_procity = company_procity;
+    public Integer getCompanyId() {
+        return companyId;
     }
 
-    public String getCompany_detailarea() {
-        return company_detailarea;
+    public void setCompanyId(Integer companyId) {
+        this.companyId = companyId;
     }
 
-    public void setCompany_detailarea(String company_detailarea) {
-        this.company_detailarea = company_detailarea;
+    public String getCompanyName() {
+        return companyName;
     }
 
-    public void setCompany_id(int company_id) {
-        this.company_id = company_id;
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName == null ? null : companyName.trim();
     }
 
-    public String getCompany_name() {
-        return company_name;
+    public String getCompanyProcity() {
+        return companyProcity;
     }
 
-    public void setCompany_name(String company_name) {
-        this.company_name = company_name;
+    public void setCompanyProcity(String companyProcity) {
+        this.companyProcity = companyProcity == null ? null : companyProcity.trim();
+    }
+
+    public String getCompanyDetailarea() {
+        return companyDetailarea;
+    }
+
+    public void setCompanyDetailarea(String companyDetailarea) {
+        this.companyDetailarea = companyDetailarea == null ? null : companyDetailarea.trim();
+    }
+
+    public Long getWxuserId() {
+        return wxuserId;
+    }
+
+    public void setWxuserId(Long wxuserId) {
+        this.wxuserId = wxuserId;
     }
 }

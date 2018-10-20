@@ -40,6 +40,7 @@ public class SenderBillApi {
 
     Semaphore semaphore = new Semaphore(1);
 
+    //角色1,2
     @ApiOperation(value = "商家下单接口", notes = "下单")
     @ApiImplicitParams({
 
@@ -47,6 +48,7 @@ public class SenderBillApi {
             @ApiImplicitParam(name = "goodsname", value = "商品名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "goodsnum", value = "商品数量", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "sender_tel", value = "商家电话", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "shop_id", value = "商铺id", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "shop_name", value = "商铺名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "company_id", value = "物流公司id", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "company_name", value = "物流公司名称", required = true, dataType = "String",paramType = "query"),
@@ -60,30 +62,27 @@ public class SenderBillApi {
             @ApiImplicitParam(name = "rec_tel", value = "收件人电话", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "rec_procity", value = "收件人省市", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "rec_detailarea", value = "收件人详细地址", required = true, dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value = "createbill",method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<JsonResult> createBill(@RequestParam(value = "sender_name")String sender_name,@RequestParam(value = "goodsname")String goodsname, @RequestParam(value = "goodsnum")Integer goodsnum,@RequestParam(value = "sender_tel")String sender_tel,
-                        @RequestParam(value = "shop_name")String shop_name, @RequestParam(value = "company_id")int company_id, @RequestParam(value = "company_name")String company_name,
+                        @RequestParam(value = "shop_id")int shop_id,@RequestParam(value = "shop_name")String shop_name, @RequestParam(value = "company_id")int company_id, @RequestParam(value = "company_name")String company_name,
                         @RequestParam(value = "batch_code")String batch_code,@RequestParam(value = "lat")String lat,@RequestParam(value = "lng")String lng,@RequestParam(value = "billinfo")String billinfo,
                         @RequestParam(value = "sender_procity")String sender_procity,@RequestParam(value = "sender_detailarea")String sender_detailarea,@RequestParam(value = "rec_name")String rec_name,
                         @RequestParam(value = "rec_tel")String rec_tel,@RequestParam(value = "rec_procity")String rec_procity,@RequestParam(value = "rec_detailarea")String rec_detailarea,HttpServletRequest request) {
         String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
         JsonResult r = new JsonResult();
-        String tokenvalue = null;
-        try {
-            tokenvalue = redisService.get(token);
-        } catch (Exception e) {
-            r.setCode(Constant.Redis_TIMEDOWN.getCode()+"");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg(Constant.Redis_TIMEDOWN.getMsg());
-            r.setSuccess(false);
+        if(!roleid.equals("1") && !roleid.equals("2")){
+            r = Common.RoleError();
             return ResponseEntity.ok(r);
         }
-
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            if(tokenvalue != null){
+            if(tokenvalue != ""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 String openid = tokenvalue.split("\\|")[0];
                 String session_key = tokenvalue.split("\\|")[1];
@@ -100,6 +99,7 @@ public class SenderBillApi {
                 sysBill.setGoodsnum(goodsnum);
                 sysBill.setSender_name(sender_name);
                 sysBill.setSender_tel(sender_tel);
+                sysBill.setShop_id(shop_id);
                 sysBill.setShop_name(shop_name);
                 sysBill.setCompany_id(company_id);
                 sysBill.setCompany_name(company_name);
@@ -121,12 +121,15 @@ public class SenderBillApi {
                     r.setMsg("下单成功！");
                     r.setData(null);
                     r.setSuccess(true);
+                }else {
+                    r.setCode("500");
+                    r.setMsg("下单失败！");
+                    r.setData(null);
+                    r.setSuccess(false);
                 }
             }else{
-                r.setCode(Constant.TOKEN_ERROR.getCode()+"");
-                r.setData(null);
-                r.setMsg(Constant.TOKEN_ERROR.getMsg());
-                r.setSuccess(false);
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
             }
         } catch (Exception e) {
             r.setCode(Constant.BILL_CREATEFAILURE.getCode()+"");
@@ -138,142 +141,193 @@ public class SenderBillApi {
         return ResponseEntity.ok(r);
     }
 
+    //角色1,2
     @ApiOperation(value = "商家查询所下订单", notes = "根据商家标识查询所下订单")
-    @ApiImplicitParam(name = "sender_id", value = "商家id", required = true, dataType = "Long",paramType = "query")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sender_id", value = "商家id", required = true, dataType = "Long",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header")
+    })
     @RequestMapping(value="getuserbill", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> searchBillByUserId(@RequestParam(value = "sender_id") long sender_id){
+    public ResponseEntity<JsonResult> searchBillByUserId(@RequestParam(value = "sender_id") long sender_id,HttpServletRequest request){
         JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("2")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            List<SysBill> billList = billService.selectUserBill(sender_id);
-            r.setCode("200");
-            r.setMsg("查询成功！");
-            r.setData(billList);
-            r.setSuccess(true);
+            if(tokenvalue!=""){
+                List<SysBill> billList = billService.selectUserBill(sender_id);
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(billList);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+            }
         } catch (Exception e) {
-            r.setCode("500");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg("查询失败！");
-            r.setSuccess(false);
+            r = Common.SearchError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
     }
 
+    //1,2,3,4
     @ApiOperation(value = "通过id查询订单", notes = "根据订单标识查询订单")
-    @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
     @RequestMapping(value="getbill", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> searchBillById(@RequestParam(value = "id") long id){
+    public ResponseEntity<JsonResult> searchBillById(@RequestParam(value = "id") long id,HttpServletRequest request){
         JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            SysBill bill = billService.selectSingleBill(id);
-            r.setCode("200");
-            r.setMsg("查询成功！");
-            r.setData(bill);
-            r.setSuccess(true);
+            if(tokenvalue!=""){
+                SysBill bill = billService.selectSingleBill(id);
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(bill);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+            }
         } catch (Exception e) {
-            r.setCode("500");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg("查询失败！");
-            r.setSuccess(false);
+            r = Common.SearchError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
     }
 
-
+    //1,2
     @ApiOperation(value = "更新订单接口", notes = "更新订单")          //让修改哪些内容？
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
             @ApiImplicitParam(name = "sender_tel", value = "下单人电话", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "shop_id", value = "商铺id", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "shop_name", value = "商铺名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "company_id", value = "物流公司id", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "company_name", value = "物流公司名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "trans_id", value = "承运员id", required = true, dataType = "Long",paramType = "query"),
             @ApiImplicitParam(name = "trans_name", value = "承运员名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "batch_code", value = "批量下单编号", required = true, dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "bill_status", value = "订单状态（1,2,3,4）", required = true, dataType = "Integer",paramType = "query")
+            @ApiImplicitParam(name = "bill_status", value = "订单状态（1,2,3,4）", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value="updatebill",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> updateBill(@RequestParam(value = "id") long id, @RequestParam(value = "sender_tel")String sender_tel,
+    public ResponseEntity<JsonResult> updateBill(@RequestParam(value = "id") long id, @RequestParam(value = "sender_tel")String sender_tel,@RequestParam(value = "shop_id")int shop_id,
                         @RequestParam(value = "shop_name")String shop_name, @RequestParam(value = "company_id")int company_id, @RequestParam(value = "company_name")String company_name,
                         @RequestParam(value = "trans_id")Long trans_id,@RequestParam(value = "trans_name")String trans_name, @RequestParam(value = "batch_code")String batch_code,
-                        @RequestParam(value = "bill_status")int bill_status){
-        SysBill sysBill = billService.selectSingleBill(id);
+                        @RequestParam(value = "bill_status")int bill_status,HttpServletRequest request){
         JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("2")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            sysBill.setSender_tel(sender_tel);
-            sysBill.setShop_name(shop_name);
-            sysBill.setCompany_id(company_id);
-            sysBill.setCompany_name(company_name);
-            sysBill.setTrans_id(trans_id);
-            sysBill.setTrans_name(trans_name);
-            sysBill.setBatch_code(batch_code);
-            sysBill.setBill_status(bill_status);
-            boolean flag = billService.updateBill(sysBill);
-            if (flag) {
-                r.setCode("200");
-                r.setMsg("更新成功！");
-                r.setData(null);
-                r.setSuccess(true);
+            if(tokenvalue!=""){
+                SysBill sysBill = billService.selectSingleBill(id);
+                sysBill.setSender_tel(sender_tel);
+                sysBill.setShop_name(shop_name);
+                sysBill.setCompany_id(company_id);
+                sysBill.setCompany_name(company_name);
+                sysBill.setTrans_id(trans_id);
+                sysBill.setTrans_name(trans_name);
+                sysBill.setBatch_code(batch_code);
+                sysBill.setBill_status(bill_status);
+                boolean flag = billService.updateBill(sysBill);
+                if (flag) {
+                    r = Common.BillUpdateSuccess();
+                }else{
+                    r = Common.BillUpdateFailure();
+                }
+            }else{
+                r = Common.TokenError();
             }
         } catch (Exception e) {
-            r.setCode(Constant.BILL_UPDATEFAILURE.getCode()+"");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg(Constant.BILL_UPDATEFAILURE.getMsg());
-            r.setSuccess(false);
+            r = Common.BillUpdateError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
     }
 
 
+    //1,2,3,4
     @ApiOperation(value = "更新订单状态接口", notes = "根据id更新订单状态")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
-            @ApiImplicitParam(name = "bill_status", value = "订单状态（1,2,3,4）", required = true, dataType = "Integer",paramType = "query")
+            @ApiImplicitParam(name = "bill_status", value = "订单状态（1,2,3,4）", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header"),
     })
     @RequestMapping(value="updatebillstatus",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> updateBillStatus(@RequestParam(value = "id") long id,@RequestParam(value = "bill_status") int bill_status){
+    public ResponseEntity<JsonResult> updateBillStatus(@RequestParam(value = "id") long id,@RequestParam(value = "bill_status") int bill_status,HttpServletRequest request){
         JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            boolean flag = billService.updateBillStatus(bill_status,id);
-            if (flag) {
+            if(tokenvalue!=""){
+                boolean flag = billService.updateBillStatus(bill_status,id);
                 if (flag) {
-                    r.setCode("200");
-                    r.setMsg("更新成功！");
-                    r.setData(null);
-                    r.setSuccess(true);
+                    r = Common.BillUpdateSuccess();
+                }else{
+                    r = Common.BillUpdateFailure();
                 }
+            }else{
+                r = Common.TokenError();
             }
         } catch (Exception e) {
-            r.setCode(Constant.BILL_UPDATEFAILURE.getCode()+"");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg(Constant.BILL_UPDATEFAILURE.getMsg());
-            r.setSuccess(false);
+            r = Common.BillUpdateError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
     }
 
+    //1
     @ApiOperation(value = "删除订单接口", notes = "根据id删除订单")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query")
+            @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value="deletebill",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> deleteBillById(@RequestParam(value = "id") long id){
+    public ResponseEntity<JsonResult> deleteBillById(@RequestParam(value = "id") long id,HttpServletRequest request){
         JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            boolean flag = billService.deleteBill(id);
-            if (flag) {
-                r.setCode("200");
-                r.setMsg("删除成功！");
-                r.setData(null);
-                r.setSuccess(true);
+            if(tokenvalue!=""){
+                boolean flag = billService.deleteBill(id);
+                if (flag) {
+                    r = Common.DeleteSuccess();
+                }else{
+                    r = Common.DeleteFailure();
+                }
+            }else{
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
             }
         } catch (Exception e) {
             r.setCode(Constant.BILL_DELETEFAILURE.getCode()+"");
@@ -285,109 +339,170 @@ public class SenderBillApi {
         return ResponseEntity.ok(r);
     }
 
-
+    //1,2
     @ApiOperation(value = "商家查询所下未完成订单", notes = "根据商家标识查询所下未完成订单")
-    @ApiImplicitParam(name = "sender_id", value = "商家id", required = true, dataType = "Long",paramType = "query")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sender_id", value = "商家id", required = true, dataType = "Long",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
     @RequestMapping(value="getuserunfinishbill",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> searchunfinishBillByUserId(@RequestParam(value = "sender_id") long sender_id){
+    public ResponseEntity<JsonResult> searchunfinishBillByUserId(@RequestParam(value = "sender_id") long sender_id,HttpServletRequest request){
         JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("2")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            List<SysBill> billList = billService.selectUnfinishBill(sender_id);
-            r.setCode("200");
-            r.setMsg("查询成功！");
-            r.setData(billList);
-            r.setSuccess(true);
+            if(tokenvalue!=""){
+                List<SysBill> billList = billService.selectUnfinishBill(sender_id);
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(billList);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+            }
         } catch (Exception e) {
-            r.setCode("500");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg("查询失败");
-            r.setSuccess(false);
+            r = Common.SearchError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
     }
 
 
+    //1,2
     @ApiOperation(value = "商家查询所下已完成订单", notes = "商家查询所下已完成订单")
-    @ApiImplicitParam(name = "sender_id", value = "商家id", required = true, dataType = "Long",paramType = "query")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sender_id", value = "商家id", required = true, dataType = "Long",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
     @RequestMapping(value="getuserfinishedbill",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> searchFinishedsBillByUserId(@RequestParam(value = "sender_id") long sender_id){
+    public ResponseEntity<JsonResult> searchFinishedsBillByUserId(@RequestParam(value = "sender_id") long sender_id,HttpServletRequest request){
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
         JsonResult r = new JsonResult();
+        if(!roleid.equals("1") && !roleid.equals("2")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            List<SysBill> billList = billService.selectfinishedBill(sender_id);
-            r.setCode("200");
-            r.setMsg("查询成功！");
-            r.setData(billList);
-            r.setSuccess(true);
+            if(tokenvalue!=""){
+                List<SysBill> billList = billService.selectfinishedBill(sender_id);
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(billList);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
         } catch (Exception e) {
-            r.setCode("500");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg("查询失败");
-            r.setSuccess(false);
+            r = Common.SearchError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
     }
 
-
+    //1,3
     @ApiOperation(value = "查询所有所下未接运单", notes = "查询所有所下未接运单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
     @RequestMapping(value="getallunbills",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> searchAllUnbills(){
+    public ResponseEntity<JsonResult> searchAllUnbills(HttpServletRequest request){
         JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("3")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            List<SysBill> billList = billService.selectAllUnBills();
-            r.setCode("200");
-            r.setMsg("查询成功！");
-            r.setData(billList);
-            r.setSuccess(true);
+            if(tokenvalue!=""){
+                List<SysBill> billList = billService.selectAllUnBills();
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(billList);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
         } catch (Exception e) {
-            r.setCode("500");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg("查询失败");
-            r.setSuccess(false);
+            r = Common.SearchError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
     }
 
-
+    //1,2,3,4
     @ApiOperation(value = "根据名称和电话查询订单", notes = "根据名称和电话查询订单")
-    @ApiImplicitParam(name = "sender_param", value = "名称或电话", required = true, dataType = "String",paramType = "query")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sender_param", value = "名称或电话", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
     @RequestMapping(value="getbillbynameortel",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> searchBillByNameOrTel(@RequestParam(value = "sender_param") String sender_param){
+    public ResponseEntity<JsonResult> searchBillByNameOrTel(@RequestParam(value = "sender_param") String sender_param,HttpServletRequest request){
         JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            List<SysBill> billList = billService.selectUnfinishBillByTelOrName(sender_param);
-            r.setCode("200");
-            r.setMsg("查询成功！");
-            r.setData(billList);
-            r.setSuccess(true);
+            if(tokenvalue!=""){
+                List<SysBill> billList = billService.selectUnfinishBillByTelOrName(sender_param);
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(billList);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
         } catch (Exception e) {
-            r.setCode("500");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg("查询失败");
-            r.setSuccess(false);
+            r = Common.SearchError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
     }
 
+    //1,3
     @ApiOperation(value = "承运员接单接口", notes = "接单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
             @ApiImplicitParam(name = "trans_id", value = "承运员id", required = true, dataType = "Long",paramType = "query"),
-            @ApiImplicitParam(name = "bill_status", value = "订单状态（1,2,3,4）", required = true, dataType = "Integer",paramType = "query")
+            @ApiImplicitParam(name = "bill_status", value = "订单状态（1,2,3,4）", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value="receivebill",method = RequestMethod.POST)
     @Transactional
     @ResponseBody
-    public ResponseEntity<JsonResult> updateBillSetTrans_id(@RequestParam(value = "id") long id,@RequestParam(value = "trans_id") long trans_id,@RequestParam(value = "bill_status") int bill_status){
-        int availablePermits = semaphore.availablePermits();
+    public ResponseEntity<JsonResult> updateBillSetTrans_id(@RequestParam(value = "id") long id,@RequestParam(value = "trans_id") long trans_id,@RequestParam(value = "bill_status") int bill_status,HttpServletRequest request){
         JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("3")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
+        int availablePermits = semaphore.availablePermits();
         if(availablePermits>0){
             System.out.println("抢单成功！");
         }else{
@@ -400,19 +515,24 @@ public class SenderBillApi {
         }
         try {
             semaphore.acquire(1);
-            SysBill bill = billService.selectSingleBill(id);
-            if(bill.getTrans_id()!=-1){
-                r.setCode(Constant.BILL_RECEIVEFAILURE.getCode()+"");
-                r.setData(null);
-                r.setMsg(Constant.BILL_RECEIVEFAILURE.getMsg());
-                r.setSuccess(false);
-            }
-            boolean flag = billService.updateBillSetTrans_id(id,bill_status,trans_id);
-            if (flag) {
-                r.setCode("200");
-                r.setMsg("查询成功！");
-                r.setData(null);
-                r.setSuccess(true);
+            if(tokenvalue!=""){
+                SysBill bill = billService.selectSingleBill(id);
+                if(bill.getTrans_id()!=-1){
+                    r.setCode(Constant.BILL_RECEIVEFAILURE.getCode()+"");
+                    r.setData(null);
+                    r.setMsg(Constant.BILL_RECEIVEFAILURE.getMsg());
+                    r.setSuccess(false);
+                }
+                boolean flag = billService.updateBillSetTrans_id(id,bill_status,trans_id);
+                if (flag) {
+                    r.setCode("200");
+                    r.setMsg("查询成功！");
+                    r.setData(null);
+                    r.setSuccess(true);
+                }
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
             }
         } catch (Exception e) {
             r.setCode(Constant.BILL_RECEIVEFAILURE.getCode()+"");
@@ -428,79 +548,149 @@ public class SenderBillApi {
     }
 
 
-
+    //1,3
     @ApiOperation(value = "根据经纬度查询周围所下未完成订单", notes = "根据经纬度查询周围所下未完成订单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "lng", value = "经度", required = true, dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "lat", value = "维度", required = true, dataType = "String",paramType = "query")
+            @ApiImplicitParam(name = "lat", value = "维度", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value="getunfinishbillbyarea",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> getUnfinishBillByArea(@RequestParam(value = "lng") String lng,@RequestParam(value = "lat") String lat){
+    public ResponseEntity<JsonResult> getUnfinishBillByArea(@RequestParam(value = "lng") String lng,@RequestParam(value = "lat") String lat,HttpServletRequest request){
         JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("3")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            List<SysBill> billList = billService.selectBillsByLnglat(lng,lat);
-            r.setCode("200");
-            r.setMsg("查询成功！");
-            r.setData(billList);
-            r.setSuccess(true);
+            if(tokenvalue!=""){
+                List<SysBill> billList = billService.selectBillsByLnglat(lng,lat);
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(billList);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
         } catch (Exception e) {
-            r.setCode("500");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg("查询失败");
-            r.setSuccess(false);
+            r = Common.SearchError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
     }
 
+    //1,4
     @ApiOperation(value = "物流公司查询本公司所有已完成订单", notes = "物流公司查询本公司所有已完成订单")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "company_id", value = "物流公司名称", required = true, dataType = "Integer",paramType = "query")
+            @ApiImplicitParam(name = "company_id", value = "物流公司名称", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value="getfinishedbillbycompanyid",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> getFinishedBillByCompanyId(@RequestParam(value = "company_id") Integer company_id){
+    public ResponseEntity<JsonResult> getFinishedBillByCompanyId(@RequestParam(value = "company_id") Integer company_id,HttpServletRequest request){
         JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("4")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            List<SysBill> billList = billService.selectfinishedBillByCompanyId(company_id);
-            r.setCode("200");
-            r.setMsg("查询成功！");
-            r.setData(billList);
-            r.setSuccess(true);
+            if(tokenvalue!=""){
+                List<SysBill> billList = billService.selectfinishedBillByCompanyId(company_id);
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(billList);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
         } catch (Exception e) {
-            r.setCode("500");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg("查询失败");
-            r.setSuccess(false);
+            r = Common.SearchError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
     }
 
 
+    //1,4
     @ApiOperation(value = "物流公司查询本公司所有未完成订单", notes = "物流公司查询本公司所有未完成订单")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "company_id", value = "物流公司名称", required = true, dataType = "Integer",paramType = "query")
+            @ApiImplicitParam(name = "company_id", value = "物流公司名称", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value="getunfinishedbillbycompanyid",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> getUnFinishedBillByCompanyId(@RequestParam(value = "company_id") Integer company_id){
+    public ResponseEntity<JsonResult> getUnFinishedBillByCompanyId(@RequestParam(value = "company_id") Integer company_id,HttpServletRequest request){
         JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("4")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            List<SysBill> billList = billService.selectunfinishedBillByCompanyId(company_id);
-            r.setCode("200");
-            r.setMsg("查询成功！");
-            r.setData(billList);
-            r.setSuccess(true);
+            if(tokenvalue!=""){
+                List<SysBill> billList = billService.selectunfinishedBillByCompanyId(company_id);
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(billList);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
         } catch (Exception e) {
-            r.setCode("500");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg("查询失败");
-            r.setSuccess(false);
+            r = Common.SearchError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
+    }
+
+    public JsonResult ConnectRedisCheckToken(String token){
+        String tokenvalue = "";
+        JsonResult r = new JsonResult();
+        int retry = 1;
+        while (retry<=3){
+            try
+            {
+                //业务代码
+                tokenvalue = redisService.get(token);
+                r.setCode(200+"");
+                r.setData(tokenvalue);
+                r.setMsg("连接成功！");
+                r.setSuccess(true);
+                break;
+            }
+            catch(Exception ex)
+            {
+                //重试
+                retry++;
+                if(retry == 4){
+                    //记录错误
+                    r.setCode(Constant.Redis_TIMEDOWN.getCode()+"");
+                    r.setData("");
+                    r.setMsg(Constant.Redis_TIMEDOWN.getMsg());
+                    r.setSuccess(false);
+                    return r;
+                }
+            }
+        }
+        return r;
     }
 
 }

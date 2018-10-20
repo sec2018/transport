@@ -2,10 +2,11 @@ package com.example.transport.dao;
 
 import com.example.transport.model.SysCompanyExample;
 import com.example.transport.pojo.SysCompany;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface SysCompanyMapper {

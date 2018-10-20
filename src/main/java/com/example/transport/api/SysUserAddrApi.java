@@ -139,6 +139,7 @@ public class SysUserAddrApi {
         return ResponseEntity.ok(r);
     }
 
+    //1,2,3,4
     @ApiOperation(value = "搜索用户地址接口", notes = "搜索地址")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
@@ -147,32 +148,10 @@ public class SysUserAddrApi {
     @ResponseBody
     public ResponseEntity<JsonResult> searchSysUserAddr(HttpServletRequest request){
         String token = request.getHeader("token");
-        JsonResult r = new JsonResult();
-        String tokenvalue = null;
-        int retry = 1;
-        while (retry<=3){
-            try
-            {
-                //业务代码
-                tokenvalue = redisService.get(token);
-                break;
-            }
-            catch(Exception ex)
-            {
-                //重试
-                retry++;
-                if(retry == 4){
-                    //记录错误
-                    r.setCode(Constant.Redis_TIMEDOWN.getCode()+"");
-                    r.setData(null);
-                    r.setMsg(Constant.Redis_TIMEDOWN.getMsg());
-                    r.setSuccess(false);
-                    return ResponseEntity.ok(r);
-                }
-            }
-        }
+        JsonResult r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            if(tokenvalue != null){
+            if(tokenvalue != ""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 String openid = tokenvalue.split("\\|")[0];
                 String session_key = tokenvalue.split("\\|")[1];
@@ -184,16 +163,10 @@ public class SysUserAddrApi {
                 r.setData(addrList);
                 r.setSuccess(true);
             }else{
-                r.setCode(Constant.TOKEN_ERROR.getCode()+"");
-                r.setData(null);
-                r.setMsg(Constant.TOKEN_ERROR.getMsg());
-                r.setSuccess(false);
+                r = Common.TokenError();
             }
         } catch (Exception e) {
-            r.setCode(Constant.TOKEN_ERROR.getCode()+"");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg(Constant.TOKEN_ERROR.getMsg());
-            r.setSuccess(false);
+            r = Common.TokenError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
@@ -215,19 +188,10 @@ public class SysUserAddrApi {
                                @RequestParam(value="detail_addr")String detail_addr, @RequestParam(value="isdefault")int isdefault, HttpServletRequest request){
         String token = request.getHeader("token");
         JsonResult r = new JsonResult();
-        String tokenvalue = null;
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            tokenvalue = redisService.get(token);
-        } catch (Exception e) {
-            r.setCode(Constant.Redis_TIMEDOWN.getCode()+"");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg(Constant.Redis_TIMEDOWN.getMsg());
-            r.setSuccess(false);
-            e.printStackTrace();
-            return ResponseEntity.ok(r);
-        }
-        try {
-            if(tokenvalue != null){
+            if(tokenvalue != ""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 String openid = tokenvalue.split("\\|")[0];
                 String session_key = tokenvalue.split("\\|")[1];
@@ -247,16 +211,10 @@ public class SysUserAddrApi {
                     r.setSuccess(true);
                 }
             }else{
-                r.setCode(Constant.TOKEN_ERROR.getCode()+"");
-                r.setData(null);
-                r.setMsg(Constant.TOKEN_ERROR.getMsg());
-                r.setSuccess(false);
+                r = Common.TokenError();
             }
         } catch (Exception e) {
-            r.setCode(Constant.TOKEN_ERROR.getCode()+"");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg(Constant.TOKEN_ERROR.getMsg());
-            r.setSuccess(false);
+            r = Common.TokenError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
@@ -272,21 +230,11 @@ public class SysUserAddrApi {
     public ResponseEntity<JsonResult> deleteSysUserAddr(@RequestParam(value="id") long id,HttpServletRequest request){
         String token = request.getHeader("token");
         JsonResult r = new JsonResult();
-        String tokenvalue = null;
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
         try {
-            tokenvalue = redisService.get(token);
-        } catch (Exception e) {
-            r.setCode(Constant.Redis_TIMEDOWN.getCode()+"");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg(Constant.Redis_TIMEDOWN.getMsg());
-            r.setSuccess(false);
-            e.printStackTrace();
-            return ResponseEntity.ok(r);
-        }
-        try {
-            if(tokenvalue != null){
+            if(tokenvalue != ""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
-
                 boolean flag = sysUserAddrService.deleteAddrById(id);
                 if (flag) {
                     r.setCode("200");
@@ -295,18 +243,44 @@ public class SysUserAddrApi {
                     r.setSuccess(true);
                 }
             }else{
-                r.setCode(Constant.TOKEN_ERROR.getCode()+"");
-                r.setData(null);
-                r.setMsg(Constant.TOKEN_ERROR.getMsg());
-                r.setSuccess(false);
+                r = Common.TokenError();
             }
         } catch (Exception e) {
-            r.setCode(Constant.TOKEN_ERROR.getCode()+"");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg(Constant.TOKEN_ERROR.getMsg());
-            r.setSuccess(false);
+            r = Common.TokenError(e);
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
+    }
+
+    public JsonResult ConnectRedisCheckToken(String token){
+        String tokenvalue = "";
+        JsonResult r = new JsonResult();
+        int retry = 1;
+        while (retry<=3){
+            try
+            {
+                //业务代码
+                tokenvalue = redisService.get(token);
+                r.setCode(200+"");
+                r.setData(tokenvalue);
+                r.setMsg("连接成功！");
+                r.setSuccess(true);
+                break;
+            }
+            catch(Exception ex)
+            {
+                //重试
+                retry++;
+                if(retry == 4){
+                    //记录错误
+                    r.setCode(Constant.Redis_TIMEDOWN.getCode()+"");
+                    r.setData("");
+                    r.setMsg(Constant.Redis_TIMEDOWN.getMsg());
+                    r.setSuccess(false);
+                    return r;
+                }
+            }
+        }
+        return r;
     }
 }

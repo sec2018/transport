@@ -1,10 +1,9 @@
 package com.example.transport.api;
 
+import com.example.transport.dao.SysCompanyMapper;
 import com.example.transport.model.SysCompanyExample;
 import com.example.transport.pojo.SysCompany;
 import com.example.transport.service.Constant;
-import com.example.transport.dao.SysCompanyMapper;
-import com.example.transport.service.SysCompanyService;
 import com.example.transport.util.JsonResult;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -25,33 +24,33 @@ import java.util.List;
 public class CompanyApi {
 
     @Autowired
-    private SysCompanyService sysCompanyService;
-
-    @Autowired
     private SysCompanyMapper sysCompanyMapper;
 
     //角色1,4
     @ApiOperation(value = "添加物流公司", notes = "根据物流公司名称添加物流公司")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "companyname", value = "物流公司名称", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "company_procity", value = "物流公司省市", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "company_detailarea", value = "物流公司详细名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value="addcompany",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> AddCompany(@RequestParam(value = "companyname")String companyname, HttpServletRequest request){
+    public ResponseEntity<JsonResult> AddCompany(@RequestParam(value = "companyname")String companyname,
+                                                 @RequestParam(value = "company_procity")String company_procity,
+                                                 @RequestParam(value = "company_detailarea")String company_detailarea,HttpServletRequest request){
         String roleid = request.getHeader("roleid");
         JsonResult r = new JsonResult();
-        if(roleid != "1" && roleid != "4"){
-            r.setCode(Constant.ROLE_ERROR.getCode()+"");
-            r.setData(null);
-            r.setMsg(Constant.ROLE_ERROR.getMsg());
-            r.setSuccess(false);
+        if(!roleid.equals("1") && !roleid.equals("4")){
+            r = Common.RoleError();
             return ResponseEntity.ok(r);
         }
         SysCompany sysCompany = new SysCompany();
-        sysCompany.setCompany_name(companyname);
+        sysCompany.setCompanyName(companyname);
+        sysCompany.setCompanyProcity(company_procity);
+        sysCompany.setCompanyDetailarea(company_detailarea);
         try {
-            boolean flag = sysCompanyService.insertCompany(sysCompany);
+            boolean flag = sysCompanyMapper.insert(sysCompany)==1?true:false;
             if(flag){
                 r.setCode("200");
                 r.setMsg("添加物流公司成功！");
@@ -75,7 +74,8 @@ public class CompanyApi {
     public ResponseEntity<JsonResult> GetCompanies(){
         JsonResult r = new JsonResult();
         try {
-            List<SysCompany> companylist = sysCompanyService.getCompanies();
+            SysCompanyExample example = new SysCompanyExample();
+            List<SysCompany> companylist = sysCompanyMapper.selectByExample(example);
             r.setCode("200");
             r.setMsg("获取物流公司成功！");
             r.setData(companylist);
@@ -94,7 +94,7 @@ public class CompanyApi {
     @ApiOperation(value = "查询所有物流公司个数", notes = "查询所有物流公司个数")
     @RequestMapping(value="getcompaniescount",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> GetCompanies1(){
+    public ResponseEntity<JsonResult> GetCompaniesNum(){
         JsonResult r = new JsonResult();
         try {
             SysCompanyExample sysCompanyExample = new SysCompanyExample();

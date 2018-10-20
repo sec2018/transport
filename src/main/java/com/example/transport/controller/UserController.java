@@ -52,7 +52,7 @@ public class UserController {
                 session.setAttribute("currentUser",user);
 
                 //生成token，并保存数据库
-                R r = sysUserTokenService.createToken(user.getUser_id());
+                R r = sysUserTokenService.createToken(user.getWxuser_id());
                 session.setAttribute("currentUserToken",r);
 
                 System.out.println(loginname+" success login");

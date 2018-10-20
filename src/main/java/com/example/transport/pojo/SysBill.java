@@ -6,6 +6,16 @@ public class SysBill {
     private long sender_id;
     private String sender_name;
     private String sender_tel;
+    private int shop_id;
+
+    public int getShop_id() {
+        return shop_id;
+    }
+
+    public void setShop_id(int shop_id) {
+        this.shop_id = shop_id;
+    }
+
     private String shop_name;
     private long company_id;
     private String company_name;
@@ -100,10 +110,20 @@ public class SysBill {
                 ", sender_id=" + sender_id +
                 ", sender_name='" + sender_name + '\'' +
                 ", sender_tel='" + sender_tel + '\'' +
+                ", shop_id=" + shop_id +
                 ", shop_name='" + shop_name + '\'' +
                 ", company_id=" + company_id +
                 ", company_name='" + company_name + '\'' +
                 ", trans_id=" + trans_id +
+                ", goodsname='" + goodsname + '\'' +
+                ", goodsnum=" + goodsnum +
+                ", billinfo='" + billinfo + '\'' +
+                ", sender_procity='" + sender_procity + '\'' +
+                ", sender_detailarea='" + sender_detailarea + '\'' +
+                ", rec_name='" + rec_name + '\'' +
+                ", rec_tel='" + rec_tel + '\'' +
+                ", rec_procity='" + rec_procity + '\'' +
+                ", rec_detailarea='" + rec_detailarea + '\'' +
                 ", trans_name='" + trans_name + '\'' +
                 ", batch_code='" + batch_code + '\'' +
                 ", bill_status=" + bill_status +

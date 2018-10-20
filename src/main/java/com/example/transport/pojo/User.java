@@ -19,12 +19,25 @@ public class User implements Serializable{
         this.id = id;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public Long getWxuser_id() {
+        return wxuser_id;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", wxuser_id=" + wxuser_id +
+                ", loginname='" + loginname + '\'' +
+                ", password='" + password + '\'' +
+                ", openid='" + openid + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", create_time=" + create_time +
+                '}';
+    }
+
+    public void setWxuser_id(Long wxuser_id) {
+        this.wxuser_id = wxuser_id;
     }
 
     public String getLoginname() {
@@ -60,31 +73,9 @@ public class User implements Serializable{
         this.create_time = create_time;
     }
 
-    public String getShop_name() {
-        return shop_name;
-    }
-
-    public void setShop_name(String shop_name) {
-        this.shop_name = shop_name;
-    }
-
-
-    private Long user_id;
+    private Long wxuser_id;
     private String loginname;
     private String password;
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "user_id=" + user_id +
-                ", loginname='" + loginname + '\'' +
-                ", password='" + password + '\'' +
-                ", openid='" + openid + '\'' +
-                ", telephone='" + telephone + '\'' +
-                ", create_time=" + create_time +
-                ", shop_name='" + shop_name + '\'' +
-                '}';
-    }
 
     public String getOpenid() {
         return openid;
@@ -97,7 +88,6 @@ public class User implements Serializable{
     private String openid;
     private String telephone;
     private Date create_time;
-    private String shop_name;
 
 
 
