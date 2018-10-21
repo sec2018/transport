@@ -11,12 +11,15 @@ public class SysCompany {
 
     private Long wxuserId;
 
-    public SysCompany(Integer companyId, String companyName, String companyProcity, String companyDetailarea, Long wxuserId) {
+    private String companyTel;
+
+    public SysCompany(Integer companyId, String companyName, String companyProcity, String companyDetailarea, Long wxuserId, String companyTel) {
         this.companyId = companyId;
         this.companyName = companyName;
         this.companyProcity = companyProcity;
         this.companyDetailarea = companyDetailarea;
         this.wxuserId = wxuserId;
+        this.companyTel = companyTel;
     }
 
     public SysCompany() {
@@ -61,5 +64,13 @@ public class SysCompany {
 
     public void setWxuserId(Long wxuserId) {
         this.wxuserId = wxuserId;
+    }
+
+    public String getCompanyTel() {
+        return companyTel;
+    }
+
+    public void setCompanyTel(String companyTel) {
+        this.companyTel = companyTel == null ? null : companyTel.trim();
     }
 }

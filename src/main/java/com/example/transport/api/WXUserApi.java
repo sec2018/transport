@@ -2,11 +2,14 @@ package com.example.transport.api;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.example.transport.dao.SysCompanyMapper;
+import com.example.transport.dao.SysShopMapper;
+import com.example.transport.model.SysCompanyExample;
+import com.example.transport.model.SysShopExample;
 import com.example.transport.pojo.WxUser;
 import com.example.transport.service.Constant;
 import com.example.transport.service.UserService;
 import com.example.transport.util.JsonResult;
-import com.example.transport.util.R;
 import com.example.transport.util.TokenGenerator;
 import com.example.transport.util.redis.RedisService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -31,6 +34,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -54,6 +58,12 @@ public class WXUserApi {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private SysCompanyMapper sysCompanyMapper;
+
+    @Autowired
+    private SysShopMapper sysShopMapper;
 
     //region 策略1
 //    @RequestMapping("wxlogin")
@@ -179,11 +189,13 @@ public class WXUserApi {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "code", value = "小程序code", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "encryptedData", value = "小程序数据", required = true, dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "iv", value = "参数", required = true, dataType = "String",paramType = "query")
+            @ApiImplicitParam(name = "iv", value = "参数", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "角色", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value="wxlogin",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> getSessionKeyOropenid(@RequestParam(value = "code") String code, @RequestParam(value = "encryptedData") String encryptedData, @RequestParam(value = "iv") String iv){
+    public ResponseEntity<JsonResult> getSessionKeyOropenid(@RequestParam(value = "code") String code, @RequestParam(value = "encryptedData") String encryptedData, @RequestParam(value = "iv") String iv,
+                                                            HttpServletRequest request){
         //微信端登录code值
         String wxCode = code;
         String requestUrl = "https://api.weixin.qq.com/sns/jscode2session";	//请求地址 https://api.weixin.qq.com/sns/jscode2session
@@ -192,6 +204,7 @@ public class WXUserApi {
         requestUrlParam.put("secret", Constant.WX_APP_SECRET);	//开发者设置中的appSecret
         requestUrlParam.put("js_code", wxCode);	//小程序调用wx.login返回的code
         requestUrlParam.put("grant_type", "authorization_code");	//默认参数
+        JsonResult r = new JsonResult();
 
         //发送post请求读取调用微信 https://api.weixin.qq.com/sns/jscode2session 接口获取openid用户唯一标识
         JSONObject jsonObject = JSON.parseObject(sendPost(requestUrl, requestUrlParam));
@@ -199,53 +212,96 @@ public class WXUserApi {
         String session_key = jsonObject.getString("session_key");
         JSONObject WxUserInfo = getUserInfo(encryptedData,session_key,iv);
         String openid = WxUserInfo.getString("openId");
-        if(openid!=null){
-            String sesssiontoken = TokenGenerator.generateValue();
-            redisService.set(sesssiontoken, openid+"|"+session_key);
-            jsonObject.remove("openid");
-            jsonObject.remove("session_key");
-            jsonObject.put("data", sesssiontoken);     //此data为token
-            WxUser wxUser = userService.getWxUser(openid);
-            if(wxUser!=null){
-                wxUser.setCountry(WxUserInfo.getString("country"));
-                wxUser.setGender(Integer.parseInt(WxUserInfo.getString("gender")));
-                wxUser.setProvince(WxUserInfo.getString("province"));
-                wxUser.setCity(WxUserInfo.getString("city"));
-                wxUser.setAvatarurl(WxUserInfo.getString("avatarUrl"));
-                wxUser.setNickname(WxUserInfo.getString("nickName"));
-                wxUser.setLanguage(WxUserInfo.getString("language"));
-                String time = JSON.parseObject(WxUserInfo.getString("watermark")).getString("timestamp");
-                Date timestamp = timeStampToDate(time+"000");
-                wxUser.setTimestamp(timestamp);
+        try{
+            if(openid!=null){
+                String sesssiontoken = TokenGenerator.generateValue();
+                redisService.set(sesssiontoken, openid+"|"+session_key);
+                jsonObject.remove("openid");
+                jsonObject.remove("session_key");
+                jsonObject.put("token", sesssiontoken);     //此data为token
+                WxUser wxUser = userService.getWxUser(openid);
+                if(wxUser!=null){
+                    wxUser.setCountry(WxUserInfo.getString("country"));
+                    wxUser.setGender(Integer.parseInt(WxUserInfo.getString("gender")));
+                    wxUser.setProvince(WxUserInfo.getString("province"));
+                    wxUser.setCity(WxUserInfo.getString("city"));
+                    wxUser.setAvatarurl(WxUserInfo.getString("avatarUrl"));
+                    wxUser.setNickname(WxUserInfo.getString("nickName"));
+                    wxUser.setLanguage(WxUserInfo.getString("language"));
+                    String time = JSON.parseObject(WxUserInfo.getString("watermark")).getString("timestamp");
+                    Date timestamp = timeStampToDate(time+"000");
+                    wxUser.setTimestamp(timestamp);
 
 
-                boolean flag = userService.updateWxUser(wxUser);
-                if(flag){
-                    logger.info("更新成功！");
+                    boolean flag = userService.updateWxUser(wxUser);
+                    if(flag){
+                        logger.info("更新成功！");
+                    }
+                }else{
+                    wxUser = new WxUser();
+                    wxUser.setCountry(WxUserInfo.getString("country"));
+                    wxUser.setGender(Integer.parseInt(WxUserInfo.getString("gender")));
+                    wxUser.setProvince(WxUserInfo.getString("province"));
+                    wxUser.setCity(WxUserInfo.getString("city"));
+                    wxUser.setAvatarurl(WxUserInfo.getString("avatarUrl"));
+                    wxUser.setOpenid(WxUserInfo.getString("openId"));
+                    wxUser.setNickname(WxUserInfo.getString("nickName"));
+                    wxUser.setLanguage(WxUserInfo.getString("language"));
+                    boolean flag = userService.insertWxUser(wxUser);
+                    if(flag){
+                        logger.info("插入成功！");
+                    }
                 }
+                String roleid = request.getHeader("roleid");
+
+                long wx_user_id = userService.getWxUserId(openid);
+                //商户
+                if(roleid.equals("2")){
+                    SysShopExample example = new SysShopExample();
+                    SysShopExample.Criteria criteria = example.createCriteria();
+                    criteria.andWxuserIdEqualTo(wx_user_id);
+                    int shopnum = sysShopMapper.countByExample(example);
+                    if(shopnum<1){
+                        r.setCode(Constant.RoleShop_ERROR.getCode()+"");
+                        r.setMsg(Constant.RoleShop_ERROR.getMsg());
+                        r.setData(jsonObject);
+                        r.setSuccess(false);
+                        return ResponseEntity.ok(r);
+                    }
+                }else if(roleid.equals("4")){
+                    SysCompanyExample example = new SysCompanyExample();
+                    SysCompanyExample.Criteria criteria = example.createCriteria();
+                    criteria.andWxuserIdEqualTo(wx_user_id);
+                    int companynum = sysCompanyMapper.countByExample(example);
+                    if(companynum<1){
+                        r.setCode(Constant.RoleCompany_ERROR.getCode()+"");
+                        r.setMsg(Constant.RoleCompany_ERROR.getMsg());
+                        r.setData(jsonObject);
+                        r.setSuccess(false);
+                        return ResponseEntity.ok(r);
+                    }
+                }
+                logger.info(wxUser.toString());
+                r.setCode("200");
+                r.setMsg("登录成功！");
+                r.setData(jsonObject);
+                r.setSuccess(true);
+                return ResponseEntity.ok(r);
             }else{
-                wxUser = new WxUser();
-                wxUser.setCountry(WxUserInfo.getString("country"));
-                wxUser.setGender(Integer.parseInt(WxUserInfo.getString("gender")));
-                wxUser.setProvince(WxUserInfo.getString("province"));
-                wxUser.setCity(WxUserInfo.getString("city"));
-                wxUser.setAvatarurl(WxUserInfo.getString("avatarUrl"));
-                wxUser.setOpenid(WxUserInfo.getString("openId"));
-                wxUser.setNickname(WxUserInfo.getString("nickName"));
-                wxUser.setLanguage(WxUserInfo.getString("language"));
-                boolean flag = userService.insertWxUser(wxUser);
-                if(flag){
-                    logger.info("插入成功！");
-                }
+                r.setCode("500");
+                r.setMsg("登录失败！");
+                r.setData(null);
+                r.setSuccess(false);
+                return ResponseEntity.ok(r);
             }
-            logger.info(wxUser.toString());
+        }catch(Exception e){
+            r.setCode("500");
+            r.setMsg("登录失败！");
+            r.setData(e.getStackTrace()+"   "+e.getMessage());
+            r.setSuccess(false);
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
         }
-        JsonResult r = new JsonResult();
-        r.setCode("200");
-        r.setMsg("登录成功！");
-        r.setData(jsonObject);
-        r.setSuccess(true);
-        return ResponseEntity.ok(r);
     }
 
     /**

@@ -433,6 +433,76 @@ public class SysCompanyExample {
             addCriterion("wxuser_id not between", value1, value2, "wxuserId");
             return (Criteria) this;
         }
+
+        public Criteria andCompanyTelIsNull() {
+            addCriterion("company_tel is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelIsNotNull() {
+            addCriterion("company_tel is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelEqualTo(String value) {
+            addCriterion("company_tel =", value, "companyTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelNotEqualTo(String value) {
+            addCriterion("company_tel <>", value, "companyTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelGreaterThan(String value) {
+            addCriterion("company_tel >", value, "companyTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelGreaterThanOrEqualTo(String value) {
+            addCriterion("company_tel >=", value, "companyTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelLessThan(String value) {
+            addCriterion("company_tel <", value, "companyTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelLessThanOrEqualTo(String value) {
+            addCriterion("company_tel <=", value, "companyTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelLike(String value) {
+            addCriterion("company_tel like", value, "companyTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelNotLike(String value) {
+            addCriterion("company_tel not like", value, "companyTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelIn(List<String> values) {
+            addCriterion("company_tel in", values, "companyTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelNotIn(List<String> values) {
+            addCriterion("company_tel not in", values, "companyTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelBetween(String value1, String value2) {
+            addCriterion("company_tel between", value1, value2, "companyTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanyTelNotBetween(String value1, String value2) {
+            addCriterion("company_tel not between", value1, value2, "companyTel");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

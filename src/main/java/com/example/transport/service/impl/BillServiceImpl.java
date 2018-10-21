@@ -91,9 +91,9 @@ public class BillServiceImpl implements BillService{
 
     @Transactional
     @Override
-    public boolean updateBillSetTrans_id(long id, int bill_status, long trans_id) {
+    public boolean updateBillSetTrans_id(long id, long trans_id) {
         try{
-            return billDao.updateBillSetTrans_id(id,bill_status,trans_id)==1?true:false;
+            return billDao.updateBillSetTrans_id(id,trans_id)==1?true:false;
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -119,5 +119,15 @@ public class BillServiceImpl implements BillService{
     @Override
     public List<SysBill> selectAllUnBills() {
         return billDao.selectAllUnBills();
+    }
+
+    @Override
+    public List<SysBill> selectunfinishedBillByTransId(long trans_id) {
+        return billDao.selectunfinishedBillByTransId(trans_id);
+    }
+
+    @Override
+    public List<SysBill> selectfinishedBillByTransId(long trans_id) {
+        return billDao.selectfinishedBillByTransId(trans_id);
     }
 }

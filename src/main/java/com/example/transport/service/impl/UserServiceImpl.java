@@ -4,6 +4,7 @@ import com.example.transport.dao.UserDao;
 import com.example.transport.pojo.User;
 import com.example.transport.pojo.WxUser;
 import com.example.transport.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -14,7 +15,7 @@ import javax.annotation.Resource;
 @Service("userService")
 public class UserServiceImpl implements UserService {
 
-    @Resource
+    @Autowired
     private UserDao userDao;
 
     @Override

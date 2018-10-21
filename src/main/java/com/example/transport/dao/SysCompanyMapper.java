@@ -31,4 +31,6 @@ public interface SysCompanyMapper {
     int updateByPrimaryKeySelective(SysCompany record);
 
     int updateByPrimaryKey(SysCompany record);
+
+    int selectCompanyIdbyWxuserid(Long wxuser_id);
 }

@@ -11,12 +11,15 @@ public class SysShop {
 
     private Long wxuserId;
 
-    public SysShop(Integer shopId, String shopName, String shopProcity, String shopDetailarea, Long wxuserId) {
+    private String shopTel;
+
+    public SysShop(Integer shopId, String shopName, String shopProcity, String shopDetailarea, Long wxuserId, String shopTel) {
         this.shopId = shopId;
         this.shopName = shopName;
         this.shopProcity = shopProcity;
         this.shopDetailarea = shopDetailarea;
         this.wxuserId = wxuserId;
+        this.shopTel = shopTel;
     }
 
     public SysShop() {
@@ -61,5 +64,13 @@ public class SysShop {
 
     public void setWxuserId(Long wxuserId) {
         this.wxuserId = wxuserId;
+    }
+
+    public String getShopTel() {
+        return shopTel;
+    }
+
+    public void setShopTel(String shopTel) {
+        this.shopTel = shopTel == null ? null : shopTel.trim();
     }
 }

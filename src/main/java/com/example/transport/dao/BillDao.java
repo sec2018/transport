@@ -26,7 +26,7 @@ public interface BillDao {
     List<SysBill> selectBillsByLnglat(String lng,String lat);  //经度lng,维度lat
 
     //所有未接订单列表
-    @Select({"SELECT * FROM sys_bill where trans_id=-1 and batch_code != 1)"})
+    @Select({"SELECT * FROM sys_bill where trans_id=-1 and batch_code != 1"})
     List<SysBill> selectAllUnBills();
 
     //更新订单内容
@@ -55,8 +55,8 @@ public interface BillDao {
     List<SysBill>  selectUnfinishBillByTelOrName(@Param("sender_param")String sender_param);
 
     //接单
-    @Update({"update sys_bill set trans_id = #{trans_id},bill_status = #{bill_status} where id = #{id}"})
-    int updateBillSetTrans_id(@Param("id")long id,@Param("bill_status")int bill_status,@Param("trans_id")long trans_id);
+    @Update({"update sys_bill set trans_id = #{trans_id},bill_status = 2 where id = #{id}"})
+    int updateBillSetTrans_id(@Param("id")long id,@Param("trans_id")long trans_id);
 
     //物流公司查询本公司所有已完成订单
     @Select({"select * from sys_bill where company_id = #{company_id} and bill_status = 4"})
@@ -67,5 +67,11 @@ public interface BillDao {
     List<SysBill>  selectunfinishedBillByCompanyId(@Param("company_id")Integer company_id);
 
 
+    //承运员查询未完成订单
+    @Select({"select * from sys_bill where trans_id = #{trans_id} and bill_status != 4"})
+    List<SysBill>  selectunfinishedBillByTransId(@Param("trans_id")long trans_id);
 
+    //承运员查询已完成订单
+    @Select({"select * from sys_bill where trans_id = #{trans_id} and bill_status = 4"})
+    List<SysBill>  selectfinishedBillByTransId(@Param("trans_id")long trans_id);
 }

@@ -433,6 +433,76 @@ public class SysShopExample {
             addCriterion("wxuser_id not between", value1, value2, "wxuserId");
             return (Criteria) this;
         }
+
+        public Criteria andShopTelIsNull() {
+            addCriterion("shop_tel is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelIsNotNull() {
+            addCriterion("shop_tel is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelEqualTo(String value) {
+            addCriterion("shop_tel =", value, "shopTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelNotEqualTo(String value) {
+            addCriterion("shop_tel <>", value, "shopTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelGreaterThan(String value) {
+            addCriterion("shop_tel >", value, "shopTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelGreaterThanOrEqualTo(String value) {
+            addCriterion("shop_tel >=", value, "shopTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelLessThan(String value) {
+            addCriterion("shop_tel <", value, "shopTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelLessThanOrEqualTo(String value) {
+            addCriterion("shop_tel <=", value, "shopTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelLike(String value) {
+            addCriterion("shop_tel like", value, "shopTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelNotLike(String value) {
+            addCriterion("shop_tel not like", value, "shopTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelIn(List<String> values) {
+            addCriterion("shop_tel in", values, "shopTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelNotIn(List<String> values) {
+            addCriterion("shop_tel not in", values, "shopTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelBetween(String value1, String value2) {
+            addCriterion("shop_tel between", value1, value2, "shopTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopTelNotBetween(String value1, String value2) {
+            addCriterion("shop_tel not between", value1, value2, "shopTel");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

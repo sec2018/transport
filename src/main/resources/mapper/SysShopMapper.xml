@@ -8,6 +8,7 @@
       <arg column="shop_procity" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="shop_detailarea" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="wxuser_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <arg column="shop_tel" jdbcType="VARCHAR" javaType="java.lang.String" />
     </constructor>
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -69,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    shop_id, shop_name, shop_procity, shop_detailarea, wxuser_id
+    shop_id, shop_name, shop_procity, shop_detailarea, wxuser_id, shop_tel
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.example.transport.model.SysShopExample" >
     select
@@ -103,9 +104,11 @@
   </delete>
   <insert id="insert" parameterType="com.example.transport.pojo.SysShop" >
     insert into sys_shop (shop_id, shop_name, shop_procity, 
-      shop_detailarea, wxuser_id)
+      shop_detailarea, wxuser_id, shop_tel
+      )
     values (#{shopId,jdbcType=INTEGER}, #{shopName,jdbcType=VARCHAR}, #{shopProcity,jdbcType=VARCHAR}, 
-      #{shopDetailarea,jdbcType=VARCHAR}, #{wxuserId,jdbcType=BIGINT})
+      #{shopDetailarea,jdbcType=VARCHAR}, #{wxuserId,jdbcType=BIGINT}, #{shopTel,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.example.transport.pojo.SysShop" >
     insert into sys_shop
@@ -125,6 +128,9 @@
       <if test="wxuserId != null" >
         wxuser_id,
       </if>
+      <if test="shopTel != null" >
+        shop_tel,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="shopId != null" >
@@ -141,6 +147,9 @@
       </if>
       <if test="wxuserId != null" >
         #{wxuserId,jdbcType=BIGINT},
+      </if>
+      <if test="shopTel != null" >
+        #{shopTel,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -168,6 +177,9 @@
       <if test="record.wxuserId != null" >
         wxuser_id = #{record.wxuserId,jdbcType=BIGINT},
       </if>
+      <if test="record.shopTel != null" >
+        shop_tel = #{record.shopTel,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -179,7 +191,8 @@
       shop_name = #{record.shopName,jdbcType=VARCHAR},
       shop_procity = #{record.shopProcity,jdbcType=VARCHAR},
       shop_detailarea = #{record.shopDetailarea,jdbcType=VARCHAR},
-      wxuser_id = #{record.wxuserId,jdbcType=BIGINT}
+      wxuser_id = #{record.wxuserId,jdbcType=BIGINT},
+      shop_tel = #{record.shopTel,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -199,6 +212,9 @@
       <if test="wxuserId != null" >
         wxuser_id = #{wxuserId,jdbcType=BIGINT},
       </if>
+      <if test="shopTel != null" >
+        shop_tel = #{shopTel,jdbcType=VARCHAR},
+      </if>
     </set>
     where shop_id = #{shopId,jdbcType=INTEGER}
   </update>
@@ -207,7 +223,8 @@
     set shop_name = #{shopName,jdbcType=VARCHAR},
       shop_procity = #{shopProcity,jdbcType=VARCHAR},
       shop_detailarea = #{shopDetailarea,jdbcType=VARCHAR},
-      wxuser_id = #{wxuserId,jdbcType=BIGINT}
+      wxuser_id = #{wxuserId,jdbcType=BIGINT},
+      shop_tel = #{shopTel,jdbcType=VARCHAR}
     where shop_id = #{shopId,jdbcType=INTEGER}
   </update>
 </mapper>

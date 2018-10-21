@@ -30,6 +30,8 @@ public class Constant {
     public static Constant BIND_ERROR = new Constant(500101, "参数校验异常：%s");
     public static Constant Redis_TIMEDOWN = new Constant(500102, "Redis连接超时");
     public static Constant ROLE_ERROR = new Constant(500103, "您没有该权限");
+    public static Constant RoleShop_ERROR = new Constant(500104, "商家至少有一个店铺！");
+    public static Constant RoleCompany_ERROR = new Constant(500105, "物流公司至少有一个地址！");
     //登录模块 5002XX
     public static Constant TOKEN_ERROR = new Constant(500210, "Token不存在或者已经失效，请先登录！");
     public static Constant PASSWORD_EMPTY = new Constant(500211, "登录密码不能为空");
@@ -65,6 +67,10 @@ public class Constant {
     //公司模块
     public static  Constant COMPANY_ADDFAILURE = new Constant(500501, "添加公司失败");
     public static  Constant COMPANY_GETFAILURE = new Constant(500502, "获取公司列表失败");
+
+    //商户模块
+    public static  Constant SHOP_ADDFAILURE = new Constant(500601, "添加商铺失败");
+    public static  Constant SHOP_GETFAILURE = new Constant(500602, "获取商铺列表失败");
 
     private Constant( ) { }
     private Constant( int code,String msg ) {

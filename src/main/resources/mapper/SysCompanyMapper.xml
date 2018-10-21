@@ -8,6 +8,7 @@
       <arg column="company_procity" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="company_detailarea" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="wxuser_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <arg column="company_tel" jdbcType="VARCHAR" javaType="java.lang.String" />
     </constructor>
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -69,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    company_id, company_name, company_procity, company_detailarea, wxuser_id
+    company_id, company_name, company_procity, company_detailarea, wxuser_id, company_tel
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.example.transport.model.SysCompanyExample" >
     select
@@ -103,9 +104,11 @@
   </delete>
   <insert id="insert" parameterType="com.example.transport.pojo.SysCompany" >
     insert into sys_company (company_id, company_name, company_procity, 
-      company_detailarea, wxuser_id)
+      company_detailarea, wxuser_id, company_tel
+      )
     values (#{companyId,jdbcType=INTEGER}, #{companyName,jdbcType=VARCHAR}, #{companyProcity,jdbcType=VARCHAR}, 
-      #{companyDetailarea,jdbcType=VARCHAR}, #{wxuserId,jdbcType=BIGINT})
+      #{companyDetailarea,jdbcType=VARCHAR}, #{wxuserId,jdbcType=BIGINT}, #{companyTel,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.example.transport.pojo.SysCompany" >
     insert into sys_company
@@ -125,6 +128,9 @@
       <if test="wxuserId != null" >
         wxuser_id,
       </if>
+      <if test="companyTel != null" >
+        company_tel,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="companyId != null" >
@@ -141,6 +147,9 @@
       </if>
       <if test="wxuserId != null" >
         #{wxuserId,jdbcType=BIGINT},
+      </if>
+      <if test="companyTel != null" >
+        #{companyTel,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -168,6 +177,9 @@
       <if test="record.wxuserId != null" >
         wxuser_id = #{record.wxuserId,jdbcType=BIGINT},
       </if>
+      <if test="record.companyTel != null" >
+        company_tel = #{record.companyTel,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -179,7 +191,8 @@
       company_name = #{record.companyName,jdbcType=VARCHAR},
       company_procity = #{record.companyProcity,jdbcType=VARCHAR},
       company_detailarea = #{record.companyDetailarea,jdbcType=VARCHAR},
-      wxuser_id = #{record.wxuserId,jdbcType=BIGINT}
+      wxuser_id = #{record.wxuserId,jdbcType=BIGINT},
+      company_tel = #{record.companyTel,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -199,6 +212,9 @@
       <if test="wxuserId != null" >
         wxuser_id = #{wxuserId,jdbcType=BIGINT},
       </if>
+      <if test="companyTel != null" >
+        company_tel = #{companyTel,jdbcType=VARCHAR},
+      </if>
     </set>
     where company_id = #{companyId,jdbcType=INTEGER}
   </update>
@@ -207,7 +223,13 @@
     set company_name = #{companyName,jdbcType=VARCHAR},
       company_procity = #{companyProcity,jdbcType=VARCHAR},
       company_detailarea = #{companyDetailarea,jdbcType=VARCHAR},
-      wxuser_id = #{wxuserId,jdbcType=BIGINT}
+      wxuser_id = #{wxuserId,jdbcType=BIGINT},
+      company_tel = #{companyTel,jdbcType=VARCHAR}
     where company_id = #{companyId,jdbcType=INTEGER}
   </update>
+  <select id="selectCompanyIdbyWxuserid" resultType="java.lang.Integer" parameterType="java.lang.Long" >
+    select company_id from sys_company
+    where wxuser_id = #{wxuser_id,jdbcType=BIGINT}
+  </select>
+
 </mapper>
