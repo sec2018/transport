@@ -39,8 +39,9 @@ public class ShopApi {
     private RedisService redisService;
 
     //角色1,2
-    @ApiOperation(value = "添加商铺", notes = "添加商铺")
+    @ApiOperation(value = "添加或修改商铺", notes = "添加或修改商铺")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "shopid", value = "商户店铺id", required = false, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "shopname", value = "商户店铺名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "shop_tel", value = "商户店铺电话", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "shop_procity", value = "商户店铺省市", required = true, dataType = "String",paramType = "query"),
@@ -48,12 +49,11 @@ public class ShopApi {
             @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
     })
-    @RequestMapping(value="addshop",method = RequestMethod.POST)
+    @RequestMapping(value="addorupdateshop",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> AddShop(@RequestParam(value = "shopname")String shopname,
-                                                 @RequestParam(value = "shop_tel")String shop_tel,
-                                                 @RequestParam(value = "shop_procity")String shop_procity,
-                                                 @RequestParam(value = "shop_detailarea")String shop_detailarea, HttpServletRequest request){
+    public ResponseEntity<JsonResult> AddShop(@RequestParam(value = "shopid",required = false)Integer shopid,
+            @RequestParam(value = "shopname")String shopname,@RequestParam(value = "shop_tel")String shop_tel,
+            @RequestParam(value = "shop_procity")String shop_procity,@RequestParam(value = "shop_detailarea")String shop_detailarea, HttpServletRequest request){
         String roleid = request.getHeader("roleid");
         JsonResult r = new JsonResult();
         if(!roleid.equals("1") && !roleid.equals("2")){
@@ -64,39 +64,77 @@ public class ShopApi {
         String token = request.getHeader("token");
         r = ConnectRedisCheckToken(token);
         String tokenvalue = r.getData().toString();
-        SysShop sysShop = new SysShop();
-        sysShop.setShopName(shopname);
-        sysShop.setShopTel(shop_tel);
-        sysShop.setShopProcity(shop_procity);
-        sysShop.setShopDetailarea(shop_detailarea);
-        try {
-            if(tokenvalue!=""){
-                redisService.expire(token, Constant.expire.getExpirationTime());
-                String openid = tokenvalue.split("\\|")[0];
-                long wxuserid = userService.getWxUserId(openid);
-                sysShop.setWxuserId(wxuserid);
-                boolean flag = sysShopMapper.insert(sysShop)==1?true:false;
-                if(flag){
-                    r.setCode("200");
-                    r.setMsg("添加商铺成功！");
-                    r.setData(null);
-                    r.setSuccess(true);
+        if(shopid == null){
+            //插入
+            try {
+                if(tokenvalue!=""){
+                    SysShop sysShop = new SysShop();
+                    sysShop.setShopName(shopname);
+                    sysShop.setShopTel(shop_tel);
+                    sysShop.setShopProcity(shop_procity);
+                    sysShop.setShopDetailarea(shop_detailarea);
+                    redisService.expire(token, Constant.expire.getExpirationTime());
+                    String openid = tokenvalue.split("\\|")[0];
+                    long wxuserid = userService.getWxUserId(openid);
+                    sysShop.setWxuserId(wxuserid);
+                    boolean flag = sysShopMapper.insert(sysShop)==1?true:false;
+                    if(flag){
+                        r.setCode("200");
+                        r.setMsg("添加商铺成功！");
+                        r.setData(null);
+                        r.setSuccess(true);
+                    }else{
+                        r.setCode(Constant.SHOP_ADDFAILURE.getCode()+"");
+                        r.setMsg(Constant.SHOP_ADDFAILURE.getMsg());
+                        r.setData(null);
+                        r.setSuccess(true);
+                    }
                 }else{
-                    r.setCode(Constant.SHOP_ADDFAILURE.getCode()+"");
-                    r.setMsg(Constant.SHOP_ADDFAILURE.getMsg());
-                    r.setData(null);
-                    r.setSuccess(true);
+                    r = Common.TokenError();
+                    ResponseEntity.ok(r);
                 }
-            }else{
-                r = Common.TokenError();
-                ResponseEntity.ok(r);
+            } catch (Exception e) {
+                r.setCode(Constant.SHOP_ADDFAILURE.getCode()+"");
+                r.setData(e.getClass().getName() + ":" + e.getMessage());
+                r.setMsg(Constant.SHOP_ADDFAILURE.getMsg());
+                r.setSuccess(false);
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            r.setCode(Constant.SHOP_ADDFAILURE.getCode()+"");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg(Constant.SHOP_ADDFAILURE.getMsg());
-            r.setSuccess(false);
-            e.printStackTrace();
+        }else{
+            //修改
+            try {
+                if(tokenvalue!=""){
+                    redisService.expire(token, Constant.expire.getExpirationTime());
+                    String openid = tokenvalue.split("\\|")[0];
+                    long wxuserid = userService.getWxUserId(openid);
+                    SysShop sysShop = sysShopMapper.selectByPrimaryKey(shopid);
+                    sysShop.setShopName(shopname);
+                    sysShop.setShopTel(shop_tel);
+                    sysShop.setShopProcity(shop_procity);
+                    sysShop.setShopDetailarea(shop_detailarea);
+                    boolean flag = sysShopMapper.updateByPrimaryKey(sysShop)==1?true:false;
+                    if(flag){
+                        r.setCode("200");
+                        r.setMsg("修改商铺成功！");
+                        r.setData(null);
+                        r.setSuccess(true);
+                    }else{
+                        r.setCode(Constant.SHOP_UPDATEFAILURE.getCode()+"");
+                        r.setMsg(Constant.SHOP_UPDATEFAILURE.getMsg());
+                        r.setData(null);
+                        r.setSuccess(true);
+                    }
+                }else{
+                    r = Common.TokenError();
+                    ResponseEntity.ok(r);
+                }
+            } catch (Exception e) {
+                r.setCode(Constant.SHOP_UPDATEFAILURE.getCode()+"");
+                r.setData(e.getClass().getName() + ":" + e.getMessage());
+                r.setMsg(Constant.SHOP_UPDATEFAILURE.getMsg());
+                r.setSuccess(false);
+                e.printStackTrace();
+            }
         }
         return ResponseEntity.ok(r);
     }
@@ -139,7 +177,6 @@ public class ShopApi {
         }
         return ResponseEntity.ok(r);
     }
-
 
 
     public JsonResult ConnectRedisCheckToken(String token){
