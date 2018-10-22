@@ -16,6 +16,8 @@ public interface SysCompanyMapper {
 
     int deleteByPrimaryKey(Integer companyId);
 
+    SysCompany selectByWxuserid(long wxuser_id);
+
     int insert(SysCompany record);
 
     int insertSelective(SysCompany record);

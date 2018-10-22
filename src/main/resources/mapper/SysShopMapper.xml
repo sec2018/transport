@@ -92,6 +92,14 @@
     from sys_shop
     where shop_id = #{shopId,jdbcType=INTEGER}
   </select>
+
+  <select id="selectByWxuserid" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from sys_shop
+    where wxuser_id = #{wxuser_id,jdbcType=BIGINT}
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sys_shop
     where shop_id = #{shopId,jdbcType=INTEGER}

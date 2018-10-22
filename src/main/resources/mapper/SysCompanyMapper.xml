@@ -232,4 +232,10 @@
     where wxuser_id = #{wxuser_id,jdbcType=BIGINT}
   </select>
 
+  <select id="selectByWxuserid" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from sys_company
+    where wxuser_id = #{wxuser_id,jdbcType=BIGINT}
+  </select>
 </mapper>

@@ -38,7 +38,7 @@ public class ShopApi {
     @Autowired
     private RedisService redisService;
 
-    //角色1,4
+    //角色1,2
     @ApiOperation(value = "添加商铺", notes = "添加商铺")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopname", value = "商户店铺名称", required = true, dataType = "String",paramType = "query"),
@@ -50,7 +50,7 @@ public class ShopApi {
     })
     @RequestMapping(value="addshop",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> AddCompany(@RequestParam(value = "shopname")String shopname,
+    public ResponseEntity<JsonResult> AddShop(@RequestParam(value = "shopname")String shopname,
                                                  @RequestParam(value = "shop_tel")String shop_tel,
                                                  @RequestParam(value = "shop_procity")String shop_procity,
                                                  @RequestParam(value = "shop_detailarea")String shop_detailarea, HttpServletRequest request){
@@ -71,6 +71,7 @@ public class ShopApi {
         sysShop.setShopDetailarea(shop_detailarea);
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 String openid = tokenvalue.split("\\|")[0];
                 long wxuserid = userService.getWxUserId(openid);
                 sysShop.setWxuserId(wxuserid);
@@ -99,6 +100,47 @@ public class ShopApi {
         }
         return ResponseEntity.ok(r);
     }
+
+    //角色1,2
+    @ApiOperation(value = "查询商铺", notes = "查询商铺")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="searchshop",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<JsonResult> SearchShop(HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("2")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        String token = request.getHeader("token");
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                String openid = tokenvalue.split("\\|")[0];
+                long wxuserid = userService.getWxUserId(openid);
+                SysShop sysShop = sysShopMapper.selectByWxuserid(wxuserid);
+                r.setCode("200");
+                r.setMsg("查询商铺成功！");
+                r.setData(sysShop);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r = Common.SearchError(e);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
 
     public JsonResult ConnectRedisCheckToken(String token){
         String tokenvalue = "";

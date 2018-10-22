@@ -166,6 +166,7 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 List<SysBill> billList = billService.selectUserBill(sender_id);
                 r.setCode("200");
                 r.setMsg("查询成功！");
@@ -196,6 +197,7 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 SysBill bill = billService.selectSingleBill(id);
                 r.setCode("200");
                 r.setMsg("查询成功！");
@@ -244,6 +246,7 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 SysBill sysBill = billService.selectSingleBill(id);
                 sysBill.setSender_tel(sender_tel);
                 sysBill.setShop_name(shop_name);
@@ -286,6 +289,7 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 boolean flag = billService.updateBillStatus(bill_status,id);
                 if (flag) {
                     r = Common.BillUpdateSuccess();
@@ -323,6 +327,7 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 boolean flag = billService.deleteBill(id);
                 if (flag) {
                     r = Common.DeleteSuccess();
@@ -359,10 +364,12 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 String openid = tokenvalue.split("\\|")[0];
                 long wxuserid = userService.getWxUserId(openid);
                 try {
                     if(tokenvalue!=""){
+                        redisService.expire(token, Constant.expire.getExpirationTime());
                         if(roleid.equals("2")){
                             //商家查询所下未完成订单
                             List<SysBill> billList = billService.selectUnfinishBill(wxuserid);
@@ -420,10 +427,12 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 String openid = tokenvalue.split("\\|")[0];
                 long wxuserid = userService.getWxUserId(openid);
                 try {
                     if(tokenvalue!=""){
+                        redisService.expire(token, Constant.expire.getExpirationTime());
                         if(roleid.equals("2")){
                             //商家查询所下已完成订单
                             List<SysBill> billList = billService.selectfinishedBill(wxuserid);
@@ -484,6 +493,7 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 List<SysBill> billList = billService.selectAllUnBills();
                 r.setCode("200");
                 r.setMsg("查询成功！");
@@ -521,6 +531,7 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 //先支付
 
 
@@ -569,6 +580,7 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 boolean flag =  billService.updateBillStatus(4,id);
                 if(flag){
                     r.setCode("200");
@@ -607,6 +619,7 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 List<SysBill> billList = billService.selectUnfinishBillByTelOrName(sender_param);
                 r.setCode("200");
                 r.setMsg("查询成功！");
@@ -657,6 +670,7 @@ public class SenderBillApi {
         try {
             semaphore.acquire(1);
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 String openid = tokenvalue.split("\\|")[0];
                 long wxuserid = userService.getWxUserId(openid);
                 SysBill bill = billService.selectSingleBill(id);
@@ -713,6 +727,7 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 List<SysBill> billList = billService.selectBillsByLnglat(lng,lat);
                 r.setCode("200");
                 r.setMsg("查询成功！");
@@ -750,6 +765,7 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 List<SysBill> billList = billService.selectfinishedBillByCompanyId(company_id);
                 r.setCode("200");
                 r.setMsg("查询成功！");
@@ -788,6 +804,7 @@ public class SenderBillApi {
         String tokenvalue = r.getData().toString();
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 List<SysBill> billList = billService.selectunfinishedBillByCompanyId(company_id);
                 r.setCode("200");
                 r.setMsg("查询成功！");

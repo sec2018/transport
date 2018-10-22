@@ -68,6 +68,7 @@ public class CompanyApi {
         sysCompany.setCompanyDetailarea(company_detailarea);
         try {
             if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 String openid = tokenvalue.split("\\|")[0];
                 long wxuserid = userService.getWxUserId(openid);
                 sysCompany.setWxuserId(wxuserid);
@@ -142,6 +143,46 @@ public class CompanyApi {
         }
         return ResponseEntity.ok(r);
     }
+
+    //角色1,2
+    @ApiOperation(value = "查询用户物流公司", notes = "查询物流公司")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="searchcompany",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<JsonResult> SearchShop(HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("4")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        String token = request.getHeader("token");
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                String openid = tokenvalue.split("\\|")[0];
+                long wxuserid = userService.getWxUserId(openid);
+                SysCompany sysCompany = sysCompanyMapper.selectByWxuserid(wxuserid);
+                r.setCode("200");
+                r.setMsg("查询物流公司成功！");
+                r.setData(sysCompany);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r = Common.SearchError(e);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
 
     public JsonResult ConnectRedisCheckToken(String token){
         String tokenvalue = "";
