@@ -9,7 +9,7 @@ import java.util.List;
 public interface BillDao {
 
     //新增订单
-    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng,goodsname,goodsnum,billinfo,sender_procity,sender_detailarea,rec_name,rec_tel,rec_procity,rec_detailarea) values(0,#{bill_code},#{sender_id},#{sender_name},#{sender_tel},#{shop_name},#{company_id},#{company_name},#{trans_id},#{trans_name},#{batch_code},#{bill_status},#{sender_lat},#{sender_lng},#{goodsname},#{goodsnum},#{billinfo},#{sender_procity},#{sender_detailarea},#{rec_name},#{rec_tel},#{rec_procity},#{rec_detailarea})"})
+    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_id,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng,goodsname,goodsnum,billinfo,sender_procity,sender_detailarea,rec_name,rec_tel,rec_procity,rec_detailarea) values(0,#{bill_code},#{sender_id},#{sender_name},#{sender_tel},#{shop_id},#{shop_name},#{company_id},#{company_name},#{trans_id},#{trans_name},#{batch_code},#{bill_status},#{sender_lat},#{sender_lng},#{goodsname},#{goodsnum},#{billinfo},#{sender_procity},#{sender_detailarea},#{rec_name},#{rec_tel},#{rec_procity},#{rec_detailarea})"})
     int insertBill(SysBill sysBill);
 
     //根据sender_id来查询某用户下所有订单
