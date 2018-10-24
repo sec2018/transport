@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>noteform</title>
+    <script src="http://www.codefans.net/ajaxjs/jquery-1.4.2.min.js"></script>
+    <script>
+        var Ohref=window.location.href;
+        var id = Ohref.split("?id=")[1].split('&')[0];
+        var token = Ohref.split("?id=")[1].split('&')[1];
+        $(function(){
+            $.ajax({
+                url: "/transport/api/getbill",
+                method: "GET",
+                data: "id="+id,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("token",token);
+                },
+                success: function (res) {
+                    $("#sender_name").val(res.data.sender_name);
+                    $("#sender_tel").val(res.data.sender_tel);
+                    $("#sender_procity").val(res.data.sender_procity);
+                    $("#sender_detailarea").val(res.data.sender_detailarea);
+                    $("#rec_name").val(res.data.rec_name);
+                    $("#rec_tel").val(res.data.rec_tel);
+                    $("#rec_procity").val(res.data.rec_procity);
+                    $("#rec_detailarea").val(res.data.rec_detailarea);
+                    $("#finish_time").val(res.data.finish_time);
+                    $("#bill_code").val(res.data.bill_code);
+                    $("#goodsname").val(res.data.goodsname);
+                    $("#goodsnum").val(res.data.goodsnum);
+                    $("#shop_name").val(res.data.shop_name);
+                    $("#company_name").val(res.data.company_name);
+                    $("#price").val(res.data.price);
+                }
+            })
+        })
+    </script>
+
+    <style>
+        <!--
+        body{
+            /*background-image:url("###");*/
+        }
+
+        .exlist{
+            background-color:#F9EE70;
+            margin:30px auto;
+            padding:5px;
+            width:850px;
+            min-height:200px;
+            height:auto;
+            font-family:"微软雅黑";
+            -webkit-box-shadow:4px 4px 5px #333;/*webkit*/
+            -moz-box-shadow:4px 4px 5px #333;/*firefox*/
+            box-shadow:4px 4px 5px #333;/*opera或ie9*/
+        }
+
+        #title{
+            width:200px;
+            margin:20px auto;
+        }
+
+        #title legend{
+            font-size:26px;
+        }
+
+        div.exlist_title{
+            background-color:#F9EE70;
+            width:680px;
+            height:20px;
+        }
+
+        div.exlist_title img{
+            float:right;
+            margin:-15px 10px;
+        }
+
+        /*-----------form-----------*/
+
+        fieldset{
+            width:90%;
+            border:1px dashed #666;
+            margin:10px auto;
+        }
+
+        legend{
+            background-color:#F9EE70;
+            height:120px;
+            height:30px;
+            color:#630;
+            font-weight:bolder;
+            font-size:20px;
+            line-height:30px;
+            margin:-20px 10px 10px;
+            padding:0 10px;
+        }
+        div.row{
+            margin:10px;
+            padding:5px;
+        }
+
+        div.row label{
+            height:20px;
+            font-size:16px;
+            line-height:20px;
+            margin:0 10px;
+        }
+
+        input.txt{
+            background-color:#F9EE70;
+            color:#333;
+            width:150px;
+            height:20px;
+            margin:0 10px;
+            font-size:16px;
+            line-height:20px;
+            border:none;
+            border-bottom:1px solid #565656;
+        }
+
+        input.txt:focus{
+            color:#333;
+            background-color: #FF0;
+            border-bottom:1px solid #F00;
+        }
+
+        select{
+            width:100px;
+        }
+
+        option{
+            text-align:center;
+        }
+
+        input.btn{
+            width:50px;
+            height:20px;
+            color:#000008B;
+            background-color: transparent;
+            border:0;
+            padding:0;
+        }
+        -->
+    </style>
+</head>
+<body>
+<div class="exlist">
+    <div class="exlist_title">
+        <!--<img src="paper-clip.png" />-->
+    </div>
+    <div id="title"><legend>托运单信息</legend></div>
+    <form action="">
+        <fieldset>
+            <legend>收件信息</legend>
+            <div class="row">
+                <label>1. 收货人:</label>
+                <input style="width:100px" id="rec_name" class="txt" type="text"  readonly="readonly"/>
+                <label>2. 省市区:</label>
+                <input style="width:120px" id="rec_procity" class="txt" type="text"   readonly="readonly"/>
+                <label>3. 联系电话:</label><input class="txt" id="rec_tel" type="text"   readonly="readonly"/>
+            </div>
+            <div class="row">
+                <label>4. 详细地址:</label><input class="txt" id="rec_detailarea" style="width:400px"  type="text"   readonly="readonly"/>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>发件信息</legend>
+            <div class="row">
+                <label>1. 发货人:</label>
+                <input style="width:100px" class="txt" id="sender_name" type="text" readonly="readonly"/>
+                <label>2. 省市区:</label>
+                <input style="width:120px" class="txt" id="sender_procity" type="text"   readonly="readonly"/>
+                <label>3. 联系电话:</label><input class="txt" id="sender_tel" type="text" readonly="readonly"/>
+            </div>
+            <div class="row">
+                <label>4. 详细地址:</label><input class="txt" id="sender_detailarea" style="width:400px"  type="text" readonly="readonly"/>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>货物信息</legend>
+            <div class="row">
+                <label>1. 日期:</label><input class="txt" id="finish_time" style="width:130px" maxlength="3" type="text" readonly="readonly"/>
+                <label>2. 运单号:</label><input class="txt" id="code" style="width:130px" maxlength="3" type="text" readonly="readonly"/>
+                <label>3. 托运号:</label><input class="txt" id="bill_code" style="width:130px" maxlength="3" type="text" readonly="readonly"/>
+            </div>
+            <div class="row">
+                <label>4. 店铺名称:</label><input class="txt" id="shop_name" style="width:150px" maxlength="3" type="text" readonly="readonly"/>
+                <label>5. 品名:</label><input class="txt" id="goodsname" style="width:90px" maxlength="3" type="text" readonly="readonly"/>
+                <label>6. 数量:</label><input class="txt" id="goodsnum" style="width:50px" maxlength="2" type="text" readonly="readonly"/>
+                <label>（1-40件）</label>
+            </div>
+            <div class="row">
+                <label>7. 物流名称:</label><input class="txt" id="company_name" style="width:150px" maxlength="3" type="text" readonly="readonly"/>
+                <label>8. 运费:</label><input class="txt" id="price" style="width:100px" maxlength="2" type="text" readonly="readonly"/>
+                <label>（线上付款）</label>
+            </div>
+            <!--<div class="row">-->
+                <!--<label>5. 付款方式:</label>-->
+                <!--<p>-->
+                    <!--<label><input type="radio" name="pay" value="单选"/>现金付款</label>-->
+                    <!--<label><input type="radio" name="pay" value="单选"/>收件人付款</label>-->
+                    <!--<label><input type="radio" name="pay" value="单选"/>第三方付款</label>-->
+                <!--</p>-->
+            <!--</div>-->
+        </fieldset>
+    </form>
+</div>
+</body>
+</html>

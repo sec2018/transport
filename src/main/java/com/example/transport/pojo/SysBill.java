@@ -1,5 +1,7 @@
 package com.example.transport.pojo;
 
+import java.util.Date;
+
 public class SysBill {
     private long id;
     private String bill_code;
@@ -29,6 +31,86 @@ public class SysBill {
     private String rec_tel;
     private String rec_procity;
     private String rec_detailarea;
+    private double price;
+    private Date create_time;
+    private Date rec_time;
+    private Date pay_time;
+    private Date finish_time;
+
+    @Override
+    public String toString() {
+        return "SysBill{" +
+                "id=" + id +
+                ", bill_code='" + bill_code + '\'' +
+                ", sender_id=" + sender_id +
+                ", sender_name='" + sender_name + '\'' +
+                ", sender_tel='" + sender_tel + '\'' +
+                ", shop_id=" + shop_id +
+                ", shop_name='" + shop_name + '\'' +
+                ", company_id=" + company_id +
+                ", company_name='" + company_name + '\'' +
+                ", trans_id=" + trans_id +
+                ", goodsname='" + goodsname + '\'' +
+                ", goodsnum=" + goodsnum +
+                ", billinfo='" + billinfo + '\'' +
+                ", sender_procity='" + sender_procity + '\'' +
+                ", sender_detailarea='" + sender_detailarea + '\'' +
+                ", rec_name='" + rec_name + '\'' +
+                ", rec_tel='" + rec_tel + '\'' +
+                ", rec_procity='" + rec_procity + '\'' +
+                ", rec_detailarea='" + rec_detailarea + '\'' +
+                ", price=" + price +
+                ", create_time=" + create_time +
+                ", rec_time=" + rec_time +
+                ", pay_time=" + pay_time +
+                ", finish_time=" + finish_time +
+                ", trans_name='" + trans_name + '\'' +
+                ", batch_code='" + batch_code + '\'' +
+                ", bill_status=" + bill_status +
+                ", sender_lat='" + sender_lat + '\'' +
+                ", sender_lng='" + sender_lng + '\'' +
+                '}';
+    }
+
+    public Date getCreate_time() {
+        return create_time;
+    }
+
+    public void setCreate_time(Date create_time) {
+        this.create_time = create_time;
+    }
+
+    public Date getRec_time() {
+        return rec_time;
+    }
+
+    public void setRec_time(Date rec_time) {
+        this.rec_time = rec_time;
+    }
+
+    public Date getPay_time() {
+        return pay_time;
+    }
+
+    public void setPay_time(Date pay_time) {
+        this.pay_time = pay_time;
+    }
+
+    public Date getFinish_time() {
+        return finish_time;
+    }
+
+    public void setFinish_time(Date finish_time) {
+        this.finish_time = finish_time;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
 
     public String getSender_procity() {
         return sender_procity;
@@ -100,36 +182,6 @@ public class SysBill {
 
     public void setBillinfo(String billinfo) {
         this.billinfo = billinfo;
-    }
-
-    @Override
-    public String toString() {
-        return "SysBill{" +
-                "id=" + id +
-                ", bill_code='" + bill_code + '\'' +
-                ", sender_id=" + sender_id +
-                ", sender_name='" + sender_name + '\'' +
-                ", sender_tel='" + sender_tel + '\'' +
-                ", shop_id=" + shop_id +
-                ", shop_name='" + shop_name + '\'' +
-                ", company_id=" + company_id +
-                ", company_name='" + company_name + '\'' +
-                ", trans_id=" + trans_id +
-                ", goodsname='" + goodsname + '\'' +
-                ", goodsnum=" + goodsnum +
-                ", billinfo='" + billinfo + '\'' +
-                ", sender_procity='" + sender_procity + '\'' +
-                ", sender_detailarea='" + sender_detailarea + '\'' +
-                ", rec_name='" + rec_name + '\'' +
-                ", rec_tel='" + rec_tel + '\'' +
-                ", rec_procity='" + rec_procity + '\'' +
-                ", rec_detailarea='" + rec_detailarea + '\'' +
-                ", trans_name='" + trans_name + '\'' +
-                ", batch_code='" + batch_code + '\'' +
-                ", bill_status=" + bill_status +
-                ", sender_lat='" + sender_lat + '\'' +
-                ", sender_lng='" + sender_lng + '\'' +
-                '}';
     }
 
     private String trans_name;

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 @Service("billService")
@@ -23,6 +24,7 @@ public class BillServiceImpl implements BillService{
             return billDao.insertBill(sysBill)==1?true:false;
         }
         catch (Exception e) {
+            e.printStackTrace();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return false;
         }
@@ -52,9 +54,21 @@ public class BillServiceImpl implements BillService{
 
     @Transactional
     @Override
-    public boolean updateBillStatus(int bill_status,long id) {
+    public boolean payBill(Date datetime, long id) {
         try{
-            return billDao.updateBillStatus(bill_status,id)==1?true:false;
+            return billDao.payBill(datetime,id)==1?true:false;
+        }
+        catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+    }
+
+    @Transactional
+    @Override
+    public boolean finishBill(Date datetime, long id) {
+        try{
+            return billDao.finishBill(datetime,id)==1?true:false;
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -91,9 +105,9 @@ public class BillServiceImpl implements BillService{
 
     @Transactional
     @Override
-    public boolean updateBillSetTrans_id(long id, long trans_id) {
+    public boolean updateBillSetTrans_id(long id, Date datetime,  long trans_id) {
         try{
-            return billDao.updateBillSetTrans_id(id,trans_id)==1?true:false;
+            return billDao.updateBillSetTrans_id(id,datetime,trans_id)==1?true:false;
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

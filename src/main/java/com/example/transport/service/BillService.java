@@ -3,6 +3,7 @@ package com.example.transport.service;
 
 import com.example.transport.pojo.SysBill;
 
+import java.util.Date;
 import java.util.List;
 
 public interface BillService {
@@ -18,8 +19,11 @@ public interface BillService {
     //更新订单内容
     boolean updateBill(SysBill sysBill);
 
-    //更新订单状态
-    boolean updateBillStatus(int bill_status,long id);
+    //支付订单
+    boolean payBill(Date pay_time, long id);
+
+    //完成订单
+    boolean finishBill(Date finish_time,long id);
 
     //删除订单
     boolean deleteBill(long id);
@@ -34,7 +38,7 @@ public interface BillService {
     List<SysBill>  selectUnfinishBillByTelOrName(String sender_param);
 
     //接单
-    boolean updateBillSetTrans_id(long id, long trans_id);
+    boolean updateBillSetTrans_id(long id, Date datetime, long trans_id);
 
     //根据经纬度得到未接订单
     List<SysBill> selectBillsByLnglat(String lng,String lat);  //经度lng,维度lat

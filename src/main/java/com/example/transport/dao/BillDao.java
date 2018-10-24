@@ -3,13 +3,14 @@ package com.example.transport.dao;
 import com.example.transport.pojo.SysBill;
 import org.apache.ibatis.annotations.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
 public interface BillDao {
 
     //新增订单
-    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng,goodsname,goodsnum,billinfo,sender_procity,sender_detailarea,rec_name,rec_tel,rec_procity,rec_detailarea) values(0,#{bill_code},#{sender_id},#{sender_name},#{sender_tel},#{shop_name},#{company_id},#{company_name},#{trans_id},#{trans_name},#{batch_code},#{bill_status},#{sender_lat},#{sender_lng},#{goodsname},#{goodsnum},#{billinfo},#{sender_procity},#{sender_detailarea},#{rec_name},#{rec_tel},#{rec_procity},#{rec_detailarea})"})
+    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_id,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng,goodsname,goodsnum,billinfo,sender_procity,sender_detailarea,rec_name,rec_tel,rec_procity,rec_detailarea,price,create_time) values(0,#{bill_code},#{sender_id},#{sender_name},#{sender_tel},#{shop_id},#{shop_name},#{company_id},#{company_name},#{trans_id},#{trans_name},#{batch_code},#{bill_status},#{sender_lat},#{sender_lng},#{goodsname},#{goodsnum},#{billinfo},#{sender_procity},#{sender_detailarea},#{rec_name},#{rec_tel},#{rec_procity},#{rec_detailarea},#{price},#{create_time})"})
     int insertBill(SysBill sysBill);
 
     //根据sender_id来查询某用户下所有订单
@@ -33,9 +34,13 @@ public interface BillDao {
     @Update({"update sys_bill set sender_tel = #{sender_tel},shop_name=#{shop_name},company_id=#{company_id},company_name=#{company_name},trans_id=#{trans_id},trans_name=#{trans_name},batch_code=#{batch_code},bill_status=#{bill_status} where id = #{id}"})
     int updateBill(SysBill sysBill);
 
-    //更新订单状态
-    @Update({"update sys_bill set bill_status = #{bill_status} where id = #{id} and batch_code != 1"})
-    int updateBillStatus(@Param("bill_status")int bill_status,@Param("id")long id);
+    //支付订单
+    @Update({"update sys_bill set bill_status = 3,pay_time=#{pay_time} where id = #{id} and batch_code != 1"})
+    int payBill(@Param("pay_time")Date pay_time, @Param("id")long id);
+
+    //完成订单
+    @Update({"update sys_bill set bill_status = 4,pay_time=#{finish_time} where id = #{id} and batch_code != 1"})
+    int finishBill(@Param("finish_time")Date finish_time,@Param("id")long id);
 
     //删除订单
     @Delete({"delete from sys_bill where id = #{id}"})
@@ -55,8 +60,8 @@ public interface BillDao {
     List<SysBill>  selectUnfinishBillByTelOrName(@Param("sender_param")String sender_param);
 
     //接单
-    @Update({"update sys_bill set trans_id = #{trans_id},bill_status = 2 where id = #{id}"})
-    int updateBillSetTrans_id(@Param("id")long id,@Param("trans_id")long trans_id);
+    @Update({"update sys_bill set trans_id = #{trans_id},rec_time=#{datetime},bill_status = 2 where id = #{id}"})
+    int updateBillSetTrans_id(@Param("id")long id,@Param("datetime")Date datetime, @Param("trans_id")long trans_id);
 
     //物流公司查询本公司所有已完成订单
     @Select({"select * from sys_bill where company_id = #{company_id} and bill_status = 4"})

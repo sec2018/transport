@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Semaphore;
@@ -47,7 +48,6 @@ public class SenderBillApi {
     //角色1,2
     @ApiOperation(value = "商家下单接口", notes = "下单")
     @ApiImplicitParams({
-
             @ApiImplicitParam(name = "sender_name", value = "下单人名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "goodsname", value = "商品名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "goodsnum", value = "商品数量", required = true, dataType = "Integer",paramType = "query"),
@@ -66,6 +66,7 @@ public class SenderBillApi {
             @ApiImplicitParam(name = "rec_tel", value = "收件人电话", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "rec_procity", value = "收件人省市", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "rec_detailarea", value = "收件人详细地址", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "price", value = "总价", required = true, dataType = "Double",paramType = "query"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header")
     })
@@ -75,7 +76,7 @@ public class SenderBillApi {
                         @RequestParam(value = "shop_id")int shop_id,@RequestParam(value = "shop_name")String shop_name, @RequestParam(value = "company_id")int company_id, @RequestParam(value = "company_name")String company_name,
                         @RequestParam(value = "batch_code")String batch_code,@RequestParam(value = "lat")String lat,@RequestParam(value = "lng")String lng,@RequestParam(value = "billinfo")String billinfo,
                         @RequestParam(value = "sender_procity")String sender_procity,@RequestParam(value = "sender_detailarea")String sender_detailarea,@RequestParam(value = "rec_name")String rec_name,
-                        @RequestParam(value = "rec_tel")String rec_tel,@RequestParam(value = "rec_procity")String rec_procity,@RequestParam(value = "rec_detailarea")String rec_detailarea,HttpServletRequest request) {
+                        @RequestParam(value = "rec_tel")String rec_tel,@RequestParam(value = "rec_procity")String rec_procity,@RequestParam(value = "rec_detailarea")String rec_detailarea,@RequestParam(value = "price")double price, HttpServletRequest request) {
         String token = request.getHeader("token");
         String roleid = request.getHeader("roleid");
         JsonResult r = new JsonResult();
@@ -96,7 +97,7 @@ public class SenderBillApi {
                 //创建订单
                 SysBill sysBill = new SysBill();
                 SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
-                String bill_code = df.format(new Date()) + UUID.randomUUID();
+                String bill_code = df.format(new Date()) + UUID.randomUUID().toString().substring(0,5);
                 sysBill.setBill_code(bill_code);
                 sysBill.setSender_id(wxuserid);    //wxuserid即为商户的sender_id
                 sysBill.setGoodsname(goodsname);
@@ -119,6 +120,10 @@ public class SenderBillApi {
                 sysBill.setRec_tel(rec_tel);
                 sysBill.setRec_procity(rec_procity);
                 sysBill.setRec_detailarea(rec_detailarea);
+                sysBill.setPrice(price);
+//                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");//注意格式化的表达式
+//                sysBill.setCreate_time(format.parse(format.format(new Date())));
+                sysBill.setCreate_time(new Date());
                 boolean flag = billService.insertBill(sysBill);
                 if (flag) {
                     r.setCode("200");
@@ -257,40 +262,6 @@ public class SenderBillApi {
                 sysBill.setBatch_code(batch_code);
                 sysBill.setBill_status(bill_status);
                 boolean flag = billService.updateBill(sysBill);
-                if (flag) {
-                    r = Common.BillUpdateSuccess();
-                }else{
-                    r = Common.BillUpdateFailure();
-                }
-            }else{
-                r = Common.TokenError();
-            }
-        } catch (Exception e) {
-            r = Common.BillUpdateError(e);
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok(r);
-    }
-
-
-    //1,2,3,4
-    @ApiOperation(value = "更新订单状态接口", notes = "根据id更新订单状态")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
-            @ApiImplicitParam(name = "bill_status", value = "订单状态（1,2,3,4）", required = true, dataType = "Integer",paramType = "query"),
-            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header"),
-    })
-    @RequestMapping(value="updatebillstatus",method = RequestMethod.POST)
-    @ResponseBody
-    public ResponseEntity<JsonResult> updateBillStatus(@RequestParam(value = "id") long id,@RequestParam(value = "bill_status") int bill_status,HttpServletRequest request){
-        JsonResult r = new JsonResult();
-        String token = request.getHeader("token");
-        r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
-        try {
-            if(tokenvalue!=""){
-                redisService.expire(token, Constant.expire.getExpirationTime());
-                boolean flag = billService.updateBillStatus(bill_status,id);
                 if (flag) {
                     r = Common.BillUpdateSuccess();
                 }else{
@@ -533,9 +504,8 @@ public class SenderBillApi {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 //先支付
-
-
-                boolean flag =  billService.updateBillStatus(3,id);
+                Date datetime = new Date();
+                boolean flag =  billService.payBill(datetime,id);
                 if(flag){
                     r.setCode("200");
                     r.setMsg("支付成功！");
@@ -581,7 +551,8 @@ public class SenderBillApi {
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
-                boolean flag =  billService.updateBillStatus(4,id);
+                Date date = new Date();
+                boolean flag =  billService.finishBill(date,id);
                 if(flag){
                     r.setCode("200");
                     r.setMsg("运单完成！");
@@ -680,7 +651,8 @@ public class SenderBillApi {
                     r.setMsg(Constant.BILL_RECEIVEFAILURE.getMsg());
                     r.setSuccess(false);
                 }
-                boolean flag = billService.updateBillSetTrans_id(id,wxuserid);
+                Date datetime = new Date();
+                boolean flag = billService.updateBillSetTrans_id(id,datetime,wxuserid);
                 if (flag) {
                     r.setCode("200");
                     r.setMsg("抢单成功！");
