@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>noteform</title>
+    <title>托运单信息</title>
     <script src="http://www.codefans.net/ajaxjs/jquery-1.4.2.min.js"></script>
     <script>
         var Ohref=window.location.href;
         var id = Ohref.split("?id=")[1].split('&')[0];
-        var token = Ohref.split("?id=")[1].split('&')[1];
+        var token = Ohref.split("?id=")[1].split("&token=")[1];
         $(function(){
             $.ajax({
                 url: "/transport/api/getbill",
@@ -25,7 +25,7 @@
                     $("#rec_tel").val(res.data.rec_tel);
                     $("#rec_procity").val(res.data.rec_procity);
                     $("#rec_detailarea").val(res.data.rec_detailarea);
-                    $("#finish_time").val(res.data.finish_time);
+                    $("#finish_time").val(formattime(res.data.finish_time));
                     $("#bill_code").val(res.data.bill_code);
                     $("#goodsname").val(res.data.goodsname);
                     $("#goodsnum").val(res.data.goodsnum);
@@ -35,6 +35,12 @@
                 }
             })
         })
+
+        function formattime(time){
+            var d = new Date(time);
+            var _time  = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+            return _time;
+        }
     </script>
 
     <style>
@@ -47,7 +53,7 @@
             background-color:#F9EE70;
             margin:30px auto;
             padding:5px;
-            width:850px;
+            width:900px;
             min-height:200px;
             height:auto;
             font-family:"微软雅黑";
@@ -155,10 +161,10 @@
             <legend>收件信息</legend>
             <div class="row">
                 <label>1. 收货人:</label>
-                <input style="width:100px" id="rec_name" class="txt" type="text"  readonly="readonly"/>
+                <input style="width:60px" id="rec_name" class="txt" type="text"  readonly="readonly"/>
                 <label>2. 省市区:</label>
-                <input style="width:120px" id="rec_procity" class="txt" type="text"   readonly="readonly"/>
-                <label>3. 联系电话:</label><input class="txt" id="rec_tel" type="text"   readonly="readonly"/>
+                <input style="width:190px" id="rec_procity" class="txt" type="text"   readonly="readonly"/>
+                <label>3. 联系电话:</label><input  style="width:120px" class="txt" id="rec_tel" type="text"   readonly="readonly"/>
             </div>
             <div class="row">
                 <label>4. 详细地址:</label><input class="txt" id="rec_detailarea" style="width:400px"  type="text"   readonly="readonly"/>
@@ -168,10 +174,10 @@
             <legend>发件信息</legend>
             <div class="row">
                 <label>1. 发货人:</label>
-                <input style="width:100px" class="txt" id="sender_name" type="text" readonly="readonly"/>
+                <input style="width:60px" class="txt" id="sender_name" type="text" readonly="readonly"/>
                 <label>2. 省市区:</label>
-                <input style="width:120px" class="txt" id="sender_procity" type="text"   readonly="readonly"/>
-                <label>3. 联系电话:</label><input class="txt" id="sender_tel" type="text" readonly="readonly"/>
+                <input style="width:190px" class="txt" id="sender_procity" type="text"   readonly="readonly"/>
+                <label>3. 联系电话:</label><input style="width:120px"  class="txt" id="sender_tel" type="text" readonly="readonly"/>
             </div>
             <div class="row">
                 <label>4. 详细地址:</label><input class="txt" id="sender_detailarea" style="width:400px"  type="text" readonly="readonly"/>
@@ -180,18 +186,20 @@
         <fieldset>
             <legend>货物信息</legend>
             <div class="row">
-                <label>1. 日期:</label><input class="txt" id="finish_time" style="width:130px" maxlength="3" type="text" readonly="readonly"/>
-                <label>2. 运单号:</label><input class="txt" id="code" style="width:130px" maxlength="3" type="text" readonly="readonly"/>
-                <label>3. 托运号:</label><input class="txt" id="bill_code" style="width:130px" maxlength="3" type="text" readonly="readonly"/>
+                <label>1. 日期:</label><input class="txt" id="finish_time" style="width:200px" maxlength="3" type="text" readonly="readonly"/>
+                <label>2. 运单号:</label><input class="txt" id="code" style="width:300px" maxlength="3" type="text" readonly="readonly"/>
             </div>
             <div class="row">
-                <label>4. 店铺名称:</label><input class="txt" id="shop_name" style="width:150px" maxlength="3" type="text" readonly="readonly"/>
+                <label>3. 托运号:</label><input class="txt" id="bill_code" style="width:300px" maxlength="3" type="text" readonly="readonly"/>
+                <label>4. 店铺名称:</label><input class="txt" id="shop_name" style="width:180px" maxlength="3" type="text" readonly="readonly"/>
+            </div>
+            <div class="row">
                 <label>5. 品名:</label><input class="txt" id="goodsname" style="width:90px" maxlength="3" type="text" readonly="readonly"/>
                 <label>6. 数量:</label><input class="txt" id="goodsnum" style="width:50px" maxlength="2" type="text" readonly="readonly"/>
                 <label>（1-40件）</label>
+                <label>7. 物流名称:</label><input class="txt" id="company_name" style="width:150px" maxlength="3" type="text" readonly="readonly"/>
             </div>
             <div class="row">
-                <label>7. 物流名称:</label><input class="txt" id="company_name" style="width:150px" maxlength="3" type="text" readonly="readonly"/>
                 <label>8. 运费:</label><input class="txt" id="price" style="width:100px" maxlength="2" type="text" readonly="readonly"/>
                 <label>（线上付款）</label>
             </div>

@@ -39,7 +39,7 @@ public interface BillDao {
     int payBill(@Param("pay_time")Date pay_time, @Param("id")long id);
 
     //完成订单
-    @Update({"update sys_bill set bill_status = 4,pay_time=#{finish_time} where id = #{id} and batch_code != 1"})
+    @Update({"update sys_bill set bill_status = 4,finish_time=#{finish_time} where id = #{id} and batch_code != 1"})
     int finishBill(@Param("finish_time")Date finish_time,@Param("id")long id);
 
     //删除订单
