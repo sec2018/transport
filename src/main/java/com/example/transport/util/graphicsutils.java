@@ -122,8 +122,8 @@ public class graphicsutils {
             i++;
         }
 
-//        String path = "1.jpg";
-//        ImageIO.write(image, "jpg", new File(path));
+//        String path = "1.png";
+//        ImageIO.write(image, "png", new File(path));
 
 //        return path;
 

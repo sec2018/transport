@@ -851,8 +851,8 @@ public class SenderBillApi {
     }
 
 
-    //1,4
-    @ApiOperation(value = "物流公司查询本公司所有已完成订单", notes = "物流公司查询本公司所有已完成订单")
+    //得到img
+    @ApiOperation(value = "获取运单图片", notes = "获取运单图片")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")

@@ -198,73 +198,71 @@
     <script src="html2canvas.js"></script>
 </head>
 <body id="body">
-    <div id="maindiv">
-        <div class="exlist" id="exlist">
-            <div class="exlist_title">
-                <!--<img src="paper-clip.png" />-->
-            </div>
-            <div id="title"><legend>托运单信息</legend></div>
-            <form action="">
-                <fieldset>
-                    <legend>收件信息</legend>
-                    <div class="row">
-                        <label>1. 收货人:</label>
-                        <input style="width:70px" id="rec_name" class="txt" type="text"  readonly="readonly"/>
-                        <label>2. 省市区:</label>
-                        <input style="width:190px" id="rec_procity" class="txt" type="text"   readonly="readonly"/>
-                        <label>3. 联系电话:</label><input  style="width:120px" class="txt" id="rec_tel" type="text"   readonly="readonly"/>
-                    </div>
-                    <div class="row">
-                        <label>4. 详细地址:</label><input class="txt" id="rec_detailarea" style="width:400px"  type="text"   readonly="readonly"/>
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <legend>发件信息</legend>
-                    <div class="row">
-                        <label>1. 发货人:</label>
-                        <input style="width:70px" class="txt" id="sender_name" type="text" readonly="readonly"/>
-                        <label>2. 省市区:</label>
-                        <input style="width:190px" class="txt" id="sender_procity" type="text"   readonly="readonly"/>
-                        <label>3. 联系电话:</label><input style="width:120px"  class="txt" id="sender_tel" type="text" readonly="readonly"/>
-                    </div>
-                    <div class="row">
-                        <label>4. 详细地址:</label><input class="txt" id="sender_detailarea" style="width:400px"  type="text" readonly="readonly"/>
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <legend>货物信息</legend>
-                    <div class="row">
-                        <label>1. 日期:</label><input class="txt" id="finish_time" style="width:200px" maxlength="3" type="text" readonly="readonly"/>
-                        <label>2. 运单号:</label><input class="txt" id="company_code" style="width:300px" maxlength="3" type="text" readonly="readonly"/>
-                    </div>
-                    <div class="row">
-                        <label>3. 托运号:</label><input class="txt" id="bill_code" style="width:300px" maxlength="3" type="text" readonly="readonly"/>
-                        <label>4. 店铺名称:</label><input class="txt" id="shop_name" style="width:180px" maxlength="3" type="text" readonly="readonly"/>
-                    </div>
-                    <div class="row">
-                        <label>5. 品名:</label><input class="txt" id="goodsname" style="width:90px" maxlength="3" type="text" readonly="readonly"/>
-                        <label>6. 数量:</label><input class="txt" id="goodsnum" style="width:50px" maxlength="2" type="text" readonly="readonly"/>
-                        <label>（1-40件）</label>
-                        <label>7. 物流名称:</label><input class="txt" id="company_name" style="width:150px" maxlength="3" type="text" readonly="readonly"/>
-                    </div>
-                    <div class="row">
-                        <label>8. 运费:</label><input class="txt" id="price" style="width:100px" maxlength="2" type="text" readonly="readonly"/>
-                        <label>（线上付款）</label>
-                    </div>
-                    <!--<div class="row">-->
-                    <!--<label>5. 付款方式:</label>-->
-                    <!--<p>-->
-                    <!--<label><input type="radio" name="pay" value="单选"/>现金付款</label>-->
-                    <!--<label><input type="radio" name="pay" value="单选"/>收件人付款</label>-->
-                    <!--<label><input type="radio" name="pay" value="单选"/>第三方付款</label>-->
-                    <!--</p>-->
-                    <!--</div>-->
-                </fieldset>
-            </form>
+    <div class="exlist" id="exlist">
+        <div class="exlist_title">
+            <!--<img src="paper-clip.png" />-->
         </div>
-        <div align="center">
-            <img id="img" />
-        </div>
+        <div id="title"><legend>托运单信息</legend></div>
+        <form action="">
+            <fieldset>
+                <legend>收件信息</legend>
+                <div class="row">
+                    <label>1. 收货人:</label>
+                    <input style="width:70px" id="rec_name" class="txt" type="text"  readonly="readonly"/>
+                    <label>2. 省市区:</label>
+                    <input style="width:190px" id="rec_procity" class="txt" type="text"   readonly="readonly"/>
+                    <label>3. 联系电话:</label><input  style="width:120px" class="txt" id="rec_tel" type="text"   readonly="readonly"/>
+                </div>
+                <div class="row">
+                    <label>4. 详细地址:</label><input class="txt" id="rec_detailarea" style="width:400px"  type="text"   readonly="readonly"/>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>发件信息</legend>
+                <div class="row">
+                    <label>1. 发货人:</label>
+                    <input style="width:70px" class="txt" id="sender_name" type="text" readonly="readonly"/>
+                    <label>2. 省市区:</label>
+                    <input style="width:190px" class="txt" id="sender_procity" type="text"   readonly="readonly"/>
+                    <label>3. 联系电话:</label><input style="width:120px"  class="txt" id="sender_tel" type="text" readonly="readonly"/>
+                </div>
+                <div class="row">
+                    <label>4. 详细地址:</label><input class="txt" id="sender_detailarea" style="width:400px"  type="text" readonly="readonly"/>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>货物信息</legend>
+                <div class="row">
+                    <label>1. 日期:</label><input class="txt" id="finish_time" style="width:200px" maxlength="3" type="text" readonly="readonly"/>
+                    <label>2. 运单号:</label><input class="txt" id="company_code" style="width:300px" maxlength="3" type="text" readonly="readonly"/>
+                </div>
+                <div class="row">
+                    <label>3. 托运号:</label><input class="txt" id="bill_code" style="width:300px" maxlength="3" type="text" readonly="readonly"/>
+                    <label>4. 店铺名称:</label><input class="txt" id="shop_name" style="width:180px" maxlength="3" type="text" readonly="readonly"/>
+                </div>
+                <div class="row">
+                    <label>5. 品名:</label><input class="txt" id="goodsname" style="width:90px" maxlength="3" type="text" readonly="readonly"/>
+                    <label>6. 数量:</label><input class="txt" id="goodsnum" style="width:50px" maxlength="2" type="text" readonly="readonly"/>
+                    <label>（1-40件）</label>
+                    <label>7. 物流名称:</label><input class="txt" id="company_name" style="width:150px" maxlength="3" type="text" readonly="readonly"/>
+                </div>
+                <div class="row">
+                    <label>8. 运费:</label><input class="txt" id="price" style="width:100px" maxlength="2" type="text" readonly="readonly"/>
+                    <label>（线上付款）</label>
+                </div>
+                <!--<div class="row">-->
+                <!--<label>5. 付款方式:</label>-->
+                <!--<p>-->
+                <!--<label><input type="radio" name="pay" value="单选"/>现金付款</label>-->
+                <!--<label><input type="radio" name="pay" value="单选"/>收件人付款</label>-->
+                <!--<label><input type="radio" name="pay" value="单选"/>第三方付款</label>-->
+                <!--</p>-->
+                <!--</div>-->
+            </fieldset>
+        </form>
+    </div>
+    <div align="center">
+        <img id="img" />
     </div>
 </body>
 </html>
