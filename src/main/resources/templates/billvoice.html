@@ -4,14 +4,16 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>托运单信息</title>
     <script src="http://www.codefans.net/ajaxjs/jquery-1.4.2.min.js"></script>
+    <script type="application/javascript" src="html2canvas.js"></script>
     <script>
         var Ohref=window.location.href;
         var id = Ohref.split("?id=")[1].split('&')[0];
         var token = Ohref.split("?id=")[1].split("&token=")[1];
+        var base = "";
         $(function(){
             $.ajax({
                 url: "/transport/api/getbill",
-                method: "GET",
+                type: "GET",
                 data: "id="+id,
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("token",token);
@@ -26,21 +28,65 @@
                     $("#rec_procity").val(res.data.rec_procity);
                     $("#rec_detailarea").val(res.data.rec_detailarea);
                     $("#finish_time").val(formattime(res.data.finish_time));
+                    $("#company_code").val(res.data.company_code);
                     $("#bill_code").val(res.data.bill_code);
                     $("#goodsname").val(res.data.goodsname);
                     $("#goodsnum").val(res.data.goodsnum);
                     $("#shop_name").val(res.data.shop_name);
                     $("#company_name").val(res.data.company_name);
                     $("#price").val(res.data.price);
+
+                    //要转换为图片的dom对象
+                    var element = document.querySelector('.exlist');
+                    //要显示图片的img标签
+                    var image = document.querySelector('#img');
+                    html2image(element,image);
                 }
             })
         })
 
         function formattime(time){
             var d = new Date(time);
-            var _time  = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+            var _time = d.getFullYear()+"-"+((d.getMonth()+1)>=10?(d.getMonth()+1):"0"+(d.getMonth()+1))+"-"+((d.getDate()>=10?d.getDate():"0"+d.getDate()))+" "
+            + (d.getHours()>=10?d.getHours():"0"+d.getHours())+":"+(d.getMinutes()>=10?d.getMinutes():"0"+d.getMinutes())+":"+(d.getSeconds()>=10?d.getSeconds():"0"+d.getSeconds());
             return _time;
         }
+
+
+        /**
+         * @param source    要转换为图片的dom对象
+         * @param image     要显示图片的img标签
+         */
+        function html2image(source,image) {
+            html2canvas(source).then(function(canvas) {
+                var imageData = canvas.toDataURL(1);
+                image.src = imageData;
+                $(".exlist").hide();
+                base = encodeURIComponent(imageData);
+                console.log(base);
+                var parent=document.getElementById("body");
+                var child=document.getElementById("exlist");
+                parent.removeChild(child);
+//                var node=document.createTextNode(base);
+//                parent.appendChild(node);
+//                ajaxUpLoad(base);
+            });
+        }
+        
+//        function ajaxUpLoad(base) {
+//            $.ajax({
+//                url: "/transport/api/pushbase",
+//                type: "post",
+//                data: "base="+base,
+//                beforeSend: function (xhr) {
+//                    xhr.setRequestHeader("token",token),
+//                    xhr.setRequestHeader("id",id+"")
+//                },
+//                success:function (data) {
+//
+//                }
+//            })
+//        }
     </script>
 
     <style>
@@ -149,70 +195,76 @@
         }
         -->
     </style>
+    <script src="html2canvas.js"></script>
 </head>
-<body>
-<div class="exlist">
-    <div class="exlist_title">
-        <!--<img src="paper-clip.png" />-->
-    </div>
-    <div id="title"><legend>托运单信息</legend></div>
-    <form action="">
-        <fieldset>
-            <legend>收件信息</legend>
-            <div class="row">
-                <label>1. 收货人:</label>
-                <input style="width:60px" id="rec_name" class="txt" type="text"  readonly="readonly"/>
-                <label>2. 省市区:</label>
-                <input style="width:190px" id="rec_procity" class="txt" type="text"   readonly="readonly"/>
-                <label>3. 联系电话:</label><input  style="width:120px" class="txt" id="rec_tel" type="text"   readonly="readonly"/>
+<body id="body">
+    <div id="maindiv">
+        <div class="exlist" id="exlist">
+            <div class="exlist_title">
+                <!--<img src="paper-clip.png" />-->
             </div>
-            <div class="row">
-                <label>4. 详细地址:</label><input class="txt" id="rec_detailarea" style="width:400px"  type="text"   readonly="readonly"/>
-            </div>
-        </fieldset>
-        <fieldset>
-            <legend>发件信息</legend>
-            <div class="row">
-                <label>1. 发货人:</label>
-                <input style="width:60px" class="txt" id="sender_name" type="text" readonly="readonly"/>
-                <label>2. 省市区:</label>
-                <input style="width:190px" class="txt" id="sender_procity" type="text"   readonly="readonly"/>
-                <label>3. 联系电话:</label><input style="width:120px"  class="txt" id="sender_tel" type="text" readonly="readonly"/>
-            </div>
-            <div class="row">
-                <label>4. 详细地址:</label><input class="txt" id="sender_detailarea" style="width:400px"  type="text" readonly="readonly"/>
-            </div>
-        </fieldset>
-        <fieldset>
-            <legend>货物信息</legend>
-            <div class="row">
-                <label>1. 日期:</label><input class="txt" id="finish_time" style="width:200px" maxlength="3" type="text" readonly="readonly"/>
-                <label>2. 运单号:</label><input class="txt" id="code" style="width:300px" maxlength="3" type="text" readonly="readonly"/>
-            </div>
-            <div class="row">
-                <label>3. 托运号:</label><input class="txt" id="bill_code" style="width:300px" maxlength="3" type="text" readonly="readonly"/>
-                <label>4. 店铺名称:</label><input class="txt" id="shop_name" style="width:180px" maxlength="3" type="text" readonly="readonly"/>
-            </div>
-            <div class="row">
-                <label>5. 品名:</label><input class="txt" id="goodsname" style="width:90px" maxlength="3" type="text" readonly="readonly"/>
-                <label>6. 数量:</label><input class="txt" id="goodsnum" style="width:50px" maxlength="2" type="text" readonly="readonly"/>
-                <label>（1-40件）</label>
-                <label>7. 物流名称:</label><input class="txt" id="company_name" style="width:150px" maxlength="3" type="text" readonly="readonly"/>
-            </div>
-            <div class="row">
-                <label>8. 运费:</label><input class="txt" id="price" style="width:100px" maxlength="2" type="text" readonly="readonly"/>
-                <label>（线上付款）</label>
-            </div>
-            <!--<div class="row">-->
-                <!--<label>5. 付款方式:</label>-->
-                <!--<p>-->
+            <div id="title"><legend>托运单信息</legend></div>
+            <form action="">
+                <fieldset>
+                    <legend>收件信息</legend>
+                    <div class="row">
+                        <label>1. 收货人:</label>
+                        <input style="width:70px" id="rec_name" class="txt" type="text"  readonly="readonly"/>
+                        <label>2. 省市区:</label>
+                        <input style="width:190px" id="rec_procity" class="txt" type="text"   readonly="readonly"/>
+                        <label>3. 联系电话:</label><input  style="width:120px" class="txt" id="rec_tel" type="text"   readonly="readonly"/>
+                    </div>
+                    <div class="row">
+                        <label>4. 详细地址:</label><input class="txt" id="rec_detailarea" style="width:400px"  type="text"   readonly="readonly"/>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>发件信息</legend>
+                    <div class="row">
+                        <label>1. 发货人:</label>
+                        <input style="width:70px" class="txt" id="sender_name" type="text" readonly="readonly"/>
+                        <label>2. 省市区:</label>
+                        <input style="width:190px" class="txt" id="sender_procity" type="text"   readonly="readonly"/>
+                        <label>3. 联系电话:</label><input style="width:120px"  class="txt" id="sender_tel" type="text" readonly="readonly"/>
+                    </div>
+                    <div class="row">
+                        <label>4. 详细地址:</label><input class="txt" id="sender_detailarea" style="width:400px"  type="text" readonly="readonly"/>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>货物信息</legend>
+                    <div class="row">
+                        <label>1. 日期:</label><input class="txt" id="finish_time" style="width:200px" maxlength="3" type="text" readonly="readonly"/>
+                        <label>2. 运单号:</label><input class="txt" id="company_code" style="width:300px" maxlength="3" type="text" readonly="readonly"/>
+                    </div>
+                    <div class="row">
+                        <label>3. 托运号:</label><input class="txt" id="bill_code" style="width:300px" maxlength="3" type="text" readonly="readonly"/>
+                        <label>4. 店铺名称:</label><input class="txt" id="shop_name" style="width:180px" maxlength="3" type="text" readonly="readonly"/>
+                    </div>
+                    <div class="row">
+                        <label>5. 品名:</label><input class="txt" id="goodsname" style="width:90px" maxlength="3" type="text" readonly="readonly"/>
+                        <label>6. 数量:</label><input class="txt" id="goodsnum" style="width:50px" maxlength="2" type="text" readonly="readonly"/>
+                        <label>（1-40件）</label>
+                        <label>7. 物流名称:</label><input class="txt" id="company_name" style="width:150px" maxlength="3" type="text" readonly="readonly"/>
+                    </div>
+                    <div class="row">
+                        <label>8. 运费:</label><input class="txt" id="price" style="width:100px" maxlength="2" type="text" readonly="readonly"/>
+                        <label>（线上付款）</label>
+                    </div>
+                    <!--<div class="row">-->
+                    <!--<label>5. 付款方式:</label>-->
+                    <!--<p>-->
                     <!--<label><input type="radio" name="pay" value="单选"/>现金付款</label>-->
                     <!--<label><input type="radio" name="pay" value="单选"/>收件人付款</label>-->
                     <!--<label><input type="radio" name="pay" value="单选"/>第三方付款</label>-->
-                <!--</p>-->
-            <!--</div>-->
-        </fieldset>
-    </form>
-</div>
+                    <!--</p>-->
+                    <!--</div>-->
+                </fieldset>
+            </form>
+        </div>
+        <div align="center">
+            <img id="img" />
+        </div>
+    </div>
 </body>
 </html>

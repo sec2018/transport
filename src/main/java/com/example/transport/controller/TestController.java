@@ -2,6 +2,7 @@ package com.example.transport.controller;
 
 
 import com.example.transport.service.UserService;
+import com.example.transport.util.graphicsutils;
 import com.example.transport.util.redis.RedisService;
 import net.sf.json.JSONObject;
 import org.junit.Assert;
@@ -18,8 +19,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 @SpringBootTest
@@ -63,7 +63,7 @@ public class TestController {
     	System.out.println(redisService.get("wang:phone"));
     }
 
-    @Test
+
     public void testR() {
         String json = "";
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -79,5 +79,31 @@ public class TestController {
             redisService.set("user_"+ip, json);
         }
         System.out.println(redisService.get("user_"+ip));
+    }
+
+    @Test
+    public void initChartData() throws Exception{
+        List<List<List<String>>> allValue = new ArrayList<>();
+        List<String> content1 = Arrays.asList(new String[]{"刘丹丹","25","163cm","未婚"});
+        List<String> content2 = Arrays.asList(new String[]{"刘丹丹","25","163cm","未婚"});
+        List<String> content3 = Arrays.asList(new String[]{"刘丹丹","宿迁","本科","未婚"});
+        List<List<String>> contentArray1 = new ArrayList<>();
+        contentArray1.add(content1);
+        contentArray1.add(content2);
+        List<List<String>> contentArray2 = new ArrayList<>();
+        contentArray2.add(content3);
+        allValue.add(contentArray1);
+        allValue.add(contentArray2);
+
+        List<String[]> headTitles = new ArrayList<>();
+        String[] h1 = new String[]{"名字","年龄","身高","婚姻"};
+        String[] h2 = new String[]{"名字","籍贯","学历","婚姻"};
+        headTitles.add(h1);
+        headTitles.add(h2);
+
+        List<String> titles = new ArrayList<>();
+        titles.add("制造部门人员统计");
+        titles.add("SQE部门人员统计");
+        graphicsutils.graphicsGeneration(allValue,titles,headTitles ,"",4);
     }
 }

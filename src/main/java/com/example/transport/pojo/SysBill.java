@@ -64,6 +64,7 @@ public class SysBill {
                 ", rec_time=" + rec_time +
                 ", pay_time=" + pay_time +
                 ", finish_time=" + finish_time +
+                ", company_code='" + company_code + '\'' +
                 ", trans_name='" + trans_name + '\'' +
                 ", batch_code='" + batch_code + '\'' +
                 ", bill_status=" + bill_status +
@@ -71,6 +72,16 @@ public class SysBill {
                 ", sender_lng='" + sender_lng + '\'' +
                 '}';
     }
+
+    public String getCompany_code() {
+        return company_code;
+    }
+
+    public void setCompany_code(String company_code) {
+        this.company_code = company_code;
+    }
+
+    private String company_code;
 
     public Date getCreate_time() {
         return create_time;

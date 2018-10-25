@@ -6,11 +6,18 @@ import com.example.transport.pojo.SysUserAddr;
 import com.example.transport.service.BillService;
 import com.example.transport.service.Constant;
 import com.example.transport.service.UserService;
+import com.example.transport.util.HttpUtils;
 import com.example.transport.util.JsonResult;
+import com.example.transport.util.graphicsutils;
 import com.example.transport.util.redis.RedisService;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,11 +27,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import sun.misc.BASE64Encoder;
 
+import javax.imageio.ImageIO;
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 
 @RequestMapping("api")
@@ -44,6 +63,9 @@ public class SenderBillApi {
     private SysCompanyMapper sysCompanyMapper;
 
     Semaphore semaphore = new Semaphore(1);
+
+
+    private static ConcurrentMap<String, String> imgBases = new ConcurrentHashMap<>();
 
     //角色1,2
     @ApiOperation(value = "商家下单接口", notes = "下单")
@@ -67,6 +89,7 @@ public class SenderBillApi {
             @ApiImplicitParam(name = "rec_procity", value = "收件人省市", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "rec_detailarea", value = "收件人详细地址", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "price", value = "总价", required = true, dataType = "Double",paramType = "query"),
+            @ApiImplicitParam(name = "company_code", value = "运单号", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header")
     })
@@ -76,7 +99,8 @@ public class SenderBillApi {
                         @RequestParam(value = "shop_id")int shop_id,@RequestParam(value = "shop_name")String shop_name, @RequestParam(value = "company_id")int company_id, @RequestParam(value = "company_name")String company_name,
                         @RequestParam(value = "batch_code")String batch_code,@RequestParam(value = "lat")String lat,@RequestParam(value = "lng")String lng,@RequestParam(value = "billinfo")String billinfo,
                         @RequestParam(value = "sender_procity")String sender_procity,@RequestParam(value = "sender_detailarea")String sender_detailarea,@RequestParam(value = "rec_name")String rec_name,
-                        @RequestParam(value = "rec_tel")String rec_tel,@RequestParam(value = "rec_procity")String rec_procity,@RequestParam(value = "rec_detailarea")String rec_detailarea,@RequestParam(value = "price")double price, HttpServletRequest request) {
+                        @RequestParam(value = "rec_tel")String rec_tel,@RequestParam(value = "rec_procity")String rec_procity,@RequestParam(value = "rec_detailarea")String rec_detailarea,@RequestParam(value = "price")double price,
+                                                 @RequestParam(value = "company_code")String company_code,HttpServletRequest request) {
         String token = request.getHeader("token");
         String roleid = request.getHeader("roleid");
         JsonResult r = new JsonResult();
@@ -121,6 +145,7 @@ public class SenderBillApi {
                 sysBill.setRec_procity(rec_procity);
                 sysBill.setRec_detailarea(rec_detailarea);
                 sysBill.setPrice(price);
+                sysBill.setCompany_code(company_code);
 //                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");//注意格式化的表达式
 //                sysBill.setCreate_time(format.parse(format.format(new Date())));
                 sysBill.setCreate_time(new Date());
@@ -826,5 +851,133 @@ public class SenderBillApi {
     }
 
 
+    //1,4
+    @ApiOperation(value = "物流公司查询本公司所有已完成订单", notes = "物流公司查询本公司所有已完成订单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="getImg",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> getImg(@RequestParam(value = "id") Integer id,HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
 
+
+                //region 解析html
+                //                URL url = new URL("http://localhost:8080/transport/billvoice.html?id="+id+"&token="+token);
+//                URLConnection connection = url.openConnection();
+//                connection.setDoOutput(true);
+//
+//                //若为post请求
+////                OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(),"8859_1");
+////                out.write("username=xxx&password=ooooo"); //请求
+////                out.flush();
+////                out.close();
+//
+//                //得到响应
+//                InputStream inputStream;
+//                inputStream = connection.getInputStream();
+//                String sCurrentline = "";
+//                String sTotalstring = "";
+//                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+//                while ((sCurrentline = reader.readLine())!=null){
+//                    sTotalstring += sCurrentline  + "\r\n";
+//                }
+
+//                String url = "http://localhost:8080/transport/billvoice.html?id="+id+"&token="+token;
+//                org.jsoup.nodes.Document doc = Jsoup.parse(new URL(url),30000);
+//                org.jsoup.nodes.Document doc = Jsoup.parse(sTotalstring);
+//                org.jsoup.nodes.Element row = doc.body();
+//                System.out.println(doc);
+
+
+//                WebClient webClient = new WebClient();
+//                webClient.getOptions().setJavaScriptEnabled(false);
+//                webClient.getOptions().setCssEnabled(false);
+//                webClient.getOptions().setUseInsecureSSL(false);
+//                //获取页面
+//                HtmlPage page = webClient.getPage(url);
+//                System.out.println("页面文本:"+page.asText());
+
+//                String cmd = "rundll32 url.dll,FileProtocolHandler "+url;
+ //               int a = Runtime.getRuntime().exec(cmd).waitFor();
+//                ScriptEngineManager sem = new ScriptEngineManager();
+//                ScriptEngine se = sem.getEngineByName("javascript"); //初始化Java内置的javascript引擎
+//                try {
+//                    se.put("document",doc); //关联对象，这一步很重要，关联javascript的document对象为TaoDocument，亦即我自己实现的document对象
+//                    se.eval("function test() { return 'base';}");
+//                    Invocable invocableEngine = (Invocable) se;//转换引擎类型为Invocable
+//                    Element callbackvalue=(Element) invocableEngine.invokeFunction("test"); //直接运行函数，返回值为Element
+//                    System.out.println("callback return :"+callbackvalue); //打印输出返回内容
+////                    se.eval("test()");//另外一种调用函数方式，我更偏爱此种方式
+//                } catch (ScriptException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                } catch (NoSuchMethodException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
+                //endregion
+
+                List<List<List<String>>> allValue = new ArrayList<>();
+                List<String> content1 = Arrays.asList(new String[]{"刘丹丹","25","163cm","未婚"});
+                List<String> content2 = Arrays.asList(new String[]{"刘丹丹","25","163cm","未婚"});
+                List<String> content3 = Arrays.asList(new String[]{"刘丹丹","宿迁","本科","未婚"});
+                List<List<String>> contentArray1 = new ArrayList<>();
+                contentArray1.add(content1);
+                contentArray1.add(content2);
+                List<List<String>> contentArray2 = new ArrayList<>();
+                contentArray2.add(content3);
+                allValue.add(contentArray1);
+                allValue.add(contentArray2);
+
+                List<String[]> headTitles = new ArrayList<>();
+                String[] h1 = new String[]{"名字","年龄","身高","婚姻"};
+                String[] h2 = new String[]{"名字","籍贯","学历","婚姻"};
+                headTitles.add(h1);
+                headTitles.add(h2);
+
+                List<String> titles = new ArrayList<>();
+                titles.add("制造部门人员统计");
+                titles.add("SQE部门人员统计");
+                BufferedImage image = graphicsutils.graphicsGeneration(allValue,titles,headTitles ,"",4);
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();//io流
+                ImageIO.write(image, "png", baos);//写入流中
+                byte[] bytes = baos.toByteArray();//转换成字节
+                BASE64Encoder encoder = new BASE64Encoder();
+                String png_base64 =  encoder.encodeBuffer(bytes).trim();//转换成base64串
+                png_base64 = png_base64.replaceAll("\n", "").replaceAll("\r", "");//删除 \r\n
+
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(png_base64);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r = Common.SearchError(e);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    @RequestMapping(value="pushbase",method = RequestMethod.POST)
+    @ResponseBody
+    public String getImg(@RequestParam(value = "base") String base,HttpServletRequest request){
+        String id = request.getHeader("id");
+        if(id!=null && id!=""){
+            imgBases.put(id,base);
+        }
+        return "success";
+    }
 }
