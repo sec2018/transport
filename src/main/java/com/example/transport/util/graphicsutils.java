@@ -73,7 +73,7 @@ public class graphicsutils {
         int i = 0;
         for (List<List<String>> typeV : allValue) {
             if (typeV != null && typeV.size() > 0) {
-                graphics.drawString(titles.get(i), imageWidth / 3 + startWidth+30, startHeight + startH*rowheight - 10);
+                graphics.drawString(titles.get(i), startWidth+10, startHeight + startH*rowheight - 10);
                 startH+=2+typeV.size();
             }
             i++;
@@ -128,6 +128,13 @@ public class graphicsutils {
 //        return path;
 
         return image;
+    }
+
+    public static String createImg(List<List<List<String>>> allValue,List<String> titles,List<String[]> headers ,String receiver,int totalcol) throws Exception{
+        BufferedImage image = graphicsGeneration(allValue,titles,headers,receiver,totalcol);
+        String path = "1.png";
+        ImageIO.write(image, "png", new File(path));
+        return path;
     }
 
     /**

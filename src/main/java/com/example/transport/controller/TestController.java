@@ -84,26 +84,24 @@ public class TestController {
     @Test
     public void initChartData() throws Exception{
         List<List<List<String>>> allValue = new ArrayList<>();
-        List<String> content1 = Arrays.asList(new String[]{"刘丹丹","25","163cm","未婚"});
-        List<String> content2 = Arrays.asList(new String[]{"刘丹丹","25","163cm","未婚"});
-        List<String> content3 = Arrays.asList(new String[]{"刘丹丹","宿迁","本科","未婚"});
+        List<String> content1 = Arrays.asList(new String[]{"刘丹丹","15167876589","上海 上海市 浦东新区","周家渡街道上岸农路1000弄"});
+        List<String> content2 = Arrays.asList(new String[]{"陆昊阳","15167876589","上海 上海市 浦东新区","周家渡街道上岸农路190弄"});
         List<List<String>> contentArray1 = new ArrayList<>();
         contentArray1.add(content1);
-        contentArray1.add(content2);
         List<List<String>> contentArray2 = new ArrayList<>();
-        contentArray2.add(content3);
+        contentArray2.add(content2);
         allValue.add(contentArray1);
         allValue.add(contentArray2);
 
         List<String[]> headTitles = new ArrayList<>();
-        String[] h1 = new String[]{"名字","年龄","身高","婚姻"};
-        String[] h2 = new String[]{"名字","籍贯","学历","婚姻"};
+        String[] h1 = new String[]{"姓名","电话","省市区","详细地址"};
+        String[] h2 = new String[]{"姓名","电话","省市区","详细地址"};
         headTitles.add(h1);
         headTitles.add(h2);
 
         List<String> titles = new ArrayList<>();
-        titles.add("制造部门人员统计");
-        titles.add("SQE部门人员统计");
-        graphicsutils.graphicsGeneration(allValue,titles,headTitles ,"",4);
+        titles.add("收件人信息");
+        titles.add("寄件人信息");
+        graphicsutils.createImg(allValue,titles,headTitles ,"",4);
     }
 }
