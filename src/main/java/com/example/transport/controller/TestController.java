@@ -86,22 +86,34 @@ public class TestController {
         List<List<List<String>>> allValue = new ArrayList<>();
         List<String> content1 = Arrays.asList(new String[]{"刘丹丹","15167876589","上海 上海市 浦东新区","周家渡街道上岸农路1000弄"});
         List<String> content2 = Arrays.asList(new String[]{"陆昊阳","15167876589","上海 上海市 浦东新区","周家渡街道上岸农路190弄"});
+        List<String> content3 = Arrays.asList(new String[]{"123456789870981","皮鞋","江南面纱厂","2018-10-09 12:23:45"});
+        List<String> h4 = Arrays.asList(new String[]{"托单号","数量","物流名称","运费"});
+        List<String> content4 = Arrays.asList(new String[]{"123456787654567","25","德胜物流公司","75.00"});
         List<List<String>> contentArray1 = new ArrayList<>();
         contentArray1.add(content1);
         List<List<String>> contentArray2 = new ArrayList<>();
         contentArray2.add(content2);
+        List<List<String>> contentArray3 = new ArrayList<>();
+        contentArray3.add(content3);
+        contentArray3.add(h4);
+        contentArray3.add(content4);
+
         allValue.add(contentArray1);
         allValue.add(contentArray2);
+        allValue.add(contentArray3);
 
         List<String[]> headTitles = new ArrayList<>();
         String[] h1 = new String[]{"姓名","电话","省市区","详细地址"};
         String[] h2 = new String[]{"姓名","电话","省市区","详细地址"};
+        String[] h3 = new String[]{"运单号","品名","店铺名称","日期"};
         headTitles.add(h1);
         headTitles.add(h2);
+        headTitles.add(h3);
 
         List<String> titles = new ArrayList<>();
         titles.add("收件人信息");
         titles.add("寄件人信息");
+        titles.add("运单信息");
         graphicsutils.createImg(allValue,titles,headTitles ,"",4);
     }
 }

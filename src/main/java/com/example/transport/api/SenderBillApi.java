@@ -3,6 +3,7 @@ package com.example.transport.api;
 import com.example.transport.dao.SysCompanyMapper;
 import com.example.transport.pojo.SysBill;
 import com.example.transport.pojo.SysUserAddr;
+import com.example.transport.pojo.WxUser;
 import com.example.transport.service.BillService;
 import com.example.transport.service.Constant;
 import com.example.transport.service.UserService;
@@ -668,7 +669,6 @@ public class SenderBillApi {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 String openid = tokenvalue.split("\\|")[0];
-                long wxuserid = userService.getWxUserId(openid);
                 SysBill bill = billService.selectSingleBill(id);
                 if(bill.getTrans_id()!=-1){
                     r.setCode(Constant.BILL_RECEIVEFAILURE.getCode()+"");
@@ -677,7 +677,8 @@ public class SenderBillApi {
                     r.setSuccess(false);
                 }
                 Date datetime = new Date();
-                boolean flag = billService.updateBillSetTrans_id(id,datetime,wxuserid);
+                WxUser wxuser = userService.getWxUser(openid);
+                boolean flag = billService.updateBillSetTrans_id(id,datetime,wxuser.getId(),wxuser.getNickname());
                 if (flag) {
                     r.setCode("200");
                     r.setMsg("抢单成功！");
@@ -867,7 +868,8 @@ public class SenderBillApi {
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
-
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                SysBill bill = billService.selectSingleBill(id);
 
                 //region 解析html
                 //                URL url = new URL("http://localhost:8080/transport/billvoice.html?id="+id+"&token="+token);
@@ -925,27 +927,39 @@ public class SenderBillApi {
 //                }
                 //endregion
 
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String finish_time = formatter.format(bill.getFinish_time());
                 List<List<List<String>>> allValue = new ArrayList<>();
-                List<String> content1 = Arrays.asList(new String[]{"刘丹丹","25","163cm","未婚"});
-                List<String> content2 = Arrays.asList(new String[]{"刘丹丹","25","163cm","未婚"});
-                List<String> content3 = Arrays.asList(new String[]{"刘丹丹","宿迁","本科","未婚"});
+                List<String> content1 = Arrays.asList(new String[]{bill.getRec_name(),bill.getRec_tel(),bill.getRec_procity(),bill.getRec_detailarea()});
+                List<String> content2 = Arrays.asList(new String[]{bill.getSender_name(),bill.getSender_tel(),bill.getSender_procity(),bill.getRec_detailarea()});
+                List<String> content3 = Arrays.asList(new String[]{bill.getCompany_code(),bill.getGoodsname(),bill.getShop_name(),finish_time});
+                List<String> h4 = Arrays.asList(new String[]{"托单号","数量","物流名称","运费"});
+                List<String> content4 = Arrays.asList(new String[]{bill.getBill_code(),bill.getGoodsnum()+"",bill.getCompany_name(),bill.getPrice()+".00"});
                 List<List<String>> contentArray1 = new ArrayList<>();
                 contentArray1.add(content1);
-                contentArray1.add(content2);
                 List<List<String>> contentArray2 = new ArrayList<>();
-                contentArray2.add(content3);
+                contentArray2.add(content2);
+                List<List<String>> contentArray3 = new ArrayList<>();
+                contentArray3.add(content3);
+                contentArray3.add(h4);
+                contentArray3.add(content4);
+
                 allValue.add(contentArray1);
                 allValue.add(contentArray2);
+                allValue.add(contentArray3);
 
                 List<String[]> headTitles = new ArrayList<>();
-                String[] h1 = new String[]{"名字","年龄","身高","婚姻"};
-                String[] h2 = new String[]{"名字","籍贯","学历","婚姻"};
+                String[] h1 = new String[]{"姓名","电话","省市区","详细地址"};
+                String[] h2 = new String[]{"姓名","电话","省市区","详细地址"};
+                String[] h3 = new String[]{"运单号","品名","店铺名称","日期"};
                 headTitles.add(h1);
                 headTitles.add(h2);
+                headTitles.add(h3);
 
                 List<String> titles = new ArrayList<>();
-                titles.add("制造部门人员统计");
-                titles.add("SQE部门人员统计");
+                titles.add("收件人信息");
+                titles.add("寄件人信息");
+                titles.add("运单信息");
                 BufferedImage image = graphicsutils.graphicsGeneration(allValue,titles,headTitles ,"",4);
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();//io流

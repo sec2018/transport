@@ -38,7 +38,7 @@ public interface BillService {
     List<SysBill>  selectUnfinishBillByTelOrName(String sender_param);
 
     //接单
-    boolean updateBillSetTrans_id(long id, Date datetime, long trans_id);
+    boolean updateBillSetTrans_id(long id, Date datetime, long trans_id,String trans_name);
 
     //根据经纬度得到未接订单
     List<SysBill> selectBillsByLnglat(String lng,String lat);  //经度lng,维度lat

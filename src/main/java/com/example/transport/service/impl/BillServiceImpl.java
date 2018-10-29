@@ -105,9 +105,9 @@ public class BillServiceImpl implements BillService{
 
     @Transactional
     @Override
-    public boolean updateBillSetTrans_id(long id, Date datetime,  long trans_id) {
+    public boolean updateBillSetTrans_id(long id, Date datetime,  long trans_id,String trans_name) {
         try{
-            return billDao.updateBillSetTrans_id(id,datetime,trans_id)==1?true:false;
+            return billDao.updateBillSetTrans_id(id,datetime,trans_id,trans_name)==1?true:false;
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
