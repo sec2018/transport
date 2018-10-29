@@ -82,7 +82,7 @@ public class graphicsutils {
         }
 
         // 设置字体
-        Font font = new Font("华文楷体", Font.BOLD, 20);
+        Font font = new Font("华文楷体", Font.BOLD, 16);
         graphics.setFont(font);
 
         // 写标题
@@ -107,7 +107,7 @@ public class graphicsutils {
 
         // 写入表头
         graphics.setColor(Color.WHITE);
-        font = new Font("华文楷体", Font.BOLD, 20);
+        font = new Font("华文楷体", Font.BOLD, 16);
         graphics.setFont(font);
         startH = 2;
         i = 0;
@@ -142,7 +142,7 @@ public class graphicsutils {
 
         // 写入内容
         graphics.setColor(Color.black);
-        font = new Font("华文楷体", Font.PLAIN, 20);
+        font = new Font("华文楷体", Font.PLAIN, 14);
         graphics.setFont(font);
         startH = 3;
         i = 0;
@@ -205,9 +205,9 @@ public class graphicsutils {
         if (k == 0) {
             rightLine = startWidth;
         } else if (k == 1) {
-            rightLine = startWidth + colwidth / 2;
+            rightLine = startWidth + colwidth / 2 - 20;
         } else if (k == 2) {
-            rightLine = startWidth + 3 * colwidth / 2 - 80;
+            rightLine = startWidth + 3 * colwidth / 2 - 60;
         } else if (k == 3) {
             rightLine = startWidth + 5 * colwidth / 2 - 50;
         } else if (k == 4) {

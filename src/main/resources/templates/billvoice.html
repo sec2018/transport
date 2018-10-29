@@ -46,7 +46,7 @@
         })
 
         function formattime(time){
-            var d = new Date(time);
+            var d = new Date(time.replace('+0000','Z'));
             var _time = d.getFullYear()+"-"+((d.getMonth()+1)>=10?(d.getMonth()+1):"0"+(d.getMonth()+1))+"-"+((d.getDate()>=10?d.getDate():"0"+d.getDate()))+" "
             + (d.getHours()>=10?d.getHours():"0"+d.getHours())+":"+(d.getMinutes()>=10?d.getMinutes():"0"+d.getMinutes())+":"+(d.getSeconds()>=10?d.getSeconds():"0"+d.getSeconds());
             return _time;
@@ -67,26 +67,9 @@
                 var parent=document.getElementById("body");
                 var child=document.getElementById("exlist");
                 parent.removeChild(child);
-//                var node=document.createTextNode(base);
-//                parent.appendChild(node);
-//                ajaxUpLoad(base);
             });
         }
-        
-//        function ajaxUpLoad(base) {
-//            $.ajax({
-//                url: "/transport/api/pushbase",
-//                type: "post",
-//                data: "base="+base,
-//                beforeSend: function (xhr) {
-//                    xhr.setRequestHeader("token",token),
-//                    xhr.setRequestHeader("id",id+"")
-//                },
-//                success:function (data) {
-//
-//                }
-//            })
-//        }
+
     </script>
 
     <style>

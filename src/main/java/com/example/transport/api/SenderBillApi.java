@@ -8,6 +8,7 @@ import com.example.transport.service.BillService;
 import com.example.transport.service.Constant;
 import com.example.transport.service.UserService;
 import com.example.transport.util.HttpUtils;
+import com.example.transport.util.ImageUtil;
 import com.example.transport.util.JsonResult;
 import com.example.transport.util.graphicsutils;
 import com.example.transport.util.redis.RedisService;
@@ -230,6 +231,9 @@ public class SenderBillApi {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 SysBill bill = billService.selectSingleBill(id);
+
+
+
                 r.setCode("200");
                 r.setMsg("查询成功！");
                 r.setData(bill);
@@ -934,7 +938,7 @@ public class SenderBillApi {
                 List<String> content2 = Arrays.asList(new String[]{bill.getSender_name(),bill.getSender_tel(),bill.getSender_procity(),bill.getRec_detailarea()});
                 List<String> content3 = Arrays.asList(new String[]{bill.getCompany_code(),bill.getGoodsname(),bill.getShop_name(),finish_time});
                 List<String> h4 = Arrays.asList(new String[]{"托单号","数量","物流名称","运费"});
-                List<String> content4 = Arrays.asList(new String[]{bill.getBill_code(),bill.getGoodsnum()+"",bill.getCompany_name(),bill.getPrice()+".00"});
+                List<String> content4 = Arrays.asList(new String[]{bill.getBill_code(),bill.getGoodsnum()+"",bill.getCompany_name(),bill.getPrice()+""});
                 List<List<String>> contentArray1 = new ArrayList<>();
                 contentArray1.add(content1);
                 List<List<String>> contentArray2 = new ArrayList<>();
@@ -961,6 +965,8 @@ public class SenderBillApi {
                 titles.add("寄件人信息");
                 titles.add("运单信息");
                 BufferedImage image = graphicsutils.graphicsGeneration(allValue,titles,headTitles ,"",4);
+                //旋转90度
+                image = ImageUtil.rotateImage(image,90);
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();//io流
                 ImageIO.write(image, "png", baos);//写入流中
