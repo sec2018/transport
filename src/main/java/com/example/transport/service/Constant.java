@@ -20,7 +20,7 @@ public class Constant {
 
 
     //redis过期时间
-    public final static Expiration expire = Expiration.seconds(3600);//3600秒后数据过期
+    public final static Expiration expire = Expiration.seconds(7200);//7200秒后数据过期
 
     private int code;
     private String msg;

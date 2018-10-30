@@ -1,13 +1,24 @@
 package com.example.transport.pojo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
+@ApiModel(value = "SysBill", description = "用户对象")
 public class SysBill_s {
+
+    @ApiModelProperty(value = "id")
     private long id;
+    @ApiModelProperty(value = "bill_code")
     private String bill_code;
+    @ApiModelProperty(value = "sender_id")
     private long sender_id;
+    @ApiModelProperty(value = "sender_name")
     private String sender_name;
+    @ApiModelProperty(value = "sender_tel")
     private String sender_tel;
+    @ApiModelProperty(value = "shop_id")
     private int shop_id;
 
     public int getShop_id() {
@@ -18,24 +29,42 @@ public class SysBill_s {
         this.shop_id = shop_id;
     }
 
+    @ApiModelProperty(value = "shop_name")
     private String shop_name;
+    @ApiModelProperty(value = "company_id")
     private long company_id;
+    @ApiModelProperty(value = "company_name")
     private String company_name;
+    @ApiModelProperty(value = "trans_id")
     private long trans_id;
+    @ApiModelProperty(value = "goodsname")
     private String goodsname;
+    @ApiModelProperty(value = "goodsnum")
     private int goodsnum;
+    @ApiModelProperty(value = "billinfo")
     private String billinfo;
+    @ApiModelProperty(value = "sender_procity")
     private String sender_procity;
+    @ApiModelProperty(value = "sender_detailarea")
     private String sender_detailarea;
+    @ApiModelProperty(value = "rec_name")
     private String rec_name;
+    @ApiModelProperty(value = "rec_tel")
     private String rec_tel;
+    @ApiModelProperty(value = "rec_procity")
     private String rec_procity;
+    @ApiModelProperty(value = "rec_detailarea")
     private String rec_detailarea;
+    @ApiModelProperty(value = "price")
     private double price;
-    private String create_time;
-    private String rec_time;
-    private String pay_time;
-    private String finish_time;
+    @ApiModelProperty(value = "create_time")
+    private Date create_time;
+    @ApiModelProperty(value = "rec_time")
+    private Date rec_time;
+    @ApiModelProperty(value = "pay_time")
+    private Date pay_time;
+    @ApiModelProperty(value = "finish_time")
+    private Date finish_time;
 
     @Override
     public String toString() {
@@ -83,7 +112,37 @@ public class SysBill_s {
 
     private String company_code;
 
+    public Date getCreate_time() {
+        return create_time;
+    }
 
+    public void setCreate_time(Date create_time) {
+        this.create_time = create_time;
+    }
+
+    public Date getRec_time() {
+        return rec_time;
+    }
+
+    public void setRec_time(Date rec_time) {
+        this.rec_time = rec_time;
+    }
+
+    public Date getPay_time() {
+        return pay_time;
+    }
+
+    public void setPay_time(Date pay_time) {
+        this.pay_time = pay_time;
+    }
+
+    public Date getFinish_time() {
+        return finish_time;
+    }
+
+    public void setFinish_time(Date finish_time) {
+        this.finish_time = finish_time;
+    }
 
     public double getPrice() {
         return price;
@@ -165,10 +224,15 @@ public class SysBill_s {
         this.billinfo = billinfo;
     }
 
+    @ApiModelProperty(value = "trans_name")
     private String trans_name;
+    @ApiModelProperty(value = "batch_code")
     private String batch_code;
+    @ApiModelProperty(value = "bill_status")
     private int bill_status;
+    @ApiModelProperty(value = "sender_lat")
     private String sender_lat;
+    @ApiModelProperty(value = "sender_lng")
     private String sender_lng;
 
     public String getSender_lat() {

@@ -2,6 +2,7 @@ package com.example.transport.api;
 
 import com.example.transport.dao.SysCompanyMapper;
 import com.example.transport.pojo.SysBill;
+import com.example.transport.pojo.SysBill_s;
 import com.example.transport.pojo.SysUserAddr;
 import com.example.transport.pojo.WxUser;
 import com.example.transport.service.BillService;
@@ -25,10 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
@@ -69,7 +67,7 @@ public class SenderBillApi {
 
     private static ConcurrentMap<String, String> imgBases = new ConcurrentHashMap<>();
 
-    //角色1,2
+    //角色1,2, company_code传空值
     @ApiOperation(value = "商家下单接口", notes = "下单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "sender_name", value = "下单人名称", required = true, dataType = "String",paramType = "query"),
@@ -120,6 +118,7 @@ public class SenderBillApi {
                 //获取当前微信用户id
                 long wxuserid = userService.getWxUserId(openid);
 
+
                 //创建订单
                 SysBill sysBill = new SysBill();
                 SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
@@ -154,8 +153,12 @@ public class SenderBillApi {
                 boolean flag = billService.insertBill(sysBill);
                 if (flag) {
                     r.setCode("200");
-                    r.setMsg("下单成功！");
-                    r.setData(null);
+                    if(batch_code.equals("1")){
+                        r.setMsg("保存成功！");
+                    }else{
+                        r.setMsg("下单成功！");
+                    }
+                    r.setData(batch_code);
                     r.setSuccess(true);
                 }else {
                     r.setCode("500");
@@ -213,6 +216,48 @@ public class SenderBillApi {
         }
         return ResponseEntity.ok(r);
     }
+
+
+    //角色1,2
+    @ApiOperation(value = "商家查询所下未完成批量订单", notes = "商家查询所下未完成批量订单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="getbatchbill", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> searchBatchBill(HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("2")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                String openid = tokenvalue.split("\\|")[0];
+                String session_key = tokenvalue.split("\\|")[1];
+                //获取当前微信用户id
+                long wxuserid = userService.getWxUserId(openid);
+                List<SysBill> billlist = billService.selectBatchBills(wxuserid);
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(billlist);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+            }
+        } catch (Exception e) {
+            r = Common.SearchError(e);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
 
     //1,2,3,4
     @ApiOperation(value = "通过id查询订单", notes = "根据订单标识查询订单")
@@ -329,7 +374,9 @@ public class SenderBillApi {
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
-                boolean flag = billService.deleteBill(id);
+                String openid = tokenvalue.split("\\|")[0];
+                long wxuserid = userService.getWxUserId(openid);
+                boolean flag = billService.deleteBill(id,wxuserid);
                 if (flag) {
                     r = Common.DeleteSuccess();
                 }else{
@@ -563,12 +610,13 @@ public class SenderBillApi {
     @ApiOperation(value = "运单完成", notes = "运单完成")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "header"),
+            @ApiImplicitParam(name = "company_code", value = "运单号", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value="finishbill",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> finishBill(@RequestParam(value = "id") long id,HttpServletRequest request){
+    public ResponseEntity<JsonResult> finishBill(@RequestParam(value = "id") long id,@RequestParam(value = "company_code") String company_code, HttpServletRequest request){
         JsonResult r = new JsonResult();
         String token = request.getHeader("token");
         String roleid = request.getHeader("roleid");
@@ -582,7 +630,7 @@ public class SenderBillApi {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 Date date = new Date();
-                boolean flag =  billService.finishBill(date,id);
+                boolean flag =  billService.finishBill(date,id,company_code);
                 if(flag){
                     r.setCode("200");
                     r.setMsg("运单完成！");
@@ -1000,4 +1048,143 @@ public class SenderBillApi {
         }
         return "success";
     }
+
+    @ApiOperation(value = "商家批量下单点击合并下单按钮", notes = "商家批量下单点击合并下单按钮")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="savebatchbills",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<JsonResult> saveBatchBills(HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("2")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                String openid = tokenvalue.split("\\|")[0];
+                String session_key = tokenvalue.split("\\|")[1];
+                //获取当前微信用户id
+                long wxuserid = userService.getWxUserId(openid);
+                SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
+                String batch_code = df.format(new Date()) + UUID.randomUUID().toString().substring(0,5);
+                boolean flag = billService.updateBatchBillsCode(wxuserid,batch_code);
+                if (flag) {
+                    r.setCode("200");
+                    r.setMsg("下单成功！");
+                    r.setData(null);
+                    r.setSuccess(true);
+                }else {
+                    r.setCode("500");
+                    r.setMsg("下单失败！");
+                    r.setData(null);
+                    r.setSuccess(false);
+                }
+            }else{
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r.setCode(Constant.BILL_CREATEFAILURE.getCode()+"");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg(Constant.BILL_CREATEFAILURE.getMsg());
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    @ApiOperation(value = "商家批量下单", notes = "商家批量下单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="createbatchbills",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<JsonResult> createBatchBills(@RequestBody List<SysBill_s> billlist, HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("2")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = r.getData().toString();
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                String openid = tokenvalue.split("\\|")[0];
+                String session_key = tokenvalue.split("\\|")[1];
+                //获取当前微信用户id
+                long wxuserid = userService.getWxUserId(openid);
+
+                //创建订单
+                SysBill sysBill = null;
+                boolean flag = true;
+                for(int i = 0;i<billlist.size();i++){
+                    sysBill = new SysBill();
+                    SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
+                    String bill_code = df.format(new Date()) + UUID.randomUUID().toString().substring(0,5);
+                    sysBill.setBill_code(bill_code);
+                    sysBill.setSender_id(wxuserid);    //wxuserid即为商户的sender_id
+                    sysBill.setGoodsname(billlist.get(i).getGoodsname());
+                    sysBill.setGoodsnum(billlist.get(i).getGoodsnum());
+                    sysBill.setSender_name(billlist.get(i).getSender_name());
+                    sysBill.setSender_tel(billlist.get(i).getSender_tel());
+                    sysBill.setShop_id(billlist.get(i).getShop_id());
+                    sysBill.setShop_name(billlist.get(i).getShop_name());
+                    sysBill.setCompany_id(billlist.get(i).getCompany_id());
+                    sysBill.setCompany_name(billlist.get(i).getCompany_name());
+                    sysBill.setBatch_code("");
+                    sysBill.setBill_status(1);
+                    sysBill.setTrans_id(-1);
+                    sysBill.setSender_lat(billlist.get(i).getSender_lat());
+                    sysBill.setSender_lng(billlist.get(i).getSender_lng());
+                    sysBill.setBillinfo(billlist.get(i).getBillinfo());
+                    sysBill.setSender_procity(billlist.get(i).getSender_procity());
+                    sysBill.setSender_detailarea(billlist.get(i).getSender_detailarea());
+                    sysBill.setRec_name(billlist.get(i).getRec_name());
+                    sysBill.setRec_tel(billlist.get(i).getRec_tel());
+                    sysBill.setRec_procity(billlist.get(i).getRec_procity());
+                    sysBill.setRec_detailarea(billlist.get(i).getRec_detailarea());
+                    sysBill.setPrice(billlist.get(i).getPrice());
+                    sysBill.setCompany_code(billlist.get(i).getCompany_code());
+                    sysBill.setCreate_time(new Date());
+                    flag = flag && billService.insertBill(sysBill);
+                }
+                if (flag && billlist.size()>0) {
+                    r.setCode("200");
+                    r.setMsg("下单成功！");
+                    r.setData(null);
+                    r.setSuccess(true);
+                }else {
+                    r.setCode("500");
+                    r.setMsg("下单失败！");
+                    r.setData(null);
+                    r.setSuccess(false);
+                }
+            }else{
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r.setCode(Constant.BILL_CREATEFAILURE.getCode()+"");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg(Constant.BILL_CREATEFAILURE.getMsg());
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
 }

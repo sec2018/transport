@@ -23,10 +23,22 @@ public interface BillService {
     boolean payBill(Date pay_time, long id);
 
     //完成订单
-    boolean finishBill(Date finish_time,long id);
+    boolean finishBill(Date finish_time,long id,String company_code);
 
-    //删除订单
-    boolean deleteBill(long id);
+    //删除订单,硬删除
+    boolean deleteBill(long id,long wxuserid);
+
+    //软删除，对已完成的订单，把承运员设置为不可见
+    boolean deleteTransBill(long id,long trans_id);
+
+    //软删除，对已完成的订单，把商户设置为不可见
+    boolean deleteSenderBill(long id,long sender_id);
+
+    //软删除，对已完成的订单，把物流公司设置为不可见
+    boolean deleteCompanyBill(long id,long company_id);
+
+    //软删除，对已接的订单，承运员取消接单
+    boolean cancelTransBill(long id,long trans_id);
 
     //商家根据sender_id和状态bill_status 来查询未完成订单
     List<SysBill>  selectUnfinishBill(long sender_id);
@@ -57,4 +69,11 @@ public interface BillService {
 
     //承运员查询已完成订单
     List<SysBill>  selectfinishedBillByTransId(long trans_id);
+
+    //商户查询所下批量订单
+    List<SysBill>  selectBatchBills(long sender_id);
+
+    //商户保存提交所下批量订单
+    boolean updateBatchBillsCode(long sender_id,String batch_code);
+
 }

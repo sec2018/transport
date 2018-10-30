@@ -35,19 +35,36 @@ public interface BillDao {
     int updateBill(SysBill sysBill);
 
     //支付订单
-    @Update({"update sys_bill set bill_status = 3,pay_time=#{pay_time} where id = #{id} and batch_code != 1"})
+    @Update({"update sys_bill set bill_status = 3,pay_time=#{pay_time} where id = #{id}"})
     int payBill(@Param("pay_time")Date pay_time, @Param("id")long id);
 
     //完成订单
-    @Update({"update sys_bill set bill_status = 4,finish_time=#{finish_time} where id = #{id} and batch_code != 1"})
-    int finishBill(@Param("finish_time")Date finish_time,@Param("id")long id);
+    @Update({"update sys_bill set bill_status = 4,finish_time=#{finish_time},company_code=#{company_code} where id = #{id}"})
+    int finishBill(@Param("finish_time")Date finish_time,@Param("id")long id,@Param("company_code")String company_code);
 
-    //删除订单
-    @Delete({"delete from sys_bill where id = #{id}"})
-    int deleteBill(long id);
+    //删除所下未接订单，硬删除
+    @Delete({"delete from sys_bill where id = #{id} and sender_id = #{wxuserid} and trans_id=-1"})
+    int deleteBill(long id,long wxuserid);
+
+    //软删除，对已完成的订单，把承运员设置为不可见
+    @Update({"update sys_bill set trans_id=-1 where id = #{id} and trans_id = #{trans_id} and bill_status = 4"})
+    int deleteTransBill(long id,long trans_id);
+
+    //软删除，对已完成的订单，把商户设置为不可见
+    @Update({"update sys_bill set sender_id=-1 where id = #{id} and sender_id = #{sender_id} and bill_status = 4"})
+    int deleteSenderBill(long id,long sender_id);
+
+    //软删除，对已完成的订单，把物流公司设置为不可见
+    @Update({"update sys_bill set company_id=-1 where id = #{id} and company_id = #{company_id} and bill_status = 4"})
+    int deleteCompanyBill(long id,long company_id);
+
+    //软删除，对已接的订单，承运员取消接单
+    @Update({"update sys_bill set trans_id=-1，bill_status = 1 where id = #{id} and trans_id = #{trans_id} and bill_status = 2"})
+    int cancelTransBill(long id,long trans_id);
+
 
     //商家根据sender_id和状态bill_status = 1，2 或 3 来查询未完成订单
-    @Select({"select * from sys_bill where sender_id = #{sender_id} and (bill_status = 1 or bill_status = 2 or bill_status = 3) and batch_code != 1"})
+    @Select({"select * from sys_bill where sender_id = #{sender_id} and (bill_status = 1 or bill_status = 2 or bill_status = 3)"})
     List<SysBill>  selectUnfinishBill(@Param("sender_id")long sender_id);
 
     //商家根据sender_id和状态bill_status = 4来查询已完成订单
@@ -68,7 +85,7 @@ public interface BillDao {
     List<SysBill>  selectfinishedBillByCompanyId(@Param("company_id")Integer company_id);
 
     //物流公司查询本公司所有未完成订单
-    @Select({"select * from sys_bill where company_id = #{company_id} and bill_status != 4 and batch_code != 1"})
+    @Select({"select * from sys_bill where company_id = #{company_id} and bill_status != 4"})
     List<SysBill>  selectunfinishedBillByCompanyId(@Param("company_id")Integer company_id);
 
 
@@ -79,4 +96,12 @@ public interface BillDao {
     //承运员查询已完成订单
     @Select({"select * from sys_bill where trans_id = #{trans_id} and bill_status = 4"})
     List<SysBill>  selectfinishedBillByTransId(@Param("trans_id")long trans_id);
+
+    //商户查询所下批量订单
+    @Select({"select * from sys_bill where sender_id = #{sender_id} and batch_code!=0 and bill_status != 4"})
+    List<SysBill>  selectBatchBills(@Param("sender_id")long sender_id);
+
+    //商户保存提交所下批量订单
+    @Update({"update sys_bill set batch_code=#{batch_code} where sender_id = #{sender_id} and batch_code=1"})
+    int updateBatchBillsCode(@Param("sender_id")long sender_id,@Param("batch_code")String batch_code);
 }

@@ -22,7 +22,7 @@ public class RedisServiceImpl implements RedisService {
     private RedisTemplate<String, ?> redisTemplate;
 	
 	private String prefix = "trans_";
-	private Expiration expire = Constant.expire;//3600秒后数据过期
+	private Expiration expire = Constant.expire;//7200秒后数据过期
 	
     @Override
     public boolean set(final String key, final String value) {

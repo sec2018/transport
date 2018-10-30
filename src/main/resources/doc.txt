@@ -200,3 +200,8 @@ public static BufferedImage graphicsGeneration(List<List<List<String>>> allValue
 
         return image;
     }
+
+
+    if(batch_code.equals("1")){
+                        batch_code = df.format(new Date()) + UUID.randomUUID().toString().substring(0,5);
+                    }
