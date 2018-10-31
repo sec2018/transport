@@ -42,9 +42,9 @@ public class BillServiceImpl implements BillService{
 
     @Transactional
     @Override
-    public boolean updateBill(SysBill sysBill) {
+    public boolean SenderUpdateBill(SysBill sysBill) {
         try{
-            return billDao.updateBill(sysBill)==1?true:false;
+            return billDao.SenderUpdateBill(sysBill)==1?true:false;
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -78,9 +78,9 @@ public class BillServiceImpl implements BillService{
 
     @Transactional
     @Override
-    public boolean deleteBill(long id,long wxuserid) {
+    public boolean deleteSenderBill(long id,long wxuserid) {
         try{
-            return billDao.deleteBill(id,wxuserid)==1?true:false;
+            return billDao.deleteSenderBill(id,wxuserid)==1?true:false;
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -88,6 +88,7 @@ public class BillServiceImpl implements BillService{
         }
     }
 
+    @Transactional
     @Override
     public boolean deleteTransBill(long id, long trans_id) {
         try{
@@ -99,17 +100,20 @@ public class BillServiceImpl implements BillService{
         }
     }
 
+    @Transactional
     @Override
-    public boolean deleteSenderBill(long id, long sender_id) {
+    public boolean deleteSenderUnRecBill(long id, long sender_id) {
         try{
-            return billDao.deleteSenderBill(id,sender_id)==1?true:false;
+            return billDao.deleteSenderUnRecBill(id,sender_id)==1?true:false;
         }
         catch (Exception e) {
+            e.printStackTrace();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return false;
         }
     }
 
+    @Transactional
     @Override
     public boolean deleteCompanyBill(long id, long company_id) {
         try{
@@ -121,6 +125,7 @@ public class BillServiceImpl implements BillService{
         }
     }
 
+    @Transactional
     @Override
     public boolean cancelTransBill(long id, long trans_id) {
         try{

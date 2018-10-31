@@ -118,7 +118,6 @@ public class SenderBillApi {
                 //获取当前微信用户id
                 long wxuserid = userService.getWxUserId(openid);
 
-
                 //创建订单
                 SysBill sysBill = new SysBill();
                 SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
@@ -294,27 +293,42 @@ public class SenderBillApi {
     }
 
     //1,2
-    @ApiOperation(value = "更新订单接口", notes = "更新订单")          //让修改哪些内容？
+    @ApiOperation(value = "商户修改未接订单接口", notes = "商户修改未接订单接口")          //让修改哪些内容？
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
+            @ApiImplicitParam(name = "sender_name", value = "下单人名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "sender_tel", value = "下单人电话", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "shop_id", value = "商铺id", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "shop_name", value = "商铺名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "company_id", value = "物流公司id", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "company_name", value = "物流公司名称", required = true, dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "trans_id", value = "承运员id", required = true, dataType = "Long",paramType = "query"),
-            @ApiImplicitParam(name = "trans_name", value = "承运员名称", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "goodsname", value = "商品名称", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "goodsnum", value = "商品数量", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "batch_code", value = "批量下单编号", required = true, dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "bill_status", value = "订单状态（1,2,3,4）", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "lat", value = "经度", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "lng", value = "维度", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "billinfo", value = "运单备注", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "sender_procity", value = "寄件人省市", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "sender_detailarea", value = "寄件人详细地址", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "rec_name", value = "收件人姓名", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "rec_tel", value = "收件人电话", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "rec_procity", value = "收件人省市", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "rec_detailarea", value = "收件人详细地址", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "price", value = "总价", required = true, dataType = "Double",paramType = "query"),
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
-    @RequestMapping(value="updatebill",method = RequestMethod.POST)
+    @RequestMapping(value="senderupdatebill",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> updateBill(@RequestParam(value = "id") long id, @RequestParam(value = "sender_tel")String sender_tel,@RequestParam(value = "shop_id")int shop_id,
-                        @RequestParam(value = "shop_name")String shop_name, @RequestParam(value = "company_id")int company_id, @RequestParam(value = "company_name")String company_name,
-                        @RequestParam(value = "trans_id")Long trans_id,@RequestParam(value = "trans_name")String trans_name, @RequestParam(value = "batch_code")String batch_code,
-                        @RequestParam(value = "bill_status")int bill_status,HttpServletRequest request){
+    public ResponseEntity<JsonResult> updateBill(@RequestParam(value = "id") long id,@RequestParam(value = "sender_name")String sender_name, @RequestParam(value = "sender_tel")String sender_tel,@RequestParam(value = "shop_id")int shop_id,
+                        @RequestParam(value = "shop_name")String shop_name, @RequestParam(value = "company_id")int company_id, @RequestParam(value = "company_name")String company_name,@RequestParam(value = "goodsname")String goodsname,
+                        @RequestParam(value = "goodsnum")int goodsnum, @RequestParam(value = "batch_code")String batch_code,
+                        @RequestParam(value = "lat")String lat,@RequestParam(value = "lng")String lng,
+                        @RequestParam(value = "billinfo")String billinfo,@RequestParam(value = "sender_procity")String sender_procity,
+                        @RequestParam(value = "sender_detailarea")String sender_detailarea,@RequestParam(value = "rec_name")String rec_name,
+                        @RequestParam(value = "rec_tel")String rec_tel,@RequestParam(value = "rec_procity")String rec_procity,
+                        @RequestParam(value = "rec_detailarea")String rec_detailarea,@RequestParam(value = "price")double price,
+                        HttpServletRequest request){
         JsonResult r = new JsonResult();
         String token = request.getHeader("token");
         String roleid = request.getHeader("roleid");
@@ -328,15 +342,27 @@ public class SenderBillApi {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 SysBill sysBill = billService.selectSingleBill(id);
+
+                sysBill.setSender_name(sender_name);
                 sysBill.setSender_tel(sender_tel);
+                sysBill.setShop_id(shop_id);
                 sysBill.setShop_name(shop_name);
                 sysBill.setCompany_id(company_id);
                 sysBill.setCompany_name(company_name);
-                sysBill.setTrans_id(trans_id);
-                sysBill.setTrans_name(trans_name);
+                sysBill.setGoodsname(goodsname);
+                sysBill.setGoodsnum(goodsnum);
                 sysBill.setBatch_code(batch_code);
-                sysBill.setBill_status(bill_status);
-                boolean flag = billService.updateBill(sysBill);
+                sysBill.setSender_lat(lat);
+                sysBill.setSender_lng(lng);
+                sysBill.setBillinfo(billinfo);
+                sysBill.setSender_procity(sender_procity);
+                sysBill.setSender_detailarea(sender_detailarea);
+                sysBill.setRec_name(rec_name);
+                sysBill.setRec_tel(rec_tel);
+                sysBill.setRec_procity(rec_procity);
+                sysBill.setRec_detailarea(rec_detailarea);
+                sysBill.setPrice(price);
+                boolean flag = billService.SenderUpdateBill(sysBill);
                 if (flag) {
                     r = Common.BillUpdateSuccess();
                 }else{
@@ -353,19 +379,19 @@ public class SenderBillApi {
     }
 
     //1
-    @ApiOperation(value = "删除订单接口", notes = "根据id删除订单")
+    @ApiOperation(value = "删除未接订单或批量下单的一个订单接口", notes = "根据id删除订单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
-    @RequestMapping(value="deletebill",method = RequestMethod.POST)
+    @RequestMapping(value="deletesenderbill",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> deleteBillById(@RequestParam(value = "id") long id,HttpServletRequest request){
+    public ResponseEntity<JsonResult> deleteSenderbill(@RequestParam(value = "id") long id,HttpServletRequest request){
         JsonResult r = new JsonResult();
         String token = request.getHeader("token");
         String roleid = request.getHeader("roleid");
-        if(!roleid.equals("1")){
+        if(!roleid.equals("1") && !roleid.equals("2")){
             r = Common.RoleError();
             return ResponseEntity.ok(r);
         }
@@ -376,7 +402,7 @@ public class SenderBillApi {
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 String openid = tokenvalue.split("\\|")[0];
                 long wxuserid = userService.getWxUserId(openid);
-                boolean flag = billService.deleteBill(id,wxuserid);
+                boolean flag = billService.deleteSenderUnRecBill(id,wxuserid);
                 if (flag) {
                     r = Common.DeleteSuccess();
                 }else{

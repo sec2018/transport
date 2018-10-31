@@ -16,8 +16,8 @@ public interface BillService {
     //根据id来查询特定订单
     SysBill selectSingleBill(long id);
 
-    //更新订单内容
-    boolean updateBill(SysBill sysBill);
+    //商户更新订单内容
+    boolean SenderUpdateBill(SysBill sysBill);
 
     //支付订单
     boolean payBill(Date pay_time, long id);
@@ -26,7 +26,7 @@ public interface BillService {
     boolean finishBill(Date finish_time,long id,String company_code);
 
     //删除订单,硬删除
-    boolean deleteBill(long id,long wxuserid);
+    boolean deleteSenderUnRecBill(long id,long wxuserid);
 
     //软删除，对已完成的订单，把承运员设置为不可见
     boolean deleteTransBill(long id,long trans_id);
