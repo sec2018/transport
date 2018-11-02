@@ -109,7 +109,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue != ""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -197,7 +204,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -234,7 +248,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -246,6 +267,69 @@ public class SenderBillApi {
                 r.setCode("200");
                 r.setMsg("查询成功！");
                 r.setData(billlist);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+            }
+        } catch (Exception e) {
+            r = Common.SearchError(e);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    //角色1,2
+    @ApiOperation(value = "用户查询所下未完成订单(分页)", notes = "用户查询所下未完成订单(分页)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "startitem", value = "startitem", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "pagesize", value = "pagesize", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "pagesize", value = "pagesize", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="getunfinishedpagebills", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> searchBatchBill(@RequestParam(value = "startitem") int startitem,@RequestParam(value = "pagesize") int pagesize,HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
+        try {
+            if(tokenvalue!=""){
+                String openid = tokenvalue.split("\\|")[0];
+                long wxuserid = userService.getWxUserId(openid);
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                if(roleid.equals("2")){
+                    //商家查询所下未完成订单
+                    Map<String, Object> map = billService.selectUnfinishBill(wxuserid,startitem,pagesize);
+                    r.setData(map);
+                }else if(roleid.equals("3")){
+                    //承运员未完成订单
+                    Map<String, Object> map = billService.selectunfinishedBillByTransId(wxuserid,startitem,pagesize);
+                    r.setData(map);
+                }else if(roleid.equals("4")){
+                    //物流公司未完成订单
+                    int companyid = sysCompanyMapper.selectCompanyIdbyWxuserid(wxuserid);
+                    Map<String, Object> map  = billService.selectunfinishedBillByCompanyId(companyid,startitem,pagesize);
+                    r.setData(map);
+                }else if(roleid.equals("1")){
+                    //超级管理员查询未完成订单
+
+                }else{
+                    r = Common.RoleError();
+                    return ResponseEntity.ok(r);
+                }
+                r.setCode("200");
+                r.setMsg("查询成功！");
                 r.setSuccess(true);
             }else{
                 r = Common.TokenError();
@@ -270,12 +354,18 @@ public class SenderBillApi {
         JsonResult r = new JsonResult();
         String token = request.getHeader("token");
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 SysBill bill = billService.selectSingleBill(id);
-
 
 
                 r.setCode("200");
@@ -337,7 +427,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -396,7 +493,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -435,7 +539,14 @@ public class SenderBillApi {
         String token = request.getHeader("token");
         String roleid = request.getHeader("roleid");
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -498,7 +609,14 @@ public class SenderBillApi {
         String token = request.getHeader("token");
         String roleid = request.getHeader("roleid");
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -564,7 +682,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -602,7 +727,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -651,7 +783,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -691,7 +830,14 @@ public class SenderBillApi {
         JsonResult r = new JsonResult();
         String token = request.getHeader("token");
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -730,7 +876,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         int availablePermits = semaphore.availablePermits();
         if(availablePermits>0){
             System.out.println("抢单成功！");
@@ -800,7 +953,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -838,7 +998,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -877,7 +1044,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -942,7 +1116,14 @@ public class SenderBillApi {
         JsonResult r = new JsonResult();
         String token = request.getHeader("token");
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -1091,7 +1272,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -1144,7 +1332,14 @@ public class SenderBillApi {
             return ResponseEntity.ok(r);
         }
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());

@@ -149,7 +149,14 @@ public class SysUserAddrApi {
     public ResponseEntity<JsonResult> searchSysUserAddr(HttpServletRequest request){
         String token = request.getHeader("token");
         JsonResult r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue != ""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -189,7 +196,14 @@ public class SysUserAddrApi {
         String token = request.getHeader("token");
         JsonResult r = new JsonResult();
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue != ""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
@@ -231,7 +245,14 @@ public class SysUserAddrApi {
         String token = request.getHeader("token");
         JsonResult r = new JsonResult();
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue != ""){
                 redisService.expire(token, Constant.expire.getExpirationTime());

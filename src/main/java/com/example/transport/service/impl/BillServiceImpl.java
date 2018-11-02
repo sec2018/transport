@@ -3,13 +3,17 @@ package com.example.transport.service.impl;
 import com.example.transport.dao.BillDao;
 import com.example.transport.pojo.SysBill;
 import com.example.transport.service.BillService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service("billService")
 public class BillServiceImpl implements BillService{
@@ -143,6 +147,18 @@ public class BillServiceImpl implements BillService{
     }
 
     @Override
+    public Map<String, Object> selectUnfinishBill(long sender_id, int startPage, int pageSize) throws Exception {
+        Page page = PageHelper.startPage(startPage, pageSize);
+        List<SysBill>  sysbilllist = billDao.selectUnfinishBill(sender_id);
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("data", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
+    }
+
+    @Override
     public List<SysBill> selectfinishedBill(long sender_id) {
         return billDao.selectfinishedBill(sender_id);
     }
@@ -180,6 +196,18 @@ public class BillServiceImpl implements BillService{
     }
 
     @Override
+    public Map<String, Object> selectunfinishedBillByCompanyId(Integer company_id, int startPage, int pageSize) throws Exception {
+        Page page = PageHelper.startPage(startPage, pageSize);
+        List<SysBill>  sysbilllist = billDao.selectunfinishedBillByCompanyId(company_id);
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("data", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
+    }
+
+    @Override
     public List<SysBill> selectAllUnBills() {
         return billDao.selectAllUnBills();
     }
@@ -190,6 +218,18 @@ public class BillServiceImpl implements BillService{
     }
 
     @Override
+    public Map<String, Object> selectunfinishedBillByTransId(long trans_id, int startPage, int pageSize) throws Exception {
+        Page page = PageHelper.startPage(startPage, pageSize);
+        List<SysBill>  sysbilllist = billDao.selectunfinishedBillByTransId(trans_id);
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("data", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
+    }
+
+    @Override
     public List<SysBill> selectfinishedBillByTransId(long trans_id) {
         return billDao.selectfinishedBillByTransId(trans_id);
     }
@@ -197,6 +237,13 @@ public class BillServiceImpl implements BillService{
     @Override
     public List<SysBill> selectBatchBills(long sender_id) {
         return billDao.selectBatchBills(sender_id);
+    }
+
+    @Override
+    public List<SysBill> selectBatchBills(long sender_id, int startPage, int pageSize) throws Exception {
+        Page page = PageHelper.startPage(startPage, pageSize);
+        List<SysBill>  sysbilllist = billDao.selectBatchBills(sender_id);
+        return sysbilllist;
     }
 
     @Override

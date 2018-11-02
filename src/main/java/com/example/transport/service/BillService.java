@@ -5,6 +5,7 @@ import com.example.transport.pojo.SysBill;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface BillService {
 
@@ -43,6 +44,9 @@ public interface BillService {
     //商家根据sender_id和状态bill_status 来查询未完成订单
     List<SysBill>  selectUnfinishBill(long sender_id);
 
+    //商家根据sender_id和状态bill_status 来查询未完成订单(分页)
+    Map<String, Object> selectUnfinishBill(long sender_id, int startitem, int pagesize) throws Exception;
+
     //商家根据sender_id和状态bill_status = 4来查询已完成订单
     List<SysBill>  selectfinishedBill(long sender_id);
 
@@ -61,17 +65,26 @@ public interface BillService {
     //物流公司查询本公司所有未完成订单
     List<SysBill>  selectunfinishedBillByCompanyId(Integer company_id);
 
+    //物流公司查询本公司所有未完成订单（分页）
+    Map<String, Object>  selectunfinishedBillByCompanyId(Integer company_id,int startitem,int pagesize) throws Exception;
+
     //所有未接订单列表
     List<SysBill> selectAllUnBills();
 
     //承运员查询未完成订单
     List<SysBill>  selectunfinishedBillByTransId(long trans_id);
 
+    //承运员查询未完成订单(分页)
+    Map<String, Object>  selectunfinishedBillByTransId(long trans_id,int startitem,int pagesize) throws Exception;
+
     //承运员查询已完成订单
     List<SysBill>  selectfinishedBillByTransId(long trans_id);
 
     //商户查询所下批量订单
     List<SysBill>  selectBatchBills(long sender_id);
+
+    //商户查询所下批量订单(分页)
+    List<SysBill>  selectBatchBills(long sender_id,int startitem,int pagesize) throws Exception;
 
     //商户保存提交所下批量订单
     boolean updateBatchBillsCode(long sender_id,String batch_code);

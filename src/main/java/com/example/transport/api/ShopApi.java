@@ -63,7 +63,14 @@ public class ShopApi {
 
         String token = request.getHeader("token");
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         if(shopid == null){
             //插入
             try {
@@ -156,7 +163,14 @@ public class ShopApi {
         }
         String token = request.getHeader("token");
         r = ConnectRedisCheckToken(token);
-        String tokenvalue = r.getData().toString();
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
