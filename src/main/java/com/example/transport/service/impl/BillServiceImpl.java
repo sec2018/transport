@@ -1,8 +1,10 @@
 package com.example.transport.service.impl;
 
+import com.example.transport.api.Common;
 import com.example.transport.dao.BillDao;
 import com.example.transport.pojo.SysBill;
 import com.example.transport.service.BillService;
+import com.example.transport.util.MapUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.stereotype.Service;
@@ -10,10 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Service("billService")
 public class BillServiceImpl implements BillService{
@@ -25,7 +26,11 @@ public class BillServiceImpl implements BillService{
     @Override
     public boolean insertBill(SysBill sysBill) {
         try{
-            return billDao.insertBill(sysBill)==1?true:false;
+            boolean flag = billDao.insertBill(sysBill)==1?true:false;
+            if(flag){
+                Common.unbilllist  = billDao.selectAllUnBills();
+            }
+            return flag;
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -181,8 +186,24 @@ public class BillServiceImpl implements BillService{
     }
 
     @Override
-    public List<SysBill> selectBillsByLnglat(String lng, String lat) {
-        return billDao.selectBillsByLnglat(lng,lat);
+    public List<SysBill> selectBillsByLnglat(String sender_lng, String sender_lat) {
+        return billDao.selectBillsByLnglat(sender_lng,sender_lat);
+    }
+
+    @Override
+    public List<SysBill> selectBillsIn2Mills(String sender_lng, String sender_lat) {
+        List<SysBill> list =  Common.unbilllist;
+        if(list.size()==0){
+            list = billDao.selectAllUnBills();
+        }
+        List<SysBill> templist = new ArrayList<SysBill>();
+        for (SysBill sysBill:list) {
+            double distance = MapUtil.getDistance(sender_lng,sender_lat,sysBill.getSender_lng(),sysBill.getSender_lat());
+            if(distance<=2.0){
+                templist.add(sysBill);
+            }
+        }
+        return templist;
     }
 
     @Override

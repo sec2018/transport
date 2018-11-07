@@ -1,15 +1,33 @@
 package com.example.transport.api;
 
+import com.example.transport.pojo.SysBill;
+import com.example.transport.service.BillService;
 import com.example.transport.service.Constant;
 import com.example.transport.util.JsonResult;
 import com.example.transport.util.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Created by WangZJ on 2018/10/20.
  */
+@Component
 public class Common {
+
+    @Resource
+    private BillService billService;
+
+    public static List<SysBill> unbilllist;
+
+    @PostConstruct
+    public void init() {
+        this.unbilllist = billService.selectAllUnBills();
+    }
 
     public static JsonResult TokenError(){
         JsonResult r = new JsonResult();

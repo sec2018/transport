@@ -67,6 +67,7 @@ public class SenderBillApi {
 
     private static ConcurrentMap<String, String> imgBases = new ConcurrentHashMap<>();
 
+
     //角色1,2, company_code传空值
     @ApiOperation(value = "商家下单接口", notes = "下单")
     @ApiImplicitParams({
@@ -694,6 +695,53 @@ public class SenderBillApi {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 List<SysBill> billList = billService.selectAllUnBills();
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(billList);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r = Common.SearchError(e);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+    //查询所有最近2公里未接订单
+    @ApiOperation(value = "查询所有最近2公里未接订单", notes = "查询所有最近2公里未接订单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "lng", value = "经度", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "lat", value = "维度", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="get2unbills",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> search2Unbills(@RequestParam(value = "lng") String lng,@RequestParam(value = "lat") String lat,HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("3")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+//                List<SysBill> billList = billService.selectBillsByLnglat(lng,lat); // 方法1
+                List<SysBill> billList = billService.selectBillsIn2Mills(lng,lat);   // 方法2
                 r.setCode("200");
                 r.setMsg("查询成功！");
                 r.setData(billList);

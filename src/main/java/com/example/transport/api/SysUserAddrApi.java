@@ -179,6 +179,7 @@ public class SysUserAddrApi {
         return ResponseEntity.ok(r);
     }
 
+    @Transactional
     @ApiOperation(value = "更新地址接口", notes = "更新地址")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "地址id", required = true, dataType = "Long",paramType = "query"),
@@ -209,14 +210,19 @@ public class SysUserAddrApi {
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 String openid = tokenvalue.split("\\|")[0];
                 String session_key = tokenvalue.split("\\|")[1];
+                //获取当前微信用户id
+                long wxuserid = userService.getWxUserId(openid);
 
                 SysUserAddr sysUserAddr = sysUserAddrService.getAddrById(id);
                 sysUserAddr.setUname(uname);
                 sysUserAddr.setTel(tel);
                 sysUserAddr.setPro_city(pro_city);
                 sysUserAddr.setDetail_addr(detail_addr);
+                if(isdefault==1){
+                    //把原默认地址状态设为0
+                    sysUserAddrService.updateSysUserAddrDefault(wxuserid);    //需要事务
+                }
                 sysUserAddr.setIsdefault(isdefault==1?1:0);
-
                 boolean flag = sysUserAddrService.updateSysUserAddr(sysUserAddr);
                 if(flag) {
                     r.setCode("200");
@@ -230,6 +236,7 @@ public class SysUserAddrApi {
         } catch (Exception e) {
             r = Common.TokenError(e);
             e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
         return ResponseEntity.ok(r);
     }
