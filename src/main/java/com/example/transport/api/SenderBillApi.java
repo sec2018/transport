@@ -867,16 +867,18 @@ public class SenderBillApi {
     }
 
     //1,2,3,4
-    @ApiOperation(value = "根据名称和电话查询订单", notes = "根据名称和电话查询订单")
+    @ApiOperation(value = "根据收件人名称和电话查询未完成订单", notes = "根据收件人名称和电话查询未完成订单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "sender_param", value = "名称或电话", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
-    @RequestMapping(value="getbillbynameortel",method = RequestMethod.GET)
+    @RequestMapping(value="getunfinishbillbynameortel",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> searchBillByNameOrTel(@RequestParam(value = "sender_param") String sender_param,HttpServletRequest request){
+    public ResponseEntity<JsonResult> searchUnfinishedBillByNameOrTel(@RequestParam(value = "sender_param") String sender_param,HttpServletRequest request){
         JsonResult r = new JsonResult();
         String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
         r = ConnectRedisCheckToken(token);
         String tokenvalue = "";
         try{
@@ -889,7 +891,72 @@ public class SenderBillApi {
         try {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
-                List<SysBill> billList = billService.selectUnfinishBillByTelOrName(sender_param);
+                String openid = tokenvalue.split("\\|")[0];
+                long wxuserid = userService.getWxUserId(openid);
+                List<SysBill> billList = null;
+                if(roleid.equals("2")){
+                    //商户
+                    billList = billService.selectShoperUnfinishBillByTelOrName(wxuserid,sender_param);
+                }else if(roleid.equals("3")){
+                    //承运员
+                    billList = billService.selectTransUnfinishBillByTelOrName(wxuserid,sender_param);
+                }else if(roleid.equals("4")){
+                    //物流公司
+                    billList = billService.selectCompanyUnfinishBillByTelOrName(wxuserid,sender_param);
+                }
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(billList);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r = Common.SearchError(e);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+    //1,2,3,4
+    @ApiOperation(value = "根据收件人名称和电话查询已完成订单", notes = "根据收件人名称和电话查询已完成订单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sender_param", value = "名称或电话", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="getfinishbillbynameortel",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> searchFinishedBillByNameOrTel(@RequestParam(value = "sender_param") String sender_param,HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                String openid = tokenvalue.split("\\|")[0];
+                long wxuserid = userService.getWxUserId(openid);
+                List<SysBill> billList = null;
+                if(roleid.equals("2")){
+                    //商户
+                    billList = billService.selectShoperFinishBillByTelOrName(wxuserid,sender_param);
+                }else if(roleid.equals("3")){
+                    //承运员
+                    billList = billService.selectTransFinishBillByTelOrName(wxuserid,sender_param);
+                }else if(roleid.equals("4")){
+                    //物流公司
+                    billList = billService.selectCompanyFinishBillByTelOrName(wxuserid,sender_param);
+                }
                 r.setCode("200");
                 r.setMsg("查询成功！");
                 r.setData(billList);

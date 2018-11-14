@@ -169,9 +169,35 @@ public class BillServiceImpl implements BillService{
     }
 
     @Override
-    public List<SysBill> selectUnfinishBillByTelOrName(String sender_param) {
-        return billDao.selectUnfinishBillByTelOrName(sender_param);
+    public List<SysBill> selectTransFinishBillByTelOrName(long wxuserid, String sender_param) {
+        return billDao.selectTransFinishBillByTelOrName(wxuserid,sender_param);
     }
+
+    @Override
+    public List<SysBill> selectTransUnfinishBillByTelOrName(long wxuserid, String sender_param) {
+        return billDao.selectTransUnfinishBillByTelOrName(wxuserid,sender_param);
+    }
+
+    @Override
+    public List<SysBill> selectShoperFinishBillByTelOrName(long wxuserid, String sender_param) {
+        return billDao.selectShoperFinishBillByTelOrName(wxuserid,sender_param);
+    }
+
+    @Override
+    public List<SysBill> selectShoperUnfinishBillByTelOrName(long wxuserid, String sender_param) {
+        return billDao.selectShoperUnfinishBillByTelOrName(wxuserid,sender_param);
+    }
+
+    @Override
+    public List<SysBill> selectCompanyFinishBillByTelOrName(long wxuserid, String sender_param) {
+        return billDao.selectCompanyFinishBillByTelOrName(wxuserid,sender_param);
+    }
+
+    @Override
+    public List<SysBill> selectCompanyUnfinishBillByTelOrName(long wxuserid, String sender_param) {
+        return billDao.selectCompanyUnfinishBillByTelOrName(wxuserid,sender_param);
+    }
+
 
     @Transactional
     @Override

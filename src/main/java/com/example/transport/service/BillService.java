@@ -51,7 +51,22 @@ public interface BillService {
     List<SysBill>  selectfinishedBill(long sender_id);
 
     //承运员根据名称和电话查询所有已完成订单
-    List<SysBill>  selectUnfinishBillByTelOrName(String sender_param);
+    List<SysBill>  selectTransFinishBillByTelOrName(long wxuserid,String sender_param);
+
+    //承运员根据名称和电话查询所有未完成订单
+    List<SysBill>  selectTransUnfinishBillByTelOrName(long wxuserid,String sender_param);
+
+    //商户根据名称和电话查询所有已完成订单
+    List<SysBill>  selectShoperFinishBillByTelOrName(long wxuserid,String sender_param);
+
+    //商户根据名称和电话查询所有未完成订单
+    List<SysBill>  selectShoperUnfinishBillByTelOrName(long wxuserid,String sender_param);
+
+    //物流公司根据名称和电话查询所有已完成订单
+    List<SysBill>  selectCompanyFinishBillByTelOrName(long wxuserid,String sender_param);
+
+    //物流公司根据名称和电话查询所有未完成订单
+    List<SysBill>  selectCompanyUnfinishBillByTelOrName(long wxuserid,String sender_param);
 
     //接单
     boolean updateBillSetTrans_id(long id, Date datetime, long trans_id,String trans_name);
