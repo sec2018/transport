@@ -169,33 +169,87 @@ public class BillServiceImpl implements BillService{
     }
 
     @Override
-    public List<SysBill> selectTransFinishBillByTelOrName(long wxuserid, String sender_param) {
-        return billDao.selectTransFinishBillByTelOrName(wxuserid,sender_param);
+    public Map<String, Object> selectfinishedBill(long sender_id, int startitem, int pagesize) throws Exception {
+        Page page = PageHelper.startPage(startitem, pagesize);
+        List<SysBill>  sysbilllist = billDao.selectfinishedBill(sender_id);
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("data", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
     }
 
     @Override
-    public List<SysBill> selectTransUnfinishBillByTelOrName(long wxuserid, String sender_param) {
-        return billDao.selectTransUnfinishBillByTelOrName(wxuserid,sender_param);
+    public Map<String, Object> selectTransFinishBillByTelOrName(long wxuserid, String sender_param,int startitem,int pagesize) {
+        Page page = PageHelper.startPage(startitem, pagesize);
+        List<SysBill>  sysbilllist = billDao.selectTransFinishBillByTelOrName(wxuserid,sender_param);
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("data", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
     }
 
     @Override
-    public List<SysBill> selectShoperFinishBillByTelOrName(long wxuserid, String sender_param) {
-        return billDao.selectShoperFinishBillByTelOrName(wxuserid,sender_param);
+    public Map<String, Object> selectTransUnfinishBillByTelOrName(long wxuserid, String sender_param,int startitem,int pagesize) {
+        Page page = PageHelper.startPage(startitem, pagesize);
+        List<SysBill>  sysbilllist = billDao.selectTransUnfinishBillByTelOrName(wxuserid,sender_param);
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("data", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
     }
 
     @Override
-    public List<SysBill> selectShoperUnfinishBillByTelOrName(long wxuserid, String sender_param) {
-        return billDao.selectShoperUnfinishBillByTelOrName(wxuserid,sender_param);
+    public Map<String, Object> selectShoperFinishBillByTelOrName(long wxuserid, String sender_param,int startitem,int pagesize) {
+        Page page = PageHelper.startPage(startitem, pagesize);
+        List<SysBill>  sysbilllist = billDao.selectShoperFinishBillByTelOrName(wxuserid,sender_param);
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("data", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
     }
 
     @Override
-    public List<SysBill> selectCompanyFinishBillByTelOrName(long wxuserid, String sender_param) {
-        return billDao.selectCompanyFinishBillByTelOrName(wxuserid,sender_param);
+    public Map<String, Object> selectShoperUnfinishBillByTelOrName(long wxuserid, String sender_param,int startitem,int pagesize) {
+        Page page = PageHelper.startPage(startitem, pagesize);
+        List<SysBill>  sysbilllist = billDao.selectShoperUnfinishBillByTelOrName(wxuserid,sender_param);
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("data", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
     }
 
     @Override
-    public List<SysBill> selectCompanyUnfinishBillByTelOrName(long wxuserid, String sender_param) {
-        return billDao.selectCompanyUnfinishBillByTelOrName(wxuserid,sender_param);
+    public Map<String, Object> selectCompanyFinishBillByTelOrName(long wxuserid, String sender_param,int startitem,int pagesize) {
+        Page page = PageHelper.startPage(startitem, pagesize);
+        List<SysBill>  sysbilllist = billDao.selectCompanyFinishBillByTelOrName(wxuserid,sender_param);
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("data", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> selectCompanyUnfinishBillByTelOrName(long wxuserid, String sender_param,int startitem,int pagesize) {
+        Page page = PageHelper.startPage(startitem, pagesize);
+        List<SysBill>  sysbilllist = billDao.selectCompanyUnfinishBillByTelOrName(wxuserid,sender_param);
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("data", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
     }
 
 
@@ -235,6 +289,18 @@ public class BillServiceImpl implements BillService{
     @Override
     public List<SysBill> selectfinishedBillByCompanyId(Integer company_id) {
         return billDao.selectfinishedBillByCompanyId(company_id);
+    }
+
+    @Override
+    public Map<String, Object> selectfinishedBillByCompanyId(Integer company_id, int startitem, int pagesize) throws Exception {
+        Page page = PageHelper.startPage(startitem, pagesize);
+        List<SysBill>  sysbilllist = billDao.selectfinishedBillByCompanyId(company_id);
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("data", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
     }
 
     @Override
@@ -279,6 +345,18 @@ public class BillServiceImpl implements BillService{
     @Override
     public List<SysBill> selectfinishedBillByTransId(long trans_id) {
         return billDao.selectfinishedBillByTransId(trans_id);
+    }
+
+    @Override
+    public Map<String, Object> selectfinishedBillByTransId(long trans_id, int startitem, int pagesize) throws Exception {
+        Page page = PageHelper.startPage(startitem, pagesize);
+        List<SysBill>  sysbilllist = billDao.selectfinishedBillByTransId(trans_id);
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("data", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
     }
 
     @Override

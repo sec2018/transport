@@ -50,23 +50,26 @@ public interface BillService {
     //商家根据sender_id和状态bill_status = 4来查询已完成订单
     List<SysBill>  selectfinishedBill(long sender_id);
 
+    //商家根据sender_id和状态bill_status 来查询已完成订单(分页)
+    Map<String, Object> selectfinishedBill(long sender_id, int startitem, int pagesize) throws Exception;
+
     //承运员根据名称和电话查询所有已完成订单
-    List<SysBill>  selectTransFinishBillByTelOrName(long wxuserid,String sender_param);
+    Map<String, Object>  selectTransFinishBillByTelOrName(long wxuserid,String sender_param,int startitem,int pagesize);
 
     //承运员根据名称和电话查询所有未完成订单
-    List<SysBill>  selectTransUnfinishBillByTelOrName(long wxuserid,String sender_param);
+    Map<String, Object>  selectTransUnfinishBillByTelOrName(long wxuserid,String sender_param,int startitem,int pagesize);
 
     //商户根据名称和电话查询所有已完成订单
-    List<SysBill>  selectShoperFinishBillByTelOrName(long wxuserid,String sender_param);
+    Map<String, Object>  selectShoperFinishBillByTelOrName(long wxuserid,String sender_param,int startitem,int pagesize);
 
     //商户根据名称和电话查询所有未完成订单
-    List<SysBill>  selectShoperUnfinishBillByTelOrName(long wxuserid,String sender_param);
+    Map<String, Object>  selectShoperUnfinishBillByTelOrName(long wxuserid,String sender_param,int startitem,int pagesize);
 
     //物流公司根据名称和电话查询所有已完成订单
-    List<SysBill>  selectCompanyFinishBillByTelOrName(long wxuserid,String sender_param);
+    Map<String, Object>  selectCompanyFinishBillByTelOrName(long wxuserid,String sender_param,int startitem,int pagesize);
 
     //物流公司根据名称和电话查询所有未完成订单
-    List<SysBill>  selectCompanyUnfinishBillByTelOrName(long wxuserid,String sender_param);
+    Map<String, Object>  selectCompanyUnfinishBillByTelOrName(long wxuserid,String sender_param,int startitem,int pagesize);
 
     //接单
     boolean updateBillSetTrans_id(long id, Date datetime, long trans_id,String trans_name);
@@ -78,6 +81,9 @@ public interface BillService {
 
     //物流公司查询本公司所有已完成订单
     List<SysBill>  selectfinishedBillByCompanyId(Integer company_id);
+
+    //物流公司查询本公司所有已完成订单（分页）
+    Map<String, Object>  selectfinishedBillByCompanyId(Integer company_id,int startitem,int pagesize) throws Exception;
 
     //物流公司查询本公司所有未完成订单
     List<SysBill>  selectunfinishedBillByCompanyId(Integer company_id);
@@ -96,6 +102,9 @@ public interface BillService {
 
     //承运员查询已完成订单
     List<SysBill>  selectfinishedBillByTransId(long trans_id);
+
+    //承运员查询已完成订单(分页)
+    Map<String, Object>  selectfinishedBillByTransId(long trans_id,int startitem,int pagesize) throws Exception;
 
     //商户查询所下批量订单
     List<SysBill>  selectBatchBills(long sender_id);

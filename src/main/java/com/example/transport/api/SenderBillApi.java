@@ -285,7 +285,6 @@ public class SenderBillApi {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "startitem", value = "startitem", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "pagesize", value = "pagesize", required = true, dataType = "Integer",paramType = "query"),
-            @ApiImplicitParam(name = "pagesize", value = "pagesize", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header")
     })
@@ -527,8 +526,105 @@ public class SenderBillApi {
         return ResponseEntity.ok(r);
     }
 
-    //1,2
-    @ApiOperation(value = "用户查询未完成订单", notes = "用户查询未完成订单")
+
+    //1，2,3,4
+    @ApiOperation(value = "用户现有订单接口(tab查询统一接口，分页)", notes = "用户现有订单接口(用tab查询统一接口，分页)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "startitem", value = "startitem", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "pagesize", value = "pagesize", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "isfinishflag", value = "是否为完成的订单标志（0：未完成，1：完成）", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="getusertabbill",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> searchunfinishBillByUserId(@RequestParam(value = "startitem") int startitem,@RequestParam(value = "pagesize") int pagesize,@RequestParam(value = "isfinishflag") int isfinishflag,HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                String openid = tokenvalue.split("\\|")[0];
+                long wxuserid = userService.getWxUserId(openid);
+                try {
+                    if(tokenvalue!=""){
+                        redisService.expire(token, Constant.expire.getExpirationTime());
+                        if(isfinishflag == 0){
+                            if(roleid.equals("2")){
+                                //商家查询所下未完成订单
+                                Map<String, Object> map = billService.selectUnfinishBill(wxuserid,startitem,pagesize);
+                                r.setData(map);
+                            }else if(roleid.equals("3")){
+                                //承运员未完成订单
+                                Map<String, Object> map = billService.selectunfinishedBillByTransId(wxuserid,startitem,pagesize);
+                                r.setData(map);
+                            }else if(roleid.equals("4")){
+                                //物流公司未完成订单
+                                int companyid = sysCompanyMapper.selectCompanyIdbyWxuserid(wxuserid);
+                                Map<String, Object> map = billService.selectunfinishedBillByCompanyId(companyid,startitem,pagesize);
+                                r.setData(map);
+                            }else if(roleid.equals("1")){
+                                //超级管理员查询未完成订单
+
+                            }else{
+                                r = Common.RoleError();
+                                return ResponseEntity.ok(r);
+                            }
+                        }else if(isfinishflag == 1){
+                            if(roleid.equals("2")){
+                                //商家查询所下已完成订单
+                                Map<String, Object> map = billService.selectfinishedBill(wxuserid,startitem,pagesize);
+                                r.setData(map);
+                            }else if(roleid.equals("3")){
+                                //承运员未完成订单
+                                Map<String, Object> map = billService.selectfinishedBillByTransId(wxuserid,startitem,pagesize);
+                                r.setData(map);
+                            }else if(roleid.equals("4")){
+                                //物流公司未完成订单
+                                int companyid = sysCompanyMapper.selectCompanyIdbyWxuserid(wxuserid);
+                                Map<String, Object> map = billService.selectfinishedBillByCompanyId(companyid,startitem,pagesize);
+                                r.setData(map);
+                            }else if(roleid.equals("1")){
+                                //超级管理员查询未完成订单
+
+                            }else{
+                                r = Common.RoleError();
+                                return ResponseEntity.ok(r);
+                            }
+                        }
+                        r.setCode("200");
+                        r.setMsg("查询成功！");
+                        r.setSuccess(true);
+                    }else{
+                        r = Common.TokenError();
+                    }
+                } catch (Exception e) {
+                    r = Common.SearchError(e);
+                    e.printStackTrace();
+                }
+            }else{
+                r = Common.TokenError();
+            }
+        } catch (Exception e) {
+            r = Common.TokenError(e);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    //1，2,3,4
+    @ApiOperation(value = "用户查询未完成订单(用tab查询统一接口替代)", notes = "用户查询未完成订单(用tab查询统一接口替代)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
@@ -597,8 +693,8 @@ public class SenderBillApi {
     }
 
 
-    //1,2
-    @ApiOperation(value = "查询所下已完成订单", notes = "查询所下已完成订单")
+    //1,2，3,4
+    @ApiOperation(value = "查询所下已完成订单(用tab查询统一接口替代)", notes = "查询所下已完成订单(用tab查询统一接口替代)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
@@ -867,15 +963,18 @@ public class SenderBillApi {
     }
 
     //1,2,3,4
-    @ApiOperation(value = "根据收件人名称和电话查询未完成订单", notes = "根据收件人名称和电话查询未完成订单")
+    @ApiOperation(value = "收件人名称或电话统一查询订单接口(分页)", notes = "收件人名称或电话统一查询订单接口(分页)")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "startitem", value = "startitem", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "pagesize", value = "pagesize", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "isfinishflag", value = "是否为完成的订单标志（0：未完成，1：完成）", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "sender_param", value = "名称或电话", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
-    @RequestMapping(value="getunfinishbillbynameortel",method = RequestMethod.GET)
+    @RequestMapping(value="getbillbynameortel",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> searchUnfinishedBillByNameOrTel(@RequestParam(value = "sender_param") String sender_param,HttpServletRequest request){
+    public ResponseEntity<JsonResult> searchBillByNameOrTel(@RequestParam(value = "startitem") int startitem,@RequestParam(value = "pagesize") int pagesize,@RequestParam(value = "isfinishflag") int isfinishflag,@RequestParam(value = "sender_param") String sender_param,HttpServletRequest request){
         JsonResult r = new JsonResult();
         String token = request.getHeader("token");
         String roleid = request.getHeader("roleid");
@@ -893,20 +992,33 @@ public class SenderBillApi {
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 String openid = tokenvalue.split("\\|")[0];
                 long wxuserid = userService.getWxUserId(openid);
-                List<SysBill> billList = null;
-                if(roleid.equals("2")){
-                    //商户
-                    billList = billService.selectShoperUnfinishBillByTelOrName(wxuserid,sender_param);
-                }else if(roleid.equals("3")){
-                    //承运员
-                    billList = billService.selectTransUnfinishBillByTelOrName(wxuserid,sender_param);
-                }else if(roleid.equals("4")){
-                    //物流公司
-                    billList = billService.selectCompanyUnfinishBillByTelOrName(wxuserid,sender_param);
+                Map<String, Object> map = null;
+                if(isfinishflag == 0){
+                    if(roleid.equals("2")){
+                        //商户
+                        map = billService.selectShoperUnfinishBillByTelOrName(wxuserid,sender_param,startitem,pagesize);
+                    }else if(roleid.equals("3")){
+                        //承运员
+                        map = billService.selectTransUnfinishBillByTelOrName(wxuserid,sender_param,startitem,pagesize);
+                    }else if(roleid.equals("4")){
+                        //物流公司
+                        map = billService.selectCompanyUnfinishBillByTelOrName(wxuserid,sender_param,startitem,pagesize);
+                    }
+                }else if(isfinishflag == 1){
+                    if(roleid.equals("2")){
+                        //商户
+                        map = billService.selectShoperFinishBillByTelOrName(wxuserid,sender_param,startitem,pagesize);
+                    }else if(roleid.equals("3")){
+                        //承运员
+                        map = billService.selectTransFinishBillByTelOrName(wxuserid,sender_param,startitem,pagesize);
+                    }else if(roleid.equals("4")){
+                        //物流公司
+                        map = billService.selectCompanyFinishBillByTelOrName(wxuserid,sender_param,startitem,pagesize);
+                    }
                 }
                 r.setCode("200");
                 r.setMsg("查询成功！");
-                r.setData(billList);
+                r.setData(map);
                 r.setSuccess(true);
             }else{
                 r = Common.TokenError();
@@ -919,58 +1031,6 @@ public class SenderBillApi {
         return ResponseEntity.ok(r);
     }
 
-    //1,2,3,4
-    @ApiOperation(value = "根据收件人名称和电话查询已完成订单", notes = "根据收件人名称和电话查询已完成订单")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "sender_param", value = "名称或电话", required = true, dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
-            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
-    })
-    @RequestMapping(value="getfinishbillbynameortel",method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<JsonResult> searchFinishedBillByNameOrTel(@RequestParam(value = "sender_param") String sender_param,HttpServletRequest request){
-        JsonResult r = new JsonResult();
-        String token = request.getHeader("token");
-        String roleid = request.getHeader("roleid");
-        r = ConnectRedisCheckToken(token);
-        String tokenvalue = "";
-        try{
-            tokenvalue = r.getData().toString();
-        }catch (Exception e) {
-            r = Common.TokenError();
-            e.printStackTrace();
-            return ResponseEntity.ok(r);
-        }
-        try {
-            if(tokenvalue!=""){
-                redisService.expire(token, Constant.expire.getExpirationTime());
-                String openid = tokenvalue.split("\\|")[0];
-                long wxuserid = userService.getWxUserId(openid);
-                List<SysBill> billList = null;
-                if(roleid.equals("2")){
-                    //商户
-                    billList = billService.selectShoperFinishBillByTelOrName(wxuserid,sender_param);
-                }else if(roleid.equals("3")){
-                    //承运员
-                    billList = billService.selectTransFinishBillByTelOrName(wxuserid,sender_param);
-                }else if(roleid.equals("4")){
-                    //物流公司
-                    billList = billService.selectCompanyFinishBillByTelOrName(wxuserid,sender_param);
-                }
-                r.setCode("200");
-                r.setMsg("查询成功！");
-                r.setData(billList);
-                r.setSuccess(true);
-            }else{
-                r = Common.TokenError();
-                ResponseEntity.ok(r);
-            }
-        } catch (Exception e) {
-            r = Common.SearchError(e);
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok(r);
-    }
 
     //1,3
     @ApiOperation(value = "承运员接单接口", notes = "接单")
