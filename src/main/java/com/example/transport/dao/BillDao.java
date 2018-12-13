@@ -83,27 +83,27 @@ public interface BillDao {
 
 
     //承运员根据名称和电话查询所有已完成订单
-    @Select({"select * from sys_bill where trans_id = #{wxuserid} and (rec_name like CONCAT('%',#{sender_param},'%') or rec_tel like like CONCAT('%',#{sender_param},'%')) and bill_status = 4"})
+    @Select({"select * from sys_bill where trans_id = #{wxuserid} and (rec_name like CONCAT('%',#{sender_param},'%') or rec_tel like CONCAT('%',#{sender_param},'%')) and bill_status = 4"})
     List<SysBill>  selectTransFinishBillByTelOrName(@Param("wxuserid")long wxuserid,@Param("sender_param")String sender_param);
 
     //承运员根据名称和电话查询所有未完成订单
-    @Select({"select * from sys_bill where trans_id = #{wxuserid} and (rec_name like CONCAT('%',#{sender_param},'%') or rec_tel like like CONCAT('%',#{sender_param},'%')) and bill_status != 4"})
+    @Select({"select * from sys_bill where trans_id = #{wxuserid} and (rec_name like CONCAT('%',#{sender_param},'%') or rec_tel like CONCAT('%',#{sender_param},'%')) and bill_status != 4"})
     List<SysBill>  selectTransUnfinishBillByTelOrName(@Param("wxuserid")long wxuserid,@Param("sender_param")String sender_param);
 
     //商户根据名称和电话查询所有已完成订单
-    @Select({"select * from sys_bill where sender_id = #{wxuserid} and (rec_name like CONCAT('%',#{sender_param},'%') or rec_tel like like CONCAT('%',#{sender_param},'%')) and bill_status = 4"})
+    @Select({"select * from sys_bill where sender_id = #{wxuserid} and (rec_name like CONCAT('%',#{sender_param},'%') or rec_tel like CONCAT('%',#{sender_param},'%')) and bill_status = 4"})
     List<SysBill>  selectShoperFinishBillByTelOrName(@Param("wxuserid")long wxuserid,@Param("sender_param")String sender_param);
 
     //商户根据名称和电话查询所有未完成订单
-    @Select({"select * from sys_bill where sender_id = #{wxuserid} and (rec_name like CONCAT('%',#{sender_param},'%') or rec_tel like like CONCAT('%',#{sender_param},'%')) and bill_status != 4"})
+    @Select({"select * from sys_bill where sender_id = #{wxuserid} and (rec_name like CONCAT('%',#{sender_param},'%') or rec_tel like CONCAT('%',#{sender_param},'%')) and bill_status != 4"})
     List<SysBill>  selectShoperUnfinishBillByTelOrName(@Param("wxuserid")long wxuserid,@Param("sender_param")String sender_param);
 
     //物流公司根据名称和电话查询所有已完成订单
-    @Select({"select * from sys_bill where company_id = #{wxuserid} and (rec_name like CONCAT('%',#{sender_param},'%') or rec_tel like like CONCAT('%',#{sender_param},'%')) and bill_status = 4"})
+    @Select({"select * from sys_bill where company_id = #{wxuserid} and (rec_name like CONCAT('%',#{sender_param},'%') or rec_tel like CONCAT('%',#{sender_param},'%')) and bill_status = 4"})
     List<SysBill>  selectCompanyFinishBillByTelOrName(@Param("wxuserid")long wxuserid,@Param("sender_param")String sender_param);
 
     //物流公司根据名称和电话查询所有未完成订单
-    @Select({"select * from sys_bill where company_id = #{wxuserid} and (rec_name like CONCAT('%',#{sender_param},'%') or rec_tel like like CONCAT('%',#{sender_param},'%')) and bill_status != 4"})
+    @Select({"select * from sys_bill where company_id = #{wxuserid} and (rec_name like CONCAT('%',#{sender_param},'%') or rec_tel like CONCAT('%',#{sender_param},'%')) and bill_status != 4"})
     List<SysBill>  selectCompanyUnfinishBillByTelOrName(@Param("wxuserid")long wxuserid,@Param("sender_param")String sender_param);
 
     //接单
