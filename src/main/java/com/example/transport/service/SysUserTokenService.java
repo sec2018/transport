@@ -14,4 +14,6 @@ public interface SysUserTokenService {
     R createToken(long userId);
 
     int updateToken(UserToken userToken);
+
+    String getToken(long userId);
 }

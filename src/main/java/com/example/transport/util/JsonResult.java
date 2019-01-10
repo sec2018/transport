@@ -38,4 +38,13 @@ public class JsonResult {
     public void setData(Object data) {
         this.data = data;
     }
+
+    public JsonResult(){}
+
+    public JsonResult(String code,String msg, boolean success, Object data){
+        this.code = code;
+        this.msg = msg;
+        this.success = success;
+        this.data = data;
+    }
 }

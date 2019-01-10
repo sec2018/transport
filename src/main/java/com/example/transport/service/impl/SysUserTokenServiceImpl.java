@@ -61,4 +61,9 @@ public class SysUserTokenServiceImpl implements SysUserTokenService {
     public int updateToken(UserToken userToken) {
         return sysUserTokenDao.updateToken(userToken);
     }
+
+    @Override
+    public String getToken(long userId) {
+        return sysUserTokenDao.getToken(userId);
+    }
 }

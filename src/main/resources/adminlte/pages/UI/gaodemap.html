@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>其他坐标变换成高德坐标</title>
+    <script src="../../plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <style>
+        html,body,#container{
+            height:100%;
+            width:100%;
+        }
+        .btn-box{
+            position: absolute;
+            right: 5rem;
+            top: 5rem;
+        }
+        .btn{
+            background: '#0277bd';
+            width: 14em;
+            margin-left: 3.2rem;
+            margin-top: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<!-- <div class="input-card" style="width:18rem">
+    <h4>坐标转换</h4>
+    <div id="coordinate">
+      <div class="input-item"><input id="gps" name="language" type="radio" checked="checked"><span class="input-text">GPS 坐标转为高德坐标</span></div>
+      <div class="input-item"><input id="mapbar" name="language" type="radio"><span class="input-text">图吧坐标转为高德坐标</span></div>
+      <div class="input-item"><input id="baidu" name="language" type="radio"><span class="input-text">百度坐标转为高德坐标</span></div>
+    </div>
+</div> -->
+
+
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.10&key=a95f2a626d3afd67fb6ae4231c8997d5&plugin=AMap.Geocoder"></script>
+
+<script type="text/javascript">
+    var allpositions = {};
+    jQuery.ajax({
+        url: '/transport/api/getallunbills',
+        method: "GET",
+        beforeSend: function(request) {
+            request.setRequestHeader("roleid", "0");
+            request.setRequestHeader("token", window.localStorage.getItem("transport_token"));
+        },
+        success:function(data){
+            if(data.code==500){
+                alert("未找到相关运单！")
+                return;
+            }
+            for(var i=0;i<data.data.length;i++){
+                //allpositions[i] = [data.data[i].longitude,data.data[i].latitude];
+                var lnglat = [data.data[i].sender_lng,data.data[i].sender_lat];
+                /* var lnglat = [116.46706996,39.99188446]; */
+                convertFrom(lnglat,'gps',data.data[i].shop_name);
+            }
+        }
+    })
+
+
+    var map = new AMap.Map("container", {
+        resizeEnable: true,
+        /* center: [116.473222,39.993214], */
+        zoom: 15
+    });
+
+    AMap.plugin('AMap.Geolocation', function() {
+        var geolocation = new AMap.Geolocation({
+            enableHighAccuracy: true,//是否使用高精度定位，默认:true
+            timeout: 10000,          //超过10秒后停止定位，默认：5s
+            buttonPosition:'RB',    //定位按钮的停靠位置
+            buttonOffset: new AMap.Pixel(10, 20),//定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+            zoomToAccuracy: true,   //定位成功后是否自动调整地图视野到定位点
+
+        });
+        map.addControl(geolocation);
+        geolocation.getCurrentPosition(function(status,result){
+            if(status=='complete'){
+                alert("定位成功");
+            }else{
+                alert("定位失败");
+            }
+        });
+    });
+
+
+    var $ = function(elementId){
+        return document.getElementById(elementId);
+    };
+
+    var m2;
+
+    // 坐标转换
+    function convertFrom(lnglat, type, mid){
+        AMap.convertFrom(lnglat, type, function (status, result) {
+            if (result.info === 'ok') {
+                var resLnglat = result.locations[0];
+                m2 = new AMap.Marker({
+                    position: resLnglat,
+                    icon: "../../dist/img/necklet_1.ico"
+                });
+                map.add(m2);
+                // 设置标签
+                m2.setLabel({
+                    offset: new AMap.Pixel(20, 20),
+                    content: "订单："+mid
+                });
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

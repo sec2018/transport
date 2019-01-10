@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>智能同城货运监控 | 登录</title>
+    <!-- 告诉浏览器该页面是自适应布局 -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../dist/css/font-awesome.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="../dist/css/ionicons.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../dist/css/AdminLTE.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="../dist/css/blue.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- 警告：Respond.js 不支持 file:// 方式查看（即本地方式查看）-->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- this page specific styles -->
+    <link rel="stylesheet" href="ui_css/login.css" type="text/css" media="screen" />
+    <!-- Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+</head>
+<body class="hold-transition login-page"  onkeydown="keyLogin();">
+    <div class="login-box-bg"></div>
+<div class="login-box" >
+    <div class="login-logo">
+        <a href="../../index2.html"><b>智能</b>同城货运监控</a>
+    </div>
+    <!-- /.login-logo -->
+    <div class="login-box-body">
+        <p class="login-box-msg">帐户登录</p>
+
+        <form>
+            <div class="form-group has-feedback">
+                <input type="username" id="username" class="form-control" placeholder="用户名">
+                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="password" id="password" class="form-control" placeholder="密码">
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            </div>
+            <div class="row">
+                <div class="col-xs-8">
+                    <div class="checkbox icheck">
+                        <label>
+                            <input id="remember_me"  type="checkbox"><span class="checkbox-span">记住我</span>
+                        </label>
+                    </div>
+                </div>
+                <!-- /.col -->
+                <div class="col-xs-4">
+                    <div id="forgetpwd" class="login-forget text-right"><a href="#">忘记密码？</a></div>
+                </div>
+                <!-- /.col -->
+            </div>
+        </form>
+
+        <!-- /.social-auth-links -->
+
+        
+        <div><button id="btnsubmit" type="button" class="btn btn-primary btn-block btn-flat">登录</button></div>
+        <div class="text-center mt10"><a href="register.html" >注册新会员&nbsp;&gt;&gt;</a></div>
+
+    </div>
+    <!-- /.login-box-body -->
+</div>
+<!-- /.login-box -->
+
+<!-- jQuery 3 -->
+<script src="../bootstrap/js/jquery-latest.js"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="../bootstrap/js/bootstrap.js"></script>
+<!-- iCheck -->
+<script src="../bootstrap/js/icheck.min.js"></script>
+<script>var secretKey = 'jeesite';</script>
+<script src="ui_js/des.js"></script>
+<script>
+    $(function () {
+        var u_p = getCookie("transportuser");
+        if (u_p !== "" && u_p != null) {
+            $("#remember_me").attr("checked", 'true');
+            $("#username").val(u_p.split('+')[0]);
+            $("#password").val(u_p.split('+')[1]);
+        }
+
+        $('input').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            radioClass: 'iradio_square-blue',
+            increaseArea: '20%' /* optional */
+        });
+
+        $("#forgetpwd").click(function () {
+            alert("请联系管理员");
+        });
+
+        $("#btnsubmit").click(function () {
+            var usrn = document.getElementById("username").value.trim();
+            var psw = document.getElementById("password").value.trim();
+            try{
+                psw = DesUtils.encode(psw, secretKey);
+            }catch (e){
+                alert("系统维护中......");
+                return;
+            }
+            var click_type = "login";
+            var userinfo = {};
+            userinfo.click_type = click_type;
+            userinfo.u = usrn;
+            userinfo.p = psw;
+            $.ajax({
+                url: timestamp("/transport/sublogin"),
+                type: "POST",
+                async: false,
+                data: userinfo,
+                success: function (data) {
+                    if (data.success == false) {
+                        alert("用户名或密码错误！");
+                    } else {
+//                        data = eval("("+data+")");
+//                        if (data.status == "0") {
+//                            alert("账户未激活！");
+//                            return;
+//                        }
+//                        setCookie("watchdogusername", usrn, "s6000");
+                        if ($("#remember_me")[0].checked) {
+                            setCookie("transportuser", usrn + "+" + psw, "s10000");
+                        } else {
+                            delCookie("transportuser");
+                        }
+                        window.localStorage.setItem("transport_token",data.data.token);
+                        window.location.href = "index_iframe.html?user="+escape(usrn);
+                        return true;
+                    }
+                }
+            })
+        });
+    });
+
+    function getCookie(name) {
+        var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+        if (arr = document.cookie.match(reg))
+            return unescape(arr[2]);
+        else
+            return null;
+    }
+
+    function setCookie(name, value, time) {
+        var strsec = getsec(time);
+        var exp = new Date();
+        exp.setTime(exp.getTime() + strsec * 1);
+        document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+    }
+
+    function delCookie(name) {
+        var exp = new Date();
+        exp.setTime(exp.getTime() - 1);
+        var cval = getCookie(name);
+        if (cval != null)
+            document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+    }
+
+    function getsec(str) {
+        var str1 = str.substring(1, str.length) * 1;
+        var str2 = str.substring(0, 1);
+        if (str2 == "s") {
+            return str1 * 1000;
+        }
+        else if (str2 == "h") {
+            return str1 * 60 * 60 * 1000;
+        }
+        else if (str2 == "d") {
+            return str1 * 24 * 60 * 60 * 1000;
+        }
+    }
+
+    function timestamp(url) {
+        var getTimestamp = new Date().getTime();
+        if (url.indexOf("?") > -1) {
+            url = url + "&timestamp=" + getTimestamp;
+        } else {
+            url = url + "?timestamp=" + getTimestamp;
+        }
+        return url;
+    }
+
+
+    function keyLogin(){
+        if (event.keyCode==13)  //回车键的键值为13
+            document.getElementById("btnsubmit").click(); //调用登录按钮的登录事件
+    }
+</script>
+</body>
+</html>

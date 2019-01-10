@@ -4,6 +4,7 @@ import com.example.transport.dao.UserDao;
 import com.example.transport.pojo.User;
 import com.example.transport.pojo.WxUser;
 import com.example.transport.service.UserService;
+import com.example.transport.util.AESUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByLoginName(String loginname) {
         return userDao.getUserByLoginName(loginname);
+    }
+
+    @Override
+    public User userLogin(String username, String pwd) {
+        AESUtil util = new AESUtil();
+        User user = null;
+        user = userDao.getUserByLoginName(username);
+        try {
+            if(pwd.equals(user.getPassword())){
+                return user;
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

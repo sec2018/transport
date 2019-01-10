@@ -74,6 +74,9 @@ public class Constant {
     public static  Constant SHOP_GETFAILURE = new Constant(500602, "获取商铺列表失败");
     public static  Constant SHOP_UPDATEFAILURE =  new Constant(500603, "修改商铺失败");
 
+    //个人信息模块
+    public static  Constant PERSONINFO_FAILURE = new Constant(500701, "获取个人信息失败");
+
     private Constant( ) { }
     private Constant( int code,String msg ) {
         this.code = code;

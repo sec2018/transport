@@ -1,12 +1,10 @@
 package com.example.transport.api;
 
 import com.example.transport.dao.SysCompanyMapper;
-import com.example.transport.pojo.SysBill;
-import com.example.transport.pojo.SysBill_s;
-import com.example.transport.pojo.SysUserAddr;
-import com.example.transport.pojo.WxUser;
+import com.example.transport.pojo.*;
 import com.example.transport.service.BillService;
 import com.example.transport.service.Constant;
+import com.example.transport.service.SysUserTokenService;
 import com.example.transport.service.UserService;
 import com.example.transport.util.HttpUtils;
 import com.example.transport.util.ImageUtil;
@@ -61,6 +59,9 @@ public class SenderBillApi {
 
     @Autowired
     private SysCompanyMapper sysCompanyMapper;
+
+    @Autowired
+    private SysUserTokenService sysUserTokenService;
 
     Semaphore semaphore = new Semaphore(1);
 
@@ -774,36 +775,58 @@ public class SenderBillApi {
         JsonResult r = new JsonResult();
         String token = request.getHeader("token");
         String roleid = request.getHeader("roleid");
-        if(!roleid.equals("1") && !roleid.equals("3")){
+        if(!roleid.equals("1") && !roleid.equals("3") && !roleid.equals("0")){
             r = Common.RoleError();
             return ResponseEntity.ok(r);
         }
-        r = ConnectRedisCheckToken(token);
-        String tokenvalue = "";
-        try{
-            tokenvalue = r.getData().toString();
-        }catch (Exception e) {
-            r = Common.TokenError();
-            e.printStackTrace();
+        if(roleid.equals("0")){
+            try {
+                User user = userService.getUserByLoginName("system");
+                if(token.equals(sysUserTokenService.getToken(user.getId()))){
+                    List<SysBill> billList = billService.selectAllUnBills();
+                    r.setCode("200");
+                    r.setMsg("查询成功！");
+                    r.setData(billList);
+                    r.setSuccess(true);
+                }else{
+                    r.setCode(Constant.PERSONINFO_FAILURE.getCode()+"");
+                    r.setData(null);
+                    r.setMsg(Constant.PERSONINFO_FAILURE.getMsg());
+                    r.setSuccess(false);
+                }
+            } catch (Exception e) {
+                r = Common.SearchError(e);
+                e.printStackTrace();
+            }
+            return ResponseEntity.ok(r);
+        }else{
+            r = ConnectRedisCheckToken(token);
+            String tokenvalue = "";
+            try{
+                tokenvalue = r.getData().toString();
+            }catch (Exception e) {
+                r = Common.TokenError();
+                e.printStackTrace();
+                return ResponseEntity.ok(r);
+            }
+            try {
+                if(tokenvalue!=""){
+                    redisService.expire(token, Constant.expire.getExpirationTime());
+                    List<SysBill> billList = billService.selectAllUnBills();
+                    r.setCode("200");
+                    r.setMsg("查询成功！");
+                    r.setData(billList);
+                    r.setSuccess(true);
+                }else{
+                    r = Common.TokenError();
+                    ResponseEntity.ok(r);
+                }
+            } catch (Exception e) {
+                r = Common.SearchError(e);
+                e.printStackTrace();
+            }
             return ResponseEntity.ok(r);
         }
-        try {
-            if(tokenvalue!=""){
-                redisService.expire(token, Constant.expire.getExpirationTime());
-                List<SysBill> billList = billService.selectAllUnBills();
-                r.setCode("200");
-                r.setMsg("查询成功！");
-                r.setData(billList);
-                r.setSuccess(true);
-            }else{
-                r = Common.TokenError();
-                ResponseEntity.ok(r);
-            }
-        } catch (Exception e) {
-            r = Common.SearchError(e);
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok(r);
     }
 
     //查询所有最近2公里未接订单

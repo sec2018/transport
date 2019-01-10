@@ -12,6 +12,8 @@ public interface UserService {
 
     User getUserByLoginName(String loginname);
 
+    User userLogin(String username, String pwd);
+
     boolean insertWxUser(WxUser wxUser);
 
     WxUser getWxUser(String openid);
