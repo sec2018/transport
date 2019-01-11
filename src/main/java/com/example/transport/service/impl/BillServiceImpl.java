@@ -2,11 +2,15 @@ package com.example.transport.service.impl;
 
 import com.example.transport.api.Common;
 import com.example.transport.dao.BillDao;
+import com.example.transport.dao.CompanyLinesMapper;
+import com.example.transport.pojo.BillView;
+import com.example.transport.pojo.CompanyLines;
 import com.example.transport.pojo.SysBill;
 import com.example.transport.service.BillService;
 import com.example.transport.util.MapUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -21,6 +25,9 @@ public class BillServiceImpl implements BillService{
 
     @Resource
     private BillDao billDao;
+
+    @Autowired
+    private CompanyLinesMapper companyLinesMapper;
 
     @Transactional
     @Override
@@ -380,5 +387,75 @@ public class BillServiceImpl implements BillService{
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return false;
         }
+    }
+
+    @Override
+    public Map<String, Object> adminSelectunfinishedBill(int startPage, int pageSize) {
+        Page page = PageHelper.startPage(startPage, pageSize);
+        List<SysBill>  sysbilllist = billDao.adminSelectunfinishedBill();
+        List<BillView> viewList = new ArrayList<>();
+        BillView billView;
+        CompanyLines companyLine;
+        for(SysBill sb : sysbilllist){
+            billView = new BillView();
+            billView.setId(sb.getId());
+            billView.setBill_code(sb.getBill_code());
+            companyLine = companyLinesMapper.selectByPrimaryKey(sb.getLine_id());
+            billView.setLine(companyLine.getBeginAddr()+"-->"+companyLine.getArriveAddr());
+            billView.setShop_name(sb.getShop_name());
+            billView.setRec_name(sb.getRec_name());
+            billView.setCompany_name(sb.getCompany_name());
+            switch (sb.getBill_status()){
+                case 1:
+                    billView.setStstus("已下单，待接单");
+                    billView.setStatustime(sb.getCreate_time());
+                    break;
+                case 2:
+                    billView.setStstus("已接单，待揽收");
+                    billView.setStatustime(sb.getRec_time());
+                    break;
+                case 3:
+                    billView.setStstus("已揽收，托运中");
+                    billView.setStatustime(sb.getPay_time());
+                    break;
+            }
+            viewList.add(billView);
+        }
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("billviewdata", viewList);
+        map.put("billdata", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> adminSelectfinishedBill(int startPage, int pageSize) {
+        Page page = PageHelper.startPage(startPage, pageSize);
+        List<SysBill>  sysbilllist = billDao.adminSelectfinishedBill();
+        List<BillView> viewList = new ArrayList<>();
+        BillView billView;
+        CompanyLines companyLine;
+        for(SysBill sb : sysbilllist){
+            billView = new BillView();
+            billView.setId(sb.getId());
+            billView.setBill_code(sb.getBill_code());
+            companyLine = companyLinesMapper.selectByPrimaryKey(sb.getLine_id());
+            billView.setLine(companyLine.getBeginAddr()+"-->"+companyLine.getArriveAddr());
+            billView.setShop_name(sb.getShop_name());
+            billView.setRec_name(sb.getRec_name());
+            billView.setCompany_name(sb.getCompany_name());
+            billView.setStstus("运单完成");
+            billView.setStatustime(sb.getFinish_time());
+            viewList.add(billView);
+        }
+        Map<String, Object> map = new HashMap<String,Object>();
+        //每页信息
+        map.put("billviewdata", viewList);
+        map.put("billdata", sysbilllist);
+        //管理员总数
+        map.put("totalNum", page.getTotal());
+        return map;
     }
 }

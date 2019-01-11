@@ -1,5 +1,6 @@
 package com.example.transport.config;
 
+import com.example.transport.api.Common;
 import com.example.transport.pojo.Constant;
 import com.example.transport.pojo.User;
 import com.example.transport.service.SysUserTokenService;
@@ -56,8 +57,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
             //设置其他地方登录后，本次登录失效
             try {
                 if(roleid.equals("0")){
-                    User user = userService.getUserByLoginName("system");
-                    if(token.equals(sysUserTokenService.getToken(user.getId()))){
+                    if(token.equals(getAdminToken())){
                         return true;
                     }else{
                         response.sendRedirect(request.getContextPath() + "/login");
@@ -83,5 +83,11 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
                 return false;
             }
         }
+    }
+
+    public String getAdminToken(){
+        User user = userService.getUserByLoginName("system");
+        String admintoken  = sysUserTokenService.getToken(user.getId());
+        return admintoken;
     }
 }

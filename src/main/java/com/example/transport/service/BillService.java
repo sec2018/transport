@@ -115,4 +115,9 @@ public interface BillService {
     //商户保存提交所下批量订单
     boolean updateBatchBillsCode(long sender_id,String batch_code);
 
+    //管理员查看所有未完成订单
+    Map<String, Object> adminSelectunfinishedBill(int startitem,int pagesize);
+
+    //管理员查看所有未完成订单
+    Map<String, Object> adminSelectfinishedBill(int startitem,int pagesize);
 }

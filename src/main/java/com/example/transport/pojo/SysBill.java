@@ -36,6 +36,25 @@ public class SysBill {
     private Date rec_time;
     private Date pay_time;
     private Date finish_time;
+    private Integer line_id;
+
+    public Integer getLine_id() {
+        return line_id;
+    }
+
+    public void setLine_id(Integer line_id) {
+        this.line_id = line_id;
+    }
+
+    public double getDelivery_fee() {
+        return delivery_fee;
+    }
+
+    public void setDelivery_fee(double delivery_fee) {
+        this.delivery_fee = delivery_fee;
+    }
+
+    private double delivery_fee;
 
     @Override
     public String toString() {
@@ -64,6 +83,7 @@ public class SysBill {
                 ", rec_time=" + rec_time +
                 ", pay_time=" + pay_time +
                 ", finish_time=" + finish_time +
+                ", delivery_fee=" + delivery_fee +
                 ", company_code='" + company_code + '\'' +
                 ", trans_name='" + trans_name + '\'' +
                 ", batch_code='" + batch_code + '\'' +

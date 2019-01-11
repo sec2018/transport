@@ -533,79 +533,93 @@ public class SenderBillApi {
         r = ConnectRedisCheckToken(token);
         String tokenvalue = "";
         try{
-            tokenvalue = r.getData().toString();
-        }catch (Exception e) {
-            r = Common.TokenError();
-            e.printStackTrace();
-            return ResponseEntity.ok(r);
-        }
-        try {
-            if(tokenvalue!=""){
-                redisService.expire(token, Constant.expire.getExpirationTime());
-                String openid = tokenvalue.split("\\|")[0];
-                long wxuserid = userService.getWxUserId(openid);
+            //超级管理员
+            if(roleid.equals("0")){
+                tokenvalue = getAdminToken();
+                if(!token.equals(tokenvalue)){
+                    r = Common.TokenError();
+                    return ResponseEntity.ok(r);
+                }else{
+                    if(isfinishflag == 0){
+                        //超级管理员查询未完成订单
+                        Map<String, Object> map = billService.adminSelectunfinishedBill(startitem,pagesize);
+                        r.setData(map);
+                    }else if(isfinishflag == 1){
+                        //超级管理员查询已完成订单
+                        Map<String, Object> map = billService.adminSelectfinishedBill(startitem,pagesize);
+                        r.setData(map);
+                    }
+                }
+            //其他角色
+            }else{
+                tokenvalue = r.getData().toString();
                 try {
                     if(tokenvalue!=""){
                         redisService.expire(token, Constant.expire.getExpirationTime());
-                        if(isfinishflag == 0){
-                            if(roleid.equals("2")){
-                                //商家查询所下未完成订单
-                                Map<String, Object> map = billService.selectUnfinishBill(wxuserid,startitem,pagesize);
-                                r.setData(map);
-                            }else if(roleid.equals("3")){
-                                //承运员未完成订单
-                                Map<String, Object> map = billService.selectunfinishedBillByTransId(wxuserid,startitem,pagesize);
-                                r.setData(map);
-                            }else if(roleid.equals("4")){
-                                //物流公司未完成订单
-                                int companyid = sysCompanyMapper.selectCompanyIdbyWxuserid(wxuserid);
-                                Map<String, Object> map = billService.selectunfinishedBillByCompanyId(companyid,startitem,pagesize);
-                                r.setData(map);
-                            }else if(roleid.equals("1")){
-                                //超级管理员查询未完成订单
-
+                        String openid = tokenvalue.split("\\|")[0];
+                        long wxuserid = userService.getWxUserId(openid);
+                        try {
+                            if(tokenvalue!=""){
+                                redisService.expire(token, Constant.expire.getExpirationTime());
+                                if(isfinishflag == 0){
+                                    if(roleid.equals("2")){
+                                        //商家查询所下未完成订单
+                                        Map<String, Object> map = billService.selectUnfinishBill(wxuserid,startitem,pagesize);
+                                        r.setData(map);
+                                    }else if(roleid.equals("3")){
+                                        //承运员未完成订单
+                                        Map<String, Object> map = billService.selectunfinishedBillByTransId(wxuserid,startitem,pagesize);
+                                        r.setData(map);
+                                    }else if(roleid.equals("4")){
+                                        //物流公司未完成订单
+                                        int companyid = sysCompanyMapper.selectCompanyIdbyWxuserid(wxuserid);
+                                        Map<String, Object> map = billService.selectunfinishedBillByCompanyId(companyid,startitem,pagesize);
+                                        r.setData(map);
+                                    }else{
+                                        r = Common.RoleError();
+                                        return ResponseEntity.ok(r);
+                                    }
+                                }else if(isfinishflag == 1){
+                                    if(roleid.equals("2")){
+                                        //商家查询所下已完成订单
+                                        Map<String, Object> map = billService.selectfinishedBill(wxuserid,startitem,pagesize);
+                                        r.setData(map);
+                                    }else if(roleid.equals("3")){
+                                        //承运员查询所下已完成订单
+                                        Map<String, Object> map = billService.selectfinishedBillByTransId(wxuserid,startitem,pagesize);
+                                        r.setData(map);
+                                    }else if(roleid.equals("4")){
+                                        //物流公司查询所下已完成订单
+                                        int companyid = sysCompanyMapper.selectCompanyIdbyWxuserid(wxuserid);
+                                        Map<String, Object> map = billService.selectfinishedBillByCompanyId(companyid,startitem,pagesize);
+                                        r.setData(map);
+                                    }else{
+                                        r = Common.RoleError();
+                                        return ResponseEntity.ok(r);
+                                    }
+                                }
+                                r.setCode("200");
+                                r.setMsg("查询成功！");
+                                r.setSuccess(true);
                             }else{
-                                r = Common.RoleError();
-                                return ResponseEntity.ok(r);
+                                r = Common.TokenError();
                             }
-                        }else if(isfinishflag == 1){
-                            if(roleid.equals("2")){
-                                //商家查询所下已完成订单
-                                Map<String, Object> map = billService.selectfinishedBill(wxuserid,startitem,pagesize);
-                                r.setData(map);
-                            }else if(roleid.equals("3")){
-                                //承运员未完成订单
-                                Map<String, Object> map = billService.selectfinishedBillByTransId(wxuserid,startitem,pagesize);
-                                r.setData(map);
-                            }else if(roleid.equals("4")){
-                                //物流公司未完成订单
-                                int companyid = sysCompanyMapper.selectCompanyIdbyWxuserid(wxuserid);
-                                Map<String, Object> map = billService.selectfinishedBillByCompanyId(companyid,startitem,pagesize);
-                                r.setData(map);
-                            }else if(roleid.equals("1")){
-                                //超级管理员查询未完成订单
-
-                            }else{
-                                r = Common.RoleError();
-                                return ResponseEntity.ok(r);
-                            }
+                        } catch (Exception e) {
+                            r = Common.SearchError(e);
+                            e.printStackTrace();
                         }
-                        r.setCode("200");
-                        r.setMsg("查询成功！");
-                        r.setSuccess(true);
                     }else{
                         r = Common.TokenError();
                     }
                 } catch (Exception e) {
-                    r = Common.SearchError(e);
+                    r = Common.TokenError(e);
                     e.printStackTrace();
                 }
-            }else{
-                r = Common.TokenError();
             }
-        } catch (Exception e) {
-            r = Common.TokenError(e);
+        }catch (Exception e) {
+            r = Common.TokenError();
             e.printStackTrace();
+            return ResponseEntity.ok(r);
         }
         return ResponseEntity.ok(r);
     }
@@ -1592,5 +1606,12 @@ public class SenderBillApi {
         return ResponseEntity.ok(r);
     }
 
+
+
+    public String getAdminToken(){
+        User user = userService.getUserByLoginName("system");
+        String admintoken  = sysUserTokenService.getToken(user.getId());
+        return admintoken;
+    }
 
 }

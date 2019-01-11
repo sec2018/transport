@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface BillDao {
@@ -134,4 +135,12 @@ public interface BillDao {
     //商户保存提交所下批量订单
     @Update({"update sys_bill set batch_code=#{batch_code} where sender_id = #{sender_id} and batch_code=1"})
     int updateBatchBillsCode(@Param("sender_id")long sender_id,@Param("batch_code")String batch_code);
+
+    //管理员查看所有未完成订单
+    @Select({"select * from sys_bill where bill_status != 4"})
+    List<SysBill> adminSelectunfinishedBill();
+
+    //管理员查看所有已完成订单
+    @Select({"select * from sys_bill where bill_status = 4"})
+    List<SysBill> adminSelectfinishedBill();
 }
