@@ -1,7 +1,11 @@
 package com.example.transport.api;
 
+import com.example.transport.dao.CompanyLinesMapper;
 import com.example.transport.dao.SysCompanyMapper;
+import com.example.transport.model.CompanyLinesExample;
 import com.example.transport.model.SysCompanyExample;
+import com.example.transport.pojo.CompanyLines;
+import com.example.transport.pojo.LineMap;
 import com.example.transport.pojo.SysCompany;
 import com.example.transport.service.Constant;
 import com.example.transport.service.UserService;
@@ -18,8 +22,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.*;
 
 @RequestMapping("api")
 @Controller
@@ -34,6 +39,80 @@ public class CompanyApi {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private CompanyLinesMapper companyLinesMapper;
+
+
+//    private static Map<String,Map<Integer,String>> linemap = new HashMap();
+   private static List<LineMap> linemaplist = new ArrayList<>();
+
+
+
+    @PostConstruct
+    public void init(){
+        //初始化得到所有路线
+        GetAllCompanyLines();
+    }
+
+//    public void GetAllCompanyLines(){
+//        CompanyLinesExample example = new CompanyLinesExample();
+//        List<CompanyLines> line = companyLinesMapper.selectByExample(example);
+//        Map<Integer,String> companylistmap;
+//        String companyname;
+//        for (CompanyLines cl : line){
+//            String key = cl.getBeginAddr()+"-->"+cl.getArriveAddr();
+//            if(linemap.containsKey(key)){
+//                if(!linemap.get(key).containsKey(cl.getCompanyId())){
+//                    companyname = sysCompanyMapper.selectByPrimaryKey(cl.getCompanyId()).getCompanyName();
+//                    linemap.get(key).put(cl.getCompanyId(),companyname);
+//                }
+//            }else{
+//                companyname = sysCompanyMapper.selectByPrimaryKey(cl.getCompanyId()).getCompanyName();
+//                companylistmap = new HashMap<Integer,String>();
+//                companylistmap.put(cl.getCompanyId(),companyname);
+//                linemap.put(key,companylistmap);
+//            }
+//        }
+//    }
+
+    public void GetAllCompanyLines(){
+        CompanyLinesExample example = new CompanyLinesExample();
+        List<CompanyLines> line = companyLinesMapper.selectByExample(example);
+        Map<Integer,String> companylistmap;
+        String companyname;
+        LineMap lp;
+        for (CompanyLines cl : line){
+            String key = cl.getBeginAddr()+"-->"+cl.getArriveAddr();
+            companyname = sysCompanyMapper.selectByPrimaryKey(cl.getCompanyId()).getCompanyName();
+            companylistmap = new HashMap<Integer,String>();
+            companylistmap.put(cl.getCompanyId(),companyname);
+            if(linemaplist.size() == 0){
+                lp = new LineMap();
+                lp.setKey(key);
+                lp.setValuemap(companylistmap);
+                linemaplist.add(lp);
+            }else{
+                for(int i=0;i<linemaplist.size();i++){
+                    if(linemaplist.get(i).getKey().equals(key)){
+                        if(!linemaplist.get(i).getValuemap().containsKey(cl.getCompanyId())){
+                            linemaplist.get(i).getValuemap().put(cl.getCompanyId(),companyname);
+                            break;
+                        }
+                    }else{
+                        companylistmap = new HashMap<Integer,String>();
+                        companylistmap.put(cl.getCompanyId(),companyname);
+                        lp = new LineMap();
+                        lp.setKey(key);
+                        lp.setValuemap(companylistmap);
+                        linemaplist.add(lp);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
 
     //角色1,4
     @ApiOperation(value = "添加或修改物流公司", notes = "根据物流公司名称添加或修改物流公司")
@@ -111,6 +190,7 @@ public class CompanyApi {
             try {
                 if(tokenvalue!=""){
                     redisService.expire(token, Constant.expire.getExpirationTime());
+
                     SysCompany sysCompany = sysCompanyMapper.selectByPrimaryKey(companyid);
                     sysCompany.setCompanyName(companyname);
                     sysCompany.setCompanyTel(company_tel);
@@ -193,6 +273,8 @@ public class CompanyApi {
         return ResponseEntity.ok(r);
     }
 
+
+
     //角色1,2
     @ApiOperation(value = "查询用户物流公司", notes = "查询物流公司")
     @ApiImplicitParams({
@@ -270,5 +352,19 @@ public class CompanyApi {
             }
         }
         return r;
+    }
+
+
+    //角色1,2，3,4
+    @ApiOperation(value = "获取所有线路接口", notes = "获取所有线路接口")
+    @RequestMapping(value="getalllines",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> GetAllLines(){
+        JsonResult r = new JsonResult();
+        r.setCode("200");
+        r.setMsg("获取物流公司数量成功！");
+        r.setData(linemaplist);
+        r.setSuccess(true);
+        return ResponseEntity.ok(r);
     }
 }

@@ -5,7 +5,7 @@
 
 <generatorConfiguration>
     <!--导入属性配置-->
-    <properties resource="mabatis-generator.properties"></properties>
+    <properties resource="mybatis-generator.properties"></properties>
     <!--指定特定数据库的jdbc驱动jar包的位置-->
     <classPathEntry location="${jdbc.driverLocation}"/>
 
@@ -19,7 +19,7 @@
 
         <!--jdbc的数据库连接 -->
         <jdbcConnection
-                driverClass="${jdbc.driverClasss}"
+                driverClass="${jdbc.driverClass}"
                 connectionURL="${jdbc.url}"
                 userId="${jdbc.username}"
                 password="${jdbc.password}">

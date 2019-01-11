@@ -105,16 +105,6 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "/index")
-    public String index(HttpServletRequest request, Model model){
-        //此处可以访问到
-        HttpSession session=request.getSession();
-        if(session.getAttribute("currentUser")==null){
-            return "redirect:/adminlte/pages/login.html";
-        }
-        model.addAttribute("hello","Hello, Spring Boot!");
-        return "index";
-    }
 
     @RequestMapping(value = "/test")
     @ResponseBody

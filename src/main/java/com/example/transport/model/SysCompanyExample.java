@@ -503,6 +503,276 @@ public class SysCompanyExample {
             addCriterion("company_tel not between", value1, value2, "companyTel");
             return (Criteria) this;
         }
+
+        public Criteria andLicenceUrlIsNull() {
+            addCriterion("licence_url is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlIsNotNull() {
+            addCriterion("licence_url is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlEqualTo(String value) {
+            addCriterion("licence_url =", value, "licenceUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlNotEqualTo(String value) {
+            addCriterion("licence_url <>", value, "licenceUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlGreaterThan(String value) {
+            addCriterion("licence_url >", value, "licenceUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlGreaterThanOrEqualTo(String value) {
+            addCriterion("licence_url >=", value, "licenceUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlLessThan(String value) {
+            addCriterion("licence_url <", value, "licenceUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlLessThanOrEqualTo(String value) {
+            addCriterion("licence_url <=", value, "licenceUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlLike(String value) {
+            addCriterion("licence_url like", value, "licenceUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlNotLike(String value) {
+            addCriterion("licence_url not like", value, "licenceUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlIn(List<String> values) {
+            addCriterion("licence_url in", values, "licenceUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlNotIn(List<String> values) {
+            addCriterion("licence_url not in", values, "licenceUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlBetween(String value1, String value2) {
+            addCriterion("licence_url between", value1, value2, "licenceUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andLicenceUrlNotBetween(String value1, String value2) {
+            addCriterion("licence_url not between", value1, value2, "licenceUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelIsNull() {
+            addCriterion("complain_tel is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelIsNotNull() {
+            addCriterion("complain_tel is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelEqualTo(String value) {
+            addCriterion("complain_tel =", value, "complainTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelNotEqualTo(String value) {
+            addCriterion("complain_tel <>", value, "complainTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelGreaterThan(String value) {
+            addCriterion("complain_tel >", value, "complainTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelGreaterThanOrEqualTo(String value) {
+            addCriterion("complain_tel >=", value, "complainTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelLessThan(String value) {
+            addCriterion("complain_tel <", value, "complainTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelLessThanOrEqualTo(String value) {
+            addCriterion("complain_tel <=", value, "complainTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelLike(String value) {
+            addCriterion("complain_tel like", value, "complainTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelNotLike(String value) {
+            addCriterion("complain_tel not like", value, "complainTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelIn(List<String> values) {
+            addCriterion("complain_tel in", values, "complainTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelNotIn(List<String> values) {
+            addCriterion("complain_tel not in", values, "complainTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelBetween(String value1, String value2) {
+            addCriterion("complain_tel between", value1, value2, "complainTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andComplainTelNotBetween(String value1, String value2) {
+            addCriterion("complain_tel not between", value1, value2, "complainTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelIsNull() {
+            addCriterion("service_tel is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelIsNotNull() {
+            addCriterion("service_tel is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelEqualTo(String value) {
+            addCriterion("service_tel =", value, "serviceTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelNotEqualTo(String value) {
+            addCriterion("service_tel <>", value, "serviceTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelGreaterThan(String value) {
+            addCriterion("service_tel >", value, "serviceTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelGreaterThanOrEqualTo(String value) {
+            addCriterion("service_tel >=", value, "serviceTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelLessThan(String value) {
+            addCriterion("service_tel <", value, "serviceTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelLessThanOrEqualTo(String value) {
+            addCriterion("service_tel <=", value, "serviceTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelLike(String value) {
+            addCriterion("service_tel like", value, "serviceTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelNotLike(String value) {
+            addCriterion("service_tel not like", value, "serviceTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelIn(List<String> values) {
+            addCriterion("service_tel in", values, "serviceTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelNotIn(List<String> values) {
+            addCriterion("service_tel not in", values, "serviceTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelBetween(String value1, String value2) {
+            addCriterion("service_tel between", value1, value2, "serviceTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceTelNotBetween(String value1, String value2) {
+            addCriterion("service_tel not between", value1, value2, "serviceTel");
+            return (Criteria) this;
+        }
+
+        public Criteria andEvaluationIsNull() {
+            addCriterion("evaluation is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEvaluationIsNotNull() {
+            addCriterion("evaluation is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEvaluationEqualTo(Integer value) {
+            addCriterion("evaluation =", value, "evaluation");
+            return (Criteria) this;
+        }
+
+        public Criteria andEvaluationNotEqualTo(Integer value) {
+            addCriterion("evaluation <>", value, "evaluation");
+            return (Criteria) this;
+        }
+
+        public Criteria andEvaluationGreaterThan(Integer value) {
+            addCriterion("evaluation >", value, "evaluation");
+            return (Criteria) this;
+        }
+
+        public Criteria andEvaluationGreaterThanOrEqualTo(Integer value) {
+            addCriterion("evaluation >=", value, "evaluation");
+            return (Criteria) this;
+        }
+
+        public Criteria andEvaluationLessThan(Integer value) {
+            addCriterion("evaluation <", value, "evaluation");
+            return (Criteria) this;
+        }
+
+        public Criteria andEvaluationLessThanOrEqualTo(Integer value) {
+            addCriterion("evaluation <=", value, "evaluation");
+            return (Criteria) this;
+        }
+
+        public Criteria andEvaluationIn(List<Integer> values) {
+            addCriterion("evaluation in", values, "evaluation");
+            return (Criteria) this;
+        }
+
+        public Criteria andEvaluationNotIn(List<Integer> values) {
+            addCriterion("evaluation not in", values, "evaluation");
+            return (Criteria) this;
+        }
+
+        public Criteria andEvaluationBetween(Integer value1, Integer value2) {
+            addCriterion("evaluation between", value1, value2, "evaluation");
+            return (Criteria) this;
+        }
+
+        public Criteria andEvaluationNotBetween(Integer value1, Integer value2) {
+            addCriterion("evaluation not between", value1, value2, "evaluation");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

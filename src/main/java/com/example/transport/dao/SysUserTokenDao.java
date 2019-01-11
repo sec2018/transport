@@ -1,13 +1,10 @@
 package com.example.transport.dao;
 
-import com.example.transport.pojo.SysCompany;
 import com.example.transport.pojo.UserToken;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-
-import java.util.List;
 
 @Mapper
 public interface SysUserTokenDao {

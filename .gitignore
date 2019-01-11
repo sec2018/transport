@@ -24,6 +24,6 @@
 /nbdist/
 /.nb-gradle/
 /src/main/resources/application.yml
-/src/main/resources/mabatis-generator.properties
+/mybatis-generator.properties
 /src/main/resources/application-dev.yml
 /log/

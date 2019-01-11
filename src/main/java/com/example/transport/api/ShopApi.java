@@ -1,8 +1,6 @@
 package com.example.transport.api;
 
-import com.example.transport.dao.SysCompanyMapper;
 import com.example.transport.dao.SysShopMapper;
-import com.example.transport.pojo.SysCompany;
 import com.example.transport.pojo.SysShop;
 import com.example.transport.service.Constant;
 import com.example.transport.service.UserService;

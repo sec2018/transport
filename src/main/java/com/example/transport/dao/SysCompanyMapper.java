@@ -1,8 +1,7 @@
 package com.example.transport.dao;
 
-import com.example.transport.model.SysCompanyExample;
 import com.example.transport.pojo.SysCompany;
-
+import com.example.transport.model.SysCompanyExample;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -15,8 +14,6 @@ public interface SysCompanyMapper {
     int deleteByExample(SysCompanyExample example);
 
     int deleteByPrimaryKey(Integer companyId);
-
-    SysCompany selectByWxuserid(long wxuser_id);
 
     int insert(SysCompany record);
 
@@ -35,4 +32,6 @@ public interface SysCompanyMapper {
     int updateByPrimaryKey(SysCompany record);
 
     int selectCompanyIdbyWxuserid(Long wxuser_id);
+
+    SysCompany selectByWxuserid(long wxuser_id);
 }

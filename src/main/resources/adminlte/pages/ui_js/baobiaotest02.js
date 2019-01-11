@@ -4,6 +4,21 @@
 
 $(function () {
 
+    $.ajax({
+        url: "/transport/api/getalllines",
+        method: "GET",
+        success: function (data) {
+            if (data.data == null) {
+                alert(data.msg);
+                return;
+            }else{
+                alert(data.msg);
+            }
+        }
+    })
+
+
+
     $.getJSON ("/transport/adminlte/pages/ui_js/data.json", function (data1)
     {
         //一个data数组
