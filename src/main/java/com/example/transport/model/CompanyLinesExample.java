@@ -150,7 +150,6 @@ public class CompanyLinesExample {
         }
 
         public Criteria andIdNotIn(List<Integer> values) {
-            addCriterion("id not in", values, "id");
             return (Criteria) this;
         }
 

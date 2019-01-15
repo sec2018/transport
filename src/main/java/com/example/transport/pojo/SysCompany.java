@@ -1,6 +1,10 @@
 package com.example.transport.pojo;
 
+import org.springframework.data.annotation.Id;
+
 public class SysCompany {
+
+    @Id
     private Integer companyId;
 
     private String companyName;

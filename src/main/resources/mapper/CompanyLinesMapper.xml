@@ -210,4 +210,21 @@
       begin_addr = #{beginAddr,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <!--批量插入-->
+  <insert id="insertLineList" parameterType="java.util.List" >
+    <selectKey resultType ="java.lang.Integer" keyProperty= "id"
+         order= "AFTER">
+        SELECT LAST_INSERT_ID()
+    </selectKey >
+    insert into company_lines (id, company_id, arrive_addr,
+    arrive_tel, begin_addr)
+    values
+     <foreach collection ="list" item="com.example.transport.pojo.CompanyLines" index= "index" separator =",">
+       (#{id,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, #{arriveAddr,jdbcType=VARCHAR},
+       #{arriveTel,jdbcType=VARCHAR}, #{beginAddr,jdbcType=VARCHAR})
+     </foreach >
+  </insert>
+
+
 </mapper>

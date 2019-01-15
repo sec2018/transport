@@ -7,7 +7,10 @@ import com.example.transport.model.SysCompanyExample;
 import com.example.transport.pojo.CompanyLines;
 import com.example.transport.pojo.LineMap;
 import com.example.transport.pojo.SysCompany;
+import com.example.transport.pojo.User;
+import com.example.transport.service.CompanyService;
 import com.example.transport.service.Constant;
+import com.example.transport.service.SysUserTokenService;
 import com.example.transport.service.UserService;
 import com.example.transport.util.JsonResult;
 import com.example.transport.util.redis.RedisService;
@@ -17,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +38,9 @@ public class CompanyApi {
     private SysCompanyMapper sysCompanyMapper;
 
     @Autowired
+    private CompanyService companyService;
+
+    @Autowired
     private UserService userService;
 
 
@@ -42,6 +49,10 @@ public class CompanyApi {
 
     @Autowired
     private CompanyLinesMapper companyLinesMapper;
+
+    @Autowired
+    private SysUserTokenService sysUserTokenService;
+
 
 
 //    private static Map<String,Map<Integer,String>> linemap = new HashMap();
@@ -114,6 +125,116 @@ public class CompanyApi {
     }
 
 
+//    //角色1,4
+//    @ApiOperation(value = "添加或修改物流公司", notes = "根据物流公司名称添加或修改物流公司")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "companyid", value = "物流公司id", required = false, dataType = "Integer",paramType = "query"),
+//            @ApiImplicitParam(name = "companyname", value = "物流公司名称", required = true, dataType = "String",paramType = "query"),
+//            @ApiImplicitParam(name = "company_tel", value = "物流公司电话", required = true, dataType = "String",paramType = "query"),
+//            @ApiImplicitParam(name = "company_procity", value = "物流公司省市", required = true, dataType = "String",paramType = "query"),
+//            @ApiImplicitParam(name = "company_detailarea", value = "物流公司详细名称", required = true, dataType = "String",paramType = "query"),
+//            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
+//            @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
+//    })
+//    @RequestMapping(value="addorupdatecompany",method = RequestMethod.POST)
+//    @ResponseBody
+//    public ResponseEntity<JsonResult> AddCompany(@RequestParam(value = "companyid",required = false)Integer companyid,
+//            @RequestParam(value = "companyname")String companyname,
+//                                                 @RequestParam(value = "company_tel")String company_tel,
+//                                                 @RequestParam(value = "company_procity")String company_procity,
+//                                                 @RequestParam(value = "company_detailarea")String company_detailarea,HttpServletRequest request){
+//        String roleid = request.getHeader("roleid");
+//        JsonResult r = new JsonResult();
+//        if(!roleid.equals("1") && !roleid.equals("4")){
+//            r = Common.RoleError();
+//            return ResponseEntity.ok(r);
+//        }
+//
+//        String token = request.getHeader("token");
+//        r = ConnectRedisCheckToken(token);
+//        String tokenvalue = "";
+//        try{
+//            tokenvalue = r.getData().toString();
+//        }catch (Exception e) {
+//            r = Common.TokenError();
+//            e.printStackTrace();
+//            return ResponseEntity.ok(r);
+//        }
+//        if(companyid == null) {
+//            //插入
+//            SysCompany sysCompany = new SysCompany();
+//            sysCompany.setCompanyName(companyname);
+//            sysCompany.setCompanyTel(company_tel);
+//            sysCompany.setCompanyProcity(company_procity);
+//            sysCompany.setCompanyDetailarea(company_detailarea);
+//            try {
+//                if(tokenvalue!=""){
+//                    redisService.expire(token, Constant.expire.getExpirationTime());
+//                    String openid = tokenvalue.split("\\|")[0];
+//                    long wxuserid = userService.getWxUserId(openid);
+//                    sysCompany.setWxuserId(wxuserid);
+//                    boolean flag = sysCompanyMapper.insert(sysCompany)==1?true:false;
+//                    if(flag){
+//                        r.setCode("200");
+//                        r.setMsg("添加物流公司成功！");
+//                        r.setData(null);
+//                        r.setSuccess(true);
+//                    }else{
+//                        r.setCode(Constant.COMPANY_ADDFAILURE.getCode()+"");
+//                        r.setMsg(Constant.COMPANY_ADDFAILURE.getMsg());
+//                        r.setData(null);
+//                        r.setSuccess(true);
+//                    }
+//                }else{
+//                    r = Common.TokenError();
+//                    ResponseEntity.ok(r);
+//                }
+//            } catch (Exception e) {
+//                r.setCode(Constant.COMPANY_ADDFAILURE.getCode()+"");
+//                r.setData(e.getClass().getName() + ":" + e.getMessage());
+//                r.setMsg(Constant.COMPANY_ADDFAILURE.getMsg());
+//                r.setSuccess(false);
+//                e.printStackTrace();
+//            }
+//        }else{
+//            //更新
+//            try {
+//                if(tokenvalue!=""){
+//                    redisService.expire(token, Constant.expire.getExpirationTime());
+//
+//                    SysCompany sysCompany = sysCompanyMapper.selectByPrimaryKey(companyid);
+//                    sysCompany.setCompanyName(companyname);
+//                    sysCompany.setCompanyTel(company_tel);
+//                    sysCompany.setCompanyProcity(company_procity);
+//                    sysCompany.setCompanyDetailarea(company_detailarea);
+//                    boolean flag = sysCompanyMapper.updateByPrimaryKey(sysCompany)==1?true:false;
+//                    if(flag){
+//                        r.setCode("200");
+//                        r.setMsg("修改物流公司成功！");
+//                        r.setData(null);
+//                        r.setSuccess(true);
+//                    }else{
+//                        r.setCode(Constant.COMPANY_UPDATEFAILURE.getCode()+"");
+//                        r.setMsg(Constant.COMPANY_UPDATEFAILURE.getMsg());
+//                        r.setData(null);
+//                        r.setSuccess(true);
+//                    }
+//                }else{
+//                    r = Common.TokenError();
+//                    ResponseEntity.ok(r);
+//                }
+//            } catch (Exception e) {
+//                r.setCode(Constant.COMPANY_UPDATEFAILURE.getCode()+"");
+//                r.setData(e.getClass().getName() + ":" + e.getMessage());
+//                r.setMsg(Constant.COMPANY_UPDATEFAILURE.getMsg());
+//                r.setSuccess(false);
+//                e.printStackTrace();
+//            }
+//        }
+//        return ResponseEntity.ok(r);
+//    }
+
+
     //角色1,4
     @ApiOperation(value = "添加或修改物流公司", notes = "根据物流公司名称添加或修改物流公司")
     @ApiImplicitParams({
@@ -122,33 +243,75 @@ public class CompanyApi {
             @ApiImplicitParam(name = "company_tel", value = "物流公司电话", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "company_procity", value = "物流公司省市", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "company_detailarea", value = "物流公司详细名称", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "licence_url", value = "营业执照url", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "complain_tel", value = "投诉电话", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "service_tel", value = "服务电话", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "evaluation", value = "评价", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "begin_addr", value = "默认线路出发地", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "arrive_addr", value = "默认线路到站地址", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "arrive_tel", value = "默认线路到达电话", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "line_id", value = "默认线路id", required = false, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value="addorupdatecompany",method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<JsonResult> AddCompany(@RequestParam(value = "companyid",required = false)Integer companyid,
-            @RequestParam(value = "companyname")String companyname,
+                                                 @RequestParam(value = "companyname")String companyname,
                                                  @RequestParam(value = "company_tel")String company_tel,
                                                  @RequestParam(value = "company_procity")String company_procity,
-                                                 @RequestParam(value = "company_detailarea")String company_detailarea,HttpServletRequest request){
+                                                 @RequestParam(value = "company_detailarea")String company_detailarea,
+                                                 @RequestParam(value = "licence_url")String licence_url,
+                                                 @RequestParam(value = "complain_tel")String complain_tel,
+                                                 @RequestParam(value = "service_tel")String service_tel,
+                                                 @RequestParam(value = "evaluation")Integer evaluation,
+                                                 @RequestParam(value = "begin_addr")String begin_addr,
+                                                 @RequestParam(value = "arrive_addr")String arrive_addr,
+                                                 @RequestParam(value = "arrive_tel")String arrive_tel,
+                                                 @RequestParam(value = "line_id",required = false)Integer line_id,
+                                                 HttpServletRequest request){
         String roleid = request.getHeader("roleid");
         JsonResult r = new JsonResult();
-        if(!roleid.equals("1") && !roleid.equals("4")){
+        if(!roleid.equals("0") && !roleid.equals("1") && !roleid.equals("4")){
             r = Common.RoleError();
             return ResponseEntity.ok(r);
         }
-
         String token = request.getHeader("token");
-        r = ConnectRedisCheckToken(token);
-        String tokenvalue = "";
-        try{
-            tokenvalue = r.getData().toString();
-        }catch (Exception e) {
-            r = Common.TokenError();
-            e.printStackTrace();
-            return ResponseEntity.ok(r);
+
+        //超级管理员,PC端
+        if(roleid.equals("0")) {
+            token = getAdminToken();
+            if (!token.equals(token)) {
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
+            } else {
+                r = AddCompany(token,"",companyid,companyname,company_tel,company_procity,
+                        company_detailarea,licence_url,complain_tel,service_tel,
+                        evaluation,begin_addr,arrive_addr,arrive_tel,line_id);
+            }
+        }else{
+            r = ConnectRedisCheckToken(token);
+            String tokenvalue = "";
+            try{
+                tokenvalue = r.getData().toString();
+            }catch (Exception e) {
+                r = Common.TokenError();
+                e.printStackTrace();
+                return ResponseEntity.ok(r);
+            }
+            r = AddCompany("",tokenvalue,companyid,companyname,company_tel,company_procity,
+                    company_detailarea,licence_url,complain_tel,service_tel,
+                    evaluation,begin_addr,arrive_addr,arrive_tel,line_id);
         }
+        return ResponseEntity.ok(r);
+    }
+
+
+    public JsonResult AddCompany(String token,String tokenvalue,Integer companyid,String companyname,String company_tel,String company_procity,
+                                                 String company_detailarea,String licence_url,String complain_tel,String service_tel,
+                                                 Integer evaluation,String begin_addr,String arrive_addr,String arrive_tel,
+                                                 Integer line_id){
+        JsonResult r = new JsonResult();
         if(companyid == null) {
             //插入
             SysCompany sysCompany = new SysCompany();
@@ -156,27 +319,37 @@ public class CompanyApi {
             sysCompany.setCompanyTel(company_tel);
             sysCompany.setCompanyProcity(company_procity);
             sysCompany.setCompanyDetailarea(company_detailarea);
+            sysCompany.setLicenceUrl(licence_url);
+            sysCompany.setServiceTel(service_tel);
+            sysCompany.setEvaluation(evaluation);
+
+            CompanyLines companyLines = new CompanyLines();
+            companyLines.setBeginAddr(begin_addr);
+            companyLines.setArriveAddr(arrive_addr);
+            companyLines.setArriveTel(arrive_tel);
             try {
-                if(tokenvalue!=""){
+                if(tokenvalue != "" && token == "") {
                     redisService.expire(token, Constant.expire.getExpirationTime());
                     String openid = tokenvalue.split("\\|")[0];
                     long wxuserid = userService.getWxUserId(openid);
                     sysCompany.setWxuserId(wxuserid);
-                    boolean flag = sysCompanyMapper.insert(sysCompany)==1?true:false;
-                    if(flag){
-                        r.setCode("200");
-                        r.setMsg("添加物流公司成功！");
-                        r.setData(null);
-                        r.setSuccess(true);
-                    }else{
-                        r.setCode(Constant.COMPANY_ADDFAILURE.getCode()+"");
-                        r.setMsg(Constant.COMPANY_ADDFAILURE.getMsg());
-                        r.setData(null);
-                        r.setSuccess(true);
-                    }
+                }else if(tokenvalue == "" && token != ""){
+                    sysCompany.setWxuserId(-1L);
                 }else{
                     r = Common.TokenError();
-                    ResponseEntity.ok(r);
+                    return r;
+                }
+                boolean flag = companyService.insert(sysCompany,companyLines);
+                if(flag){
+                    r.setCode("200");
+                    r.setMsg("添加物流公司成功！");
+                    r.setData(null);
+                    r.setSuccess(true);
+                }else{
+                    r.setCode(Constant.COMPANY_ADDFAILURE.getCode()+"");
+                    r.setMsg(Constant.COMPANY_ADDFAILURE.getMsg());
+                    r.setData(null);
+                    r.setSuccess(true);
                 }
             } catch (Exception e) {
                 r.setCode(Constant.COMPANY_ADDFAILURE.getCode()+"");
@@ -188,29 +361,36 @@ public class CompanyApi {
         }else{
             //更新
             try {
-                if(tokenvalue!=""){
+                if(tokenvalue != "" && token == "") {
                     redisService.expire(token, Constant.expire.getExpirationTime());
-
-                    SysCompany sysCompany = sysCompanyMapper.selectByPrimaryKey(companyid);
-                    sysCompany.setCompanyName(companyname);
-                    sysCompany.setCompanyTel(company_tel);
-                    sysCompany.setCompanyProcity(company_procity);
-                    sysCompany.setCompanyDetailarea(company_detailarea);
-                    boolean flag = sysCompanyMapper.updateByPrimaryKey(sysCompany)==1?true:false;
-                    if(flag){
-                        r.setCode("200");
-                        r.setMsg("修改物流公司成功！");
-                        r.setData(null);
-                        r.setSuccess(true);
-                    }else{
-                        r.setCode(Constant.COMPANY_UPDATEFAILURE.getCode()+"");
-                        r.setMsg(Constant.COMPANY_UPDATEFAILURE.getMsg());
-                        r.setData(null);
-                        r.setSuccess(true);
-                    }
                 }else{
                     r = Common.TokenError();
-                    ResponseEntity.ok(r);
+                    return r;
+                }
+                SysCompany sysCompany = sysCompanyMapper.selectByPrimaryKey(companyid);
+                sysCompany.setCompanyName(companyname);
+                sysCompany.setCompanyTel(company_tel);
+                sysCompany.setCompanyProcity(company_procity);
+                sysCompany.setCompanyDetailarea(company_detailarea);
+                sysCompany.setLicenceUrl(licence_url);
+                sysCompany.setServiceTel(service_tel);
+                sysCompany.setEvaluation(evaluation);
+
+                CompanyLines companyLines = companyLinesMapper.selectByPrimaryKey(line_id);
+                companyLines.setBeginAddr(begin_addr);
+                companyLines.setArriveAddr(arrive_addr);
+                companyLines.setArriveTel(arrive_tel);
+                boolean flag = companyService.updateByPrimaryKey(sysCompany,companyLines);
+                if(flag){
+                    r.setCode("200");
+                    r.setMsg("修改物流公司成功！");
+                    r.setData(null);
+                    r.setSuccess(true);
+                }else{
+                    r.setCode(Constant.COMPANY_UPDATEFAILURE.getCode()+"");
+                    r.setMsg(Constant.COMPANY_UPDATEFAILURE.getMsg());
+                    r.setData(null);
+                    r.setSuccess(true);
                 }
             } catch (Exception e) {
                 r.setCode(Constant.COMPANY_UPDATEFAILURE.getCode()+"");
@@ -220,12 +400,9 @@ public class CompanyApi {
                 e.printStackTrace();
             }
         }
-
-
-
-
-        return ResponseEntity.ok(r);
+        return r;
     }
+
 
     //角色1,2，3,4
     @ApiOperation(value = "查询所有物流公司", notes = "查询所有物流公司")
@@ -366,5 +543,12 @@ public class CompanyApi {
         r.setData(linemaplist);
         r.setSuccess(true);
         return ResponseEntity.ok(r);
+    }
+
+
+    public String getAdminToken(){
+        User user = userService.getUserByLoginName("system");
+        String admintoken  = sysUserTokenService.getToken(user.getId());
+        return admintoken;
     }
 }

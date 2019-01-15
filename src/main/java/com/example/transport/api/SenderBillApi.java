@@ -533,7 +533,7 @@ public class SenderBillApi {
         r = ConnectRedisCheckToken(token);
         String tokenvalue = "";
         try{
-            //超级管理员
+            //超级管理员,PC端
             if(roleid.equals("0")){
                 tokenvalue = getAdminToken();
                 if(!token.equals(tokenvalue)){

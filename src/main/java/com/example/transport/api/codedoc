@@ -1,3 +1,7 @@
+#{companyId,jdbcType=INTEGER}
+
+
+
 //1,2,3,4
     @ApiOperation(value = "收件人名称或电话查询未完成订单(用 收件人名称或电话统一查询订单 接口替代)", notes = "收件人名称或电话查询未完成订单(用 收件人名称和电话统一查询订单 接口替代)")
     @ApiImplicitParams({

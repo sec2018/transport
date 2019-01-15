@@ -33,4 +33,6 @@ public interface CompanyLinesMapper {
 
     int updateByPrimaryKey(CompanyLines record);
 
+    int insertLineList(List<CompanyLines> list);
+
 }
