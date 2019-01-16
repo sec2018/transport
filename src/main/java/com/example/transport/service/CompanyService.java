@@ -7,4 +7,6 @@ public interface CompanyService {
     boolean insert(SysCompany record, CompanyLines companyLines);
 
     boolean updateByPrimaryKey(SysCompany record, CompanyLines companyLines);
+
+    boolean delete(Integer companyId);
 }

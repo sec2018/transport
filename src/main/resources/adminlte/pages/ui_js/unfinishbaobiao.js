@@ -1,6 +1,8 @@
 /**
  * Created by 03010335 on 2018/8/22.
  */
+var billviewdata;
+var billdata;
 $(function () {
     var senddata = {};
     senddata.startitem = 1;
@@ -19,10 +21,14 @@ $(function () {
                 alert(data.msg);
                 return;
             }else{
+                billviewdata = $.extend(true,[],data.data.billviewdata);
+                billdata = $.extend(true,[],data.data.billdata);
                 for(var i = 0;i<data.data.billviewdata.length;i++){
-                    data.data.billviewdata[i].statustime = timetrans(data.data.billviewdata[i].statustime).replace('T'," ");
+                    billviewdata[i].statustime = timetrans(data.data.billviewdata[i].statustime).replace('T'," ");
+                    data.data.billviewdata[i].statustime = timelength(data.data.billviewdata[i].statustime)+"分钟";
+                    data.data.billviewdata[i].action = "<a href='#'>删除</a>"
                 }
-                $('#datatable').DataTable({
+                var dt = $('#datatable').DataTable({
                     data: data.data.billviewdata,
                     "jQueryUI": true,
                     'paging'      : true,
@@ -59,7 +65,14 @@ $(function () {
                     },
                     "scrollY": "450px",
                     dom: 'Bfrtip',
+                    "processing": true,
                     "columns": [
+                        {
+                            "class":          "details-control",
+                            "orderable":      false,
+                            "data":           null,
+                            "defaultContent": ""
+                        },
                         { "data": "bill_code" },
                         { "data": "line" },
                         { "data": "shop_name" },
@@ -67,7 +80,7 @@ $(function () {
                         { "data": "company_name" },
                         { "data": "ststus" },
                         { "data": "statustime" },
-                        { "data": "shop_name" }
+                        { "data": "action" }
                     ],
                     buttons: [
                         'pageLength',
@@ -93,9 +106,49 @@ $(function () {
                         }
                     ]
                 });
+
+                // Array to track the ids of the details displayed rows
+                var detailRows = [];
+
+                $('#tbody').on( 'click', 'tr td.details-control', function () {
+                    var tr = $(this).closest('tr');
+                    var row = dt.row( tr );
+                    var idx = $.inArray( tr.attr('id'), detailRows );
+
+                    if ( row.child.isShown() ) {
+                        tr.removeClass( 'details' );
+                        row.child.hide();
+
+                        // Remove from the 'open' array
+                        detailRows.splice( idx, 1 );
+                    }
+                    else {
+                        tr.addClass( 'details' );
+                        row.child( format( row.index() ) ).show();
+
+                        // Add to the 'open' array
+                        if ( idx === -1 ) {
+                            detailRows.push( tr.attr('id') );
+                        }
+                    }
+                } );
+
+                // On each draw, loop over the `detailRows` array and show any child rows
+                dt.on( 'draw', function () {
+                    $.each( detailRows, function ( i, id ) {
+                        $('#'+id+' td.details-control').trigger( 'click' );
+                    } );
+                } );
+
             }
         }
     })
+
+    function format ( index ) {
+        return '运单编号: '+billdata[index].bill_code+'   &nbsp;&nbsp;&nbsp;&nbsp;物流公司名称：'+billdata[index].company_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;商品名称：'+billdata[index].goodsname+
+            '   &nbsp;&nbsp;&nbsp;&nbsp;商品数量: '+billdata[index].goodsnum+ '   &nbsp;&nbsp;&nbsp;&nbsp;快递费用: '+billdata[index].delivery_fee+ '<br>' +'收件人姓名: '+billdata[index].rec_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;收件人地址: '+billdata[index].rec_procity+billdata[index].rec_detailarea+  '   &nbsp;&nbsp;&nbsp;&nbsp;收件人电话: '+billdata[index].rec_tel+ '<br>' +
+            '寄件人姓名: '+billdata[index].sender_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;寄件人地址: '+billdata[index].sender_procity+billdata[index].sender_detailarea+ '   &nbsp;&nbsp;&nbsp;&nbsp;寄件人电话: '+billdata[index].sender_tel+ '<br>' +'当前状态触发时间: '+billviewdata[index].statustime;
+    }
 
     function timetrans(date){
 //    var date = new Date(date*1000);//如果date为13位不需要乘1000
@@ -107,5 +160,11 @@ $(function () {
         var m = (date.getMinutes() <10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
         var s = (date.getSeconds() <10 ? '0' + date.getSeconds() : date.getSeconds());
         return Y+M+D+h+m+s;
+    }
+    
+    function timelength(date) {
+        var d1 = new Date(date);
+        var d2 = new Date();
+        return parseInt((d2 - d1) / 1000 / 60);//两个时间相差的分钟数
     }
 })

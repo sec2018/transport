@@ -37,7 +37,7 @@
         /*}*/
         .table td, .table th {
             font-style: normal;
-            text-align:center;
+            /*text-align:center;*/
         }
         input[type=checkbox]{
             margin-right: 3px;
@@ -47,6 +47,13 @@
         /*}*/
         .box{
             margin-bottom: 3px !important;
+        }
+        td.details-control {
+            background: url('../ui_css/details_open.png') no-repeat center center;
+            cursor: pointer;
+        }
+        tr.details td.details-control {
+            background: url('../ui_css/details_close.png') no-repeat center center;
         }
     </style>
 </head>
@@ -68,13 +75,14 @@
                         <table data-toggle="table" class="table  table-bordered" id="datatable" style="table-layout:fixed;">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>运单编号</th>
                                     <th>线路</th>
                                     <th>寄件商户</th>
                                     <th>收件人</th>
                                     <th>物流公司</th>
                                     <th>当前状态</th>
-                                    <th>等待时长</th>
+                                    <th>完成时间</th>
                                     <th>操作</th>
                                 </tr>
                             </thead>

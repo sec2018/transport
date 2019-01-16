@@ -70,6 +70,7 @@ public class Constant {
     public static  Constant COMPANY_UPDATEFAILURE = new Constant(500503, "修改公司失败");
     public static  Constant COMPANYLINE_ADDORUPDATEFAILURE = new Constant(500504, "添加或更新公司线路失败");
     public static  Constant COMPANYLINE_DELETEFAILURE = new Constant(500505, "删除公司线路失败");
+    public static  Constant COMPANY_DELETEFAILURE = new Constant(500506, "删除公司失败");
 
     //商户模块
     public static  Constant SHOP_ADDFAILURE = new Constant(500601, "添加商铺失败");

@@ -63,6 +63,31 @@ public class CompanyServiceImpl implements CompanyService{
                     return false;
                 }
             }
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+    }
+
+    @Transactional
+    @Override
+    public boolean delete(Integer companyId) {
+        try{
+            boolean flag = sysCompanyMapper.deleteByPrimaryKey(companyId)==1?true:false;
+            if(flag){
+                flag  = companyLinesMapper.deleteByCompanyId(companyId)>0?true:false;
+                if(flag){
+                    return true;
+                }else{
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return false;
+                }
+            }
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return false;
         }
         catch (Exception e) {

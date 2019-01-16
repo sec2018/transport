@@ -172,12 +172,12 @@ public class CompanyLinesApi {
     @ApiOperation(value = "删除物流公司线路", notes = "删除物流公司线路")
     @RequestMapping(value="deletecompanylines",method = RequestMethod.GET)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "line_id", value = "默认线路id", required = false, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "line_id", value = "默认线路id", dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
     })
     @ResponseBody
-    public ResponseEntity<JsonResult> DeleteCompanyLines(@RequestParam(value = "line_id",required = false)Integer line_id,
+    public ResponseEntity<JsonResult> DeleteCompanyLines(@RequestParam(value = "line_id")Integer line_id,
                                                       HttpServletRequest request) {
 
         String roleid = request.getHeader("roleid");

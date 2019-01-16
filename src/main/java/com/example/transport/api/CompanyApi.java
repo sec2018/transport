@@ -404,6 +404,80 @@ public class CompanyApi {
     }
 
 
+    //删除物流公司
+    @ApiOperation(value = "删除物流公司线路", notes = "删除物流公司线路")
+    @RequestMapping(value="deletecompany",method = RequestMethod.GET)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "company_id", value = "公司id", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
+    })
+    @ResponseBody
+    public ResponseEntity<JsonResult> DeleteCompany(@RequestParam(value = "company_id")Integer company_id,
+                                                         HttpServletRequest request) {
+
+        String roleid = request.getHeader("roleid");
+        JsonResult r = new JsonResult();
+        if (!roleid.equals("0") && !roleid.equals("1") && !roleid.equals("4")) {
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        String token = request.getHeader("token");
+
+        //超级管理员,PC端
+        if (roleid.equals("0")) {
+            token = getAdminToken();
+            if (!token.equals(token)) {
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
+            } else {
+                r = DeleteCompany(company_id);
+            }
+        } else {
+            r = ConnectRedisCheckToken(token);
+            String tokenvalue = "";
+            try {
+                tokenvalue = r.getData().toString();
+                if (tokenvalue != null) {
+                    r = DeleteCompany(company_id);
+                }
+            } catch (Exception e) {
+                r = Common.TokenError();
+                e.printStackTrace();
+                return ResponseEntity.ok(r);
+            }
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    public JsonResult DeleteCompany(Integer company_id){
+        JsonResult r = new JsonResult();
+        try {
+            boolean issuccess = companyService.delete(company_id);
+            if(issuccess){
+                r.setCode("200");
+                r.setMsg("删除物流公司成功！");
+                r.setData(null);
+                r.setSuccess(true);
+            }else{
+                r.setCode("500");
+                r.setMsg("删除物流公司失败！");
+                r.setData(null);
+                r.setSuccess(false);
+            }
+        } catch (Exception e) {
+            r.setCode(Constant.COMPANY_DELETEFAILURE.getCode()+"");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg(Constant.COMPANY_DELETEFAILURE.getMsg());
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return r;
+    }
+
+
+
     //角色1,2，3,4
     @ApiOperation(value = "查询所有物流公司", notes = "查询所有物流公司")
     @RequestMapping(value="getcompanies",method = RequestMethod.GET)

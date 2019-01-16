@@ -5,6 +5,7 @@ import com.example.transport.pojo.CompanyLines;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -34,5 +35,8 @@ public interface CompanyLinesMapper {
     int updateByPrimaryKey(CompanyLines record);
 
     int insertLineList(List<CompanyLines> list);
+
+    @Delete({"delete from company_lines where company_id = #{company_id}"})
+    int deleteByCompanyId(@Param("company_id")Integer company_id);
 
 }
