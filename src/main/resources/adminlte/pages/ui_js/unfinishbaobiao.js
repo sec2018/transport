@@ -37,7 +37,8 @@ $(function () {
                         ['10 条', '20 条','30条', '50 条','全部']
                     ],
                     'searching'   : true,
-                    'ordering'    : false,
+                    'ordering'    : true,
+                    // "order": [[ 7, "desc" ]],
                     "pageLength": 10, //每行显示记录数
                     'info'        : true,
                     'autoWidth'   : true,
