@@ -70,9 +70,10 @@ $(function () {
                             "class":          "details-control",
                             "orderable":      false,
                             "data":           null,
-                            "defaultContent": ""
+                            "defaultContent": "",
+                            "width": "1px"
                         },
-                        { "data": "bill_code" },
+                        { "data": "bill_code","width":"140px"},
                         { "data": "line" },
                         { "data": "shop_name" },
                         { "data": "rec_name" },

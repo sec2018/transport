@@ -3,10 +3,12 @@
  */
 var billviewdata;
 var billdata;
+
 $(function () {
+
     var senddata = {};
     senddata.startitem = 1;
-    senddata.pagesize = 10;
+    senddata.pagesize = 10000;
     senddata.isfinishflag = 0;
     $.ajax({
         url: "/transport/api/getusertabbill",
@@ -23,23 +25,26 @@ $(function () {
             }else{
                 billviewdata = $.extend(true,[],data.data.billviewdata);
                 billdata = $.extend(true,[],data.data.billdata);
+
                 for(var i = 0;i<data.data.billviewdata.length;i++){
-                    billviewdata[i].statustime = timetrans(data.data.billviewdata[i].statustime).replace('T'," ");
-                    data.data.billviewdata[i].statustime = timelength(data.data.billviewdata[i].statustime)+"分钟";
-                    data.data.billviewdata[i].action = "<a href='#'>删除</a>"
+                    billviewdata[i].showstatustime = timetrans(data.data.billviewdata[i].statustime).replace('T'," ");
+                    data.data.billviewdata[i].statustime = timelength(data.data.billviewdata[i].statustime)+"秒";
+                    data.data.billviewdata[i].action = "<a href='#'>删除</a>";
+                    billviewdata[i].action = "<a href='#'>删除</a>"
                 }
+
                 var dt = $('#datatable').DataTable({
                     data: data.data.billviewdata,
                     "jQueryUI": true,
                     'paging'      : true,
                     lengthMenu: [　//显示几条数据设置
-                        [10, 20,30, 50,-1],
-                        ['10 条', '20 条','30条', '50 条','全部']
+                        [5,10,20,30, 50,-1],
+                        ['5 条','10 条', '20 条','30条', '50 条','全部']
                     ],
                     'searching'   : true,
                     'ordering'    : true,
                     // "order": [[ 7, "desc" ]],
-                    "pageLength": 10, //每行显示记录数
+                    "pageLength": 5, //每行显示记录数
                     'info'        : true,
                     'autoWidth'   : true,
                     "oLanguage": {
@@ -72,15 +77,22 @@ $(function () {
                             "class":          "details-control",
                             "orderable":      false,
                             "data":           null,
-                            "defaultContent": ""
+                            "defaultContent": "",
+                            "width": "1px"
                         },
-                        { "data": "bill_code" },
+                        { "data": "bill_code","width":"140px"},
                         { "data": "line" },
                         { "data": "shop_name" },
-                        { "data": "rec_name" },
+                        { "data": "rec_name","class": "center" },
                         { "data": "company_name" },
                         { "data": "ststus" },
                         { "data": "statustime" },
+                        // {
+                        //     data: 'statustime',
+                        //     render: function ( data, type, row ) {
+                        //         return data;
+                        //     }
+                        // },
                         { "data": "action" }
                     ],
                     buttons: [
@@ -138,17 +150,32 @@ $(function () {
                 dt.on( 'draw', function () {
                     $.each( detailRows, function ( i, id ) {
                         $('#'+id+' td.details-control').trigger( 'click' );
-                    } );
-                } );
+                    });
+                });
 
+                var count = 0;
+                setInterval(function () {
+                    for(var i = 0;i<billviewdata.length;i++){
+                        // dt.row(i).data()["statustime"] = timelength(billviewdata[i]["statustime"]) + "秒";
+                        var cellData  = $.extend(true,[],billviewdata[i]);
+                        cellData["statustime"] = timelength(billviewdata[i]["statustime"]) + "秒";
+                        dt.row(i).data(cellData);
+                    }
+                    count++;
+                    while(count%12 == 0){
+                        window.location.reload();
+                        break;
+                    }
+                }, 5000);
             }
         }
     })
 
+
     function format ( index ) {
         return '运单编号: '+billdata[index].bill_code+'   &nbsp;&nbsp;&nbsp;&nbsp;物流公司名称：'+billdata[index].company_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;商品名称：'+billdata[index].goodsname+
             '   &nbsp;&nbsp;&nbsp;&nbsp;商品数量: '+billdata[index].goodsnum+ '   &nbsp;&nbsp;&nbsp;&nbsp;快递费用: '+billdata[index].delivery_fee+ '<br>' +'收件人姓名: '+billdata[index].rec_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;收件人地址: '+billdata[index].rec_procity+billdata[index].rec_detailarea+  '   &nbsp;&nbsp;&nbsp;&nbsp;收件人电话: '+billdata[index].rec_tel+ '<br>' +
-            '寄件人姓名: '+billdata[index].sender_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;寄件人地址: '+billdata[index].sender_procity+billdata[index].sender_detailarea+ '   &nbsp;&nbsp;&nbsp;&nbsp;寄件人电话: '+billdata[index].sender_tel+ '<br>' +'当前状态触发时间: '+billviewdata[index].statustime;
+            '寄件人姓名: '+billdata[index].sender_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;寄件人地址: '+billdata[index].sender_procity+billdata[index].sender_detailarea+ '   &nbsp;&nbsp;&nbsp;&nbsp;寄件人电话: '+billdata[index].sender_tel+ '<br>' +'当前状态触发时间: '+billviewdata[index].showstatustime;
     }
 
     function timetrans(date){
@@ -166,6 +193,7 @@ $(function () {
     function timelength(date) {
         var d1 = new Date(date);
         var d2 = new Date();
-        return parseInt((d2 - d1) / 1000 / 60);//两个时间相差的分钟数
+        return parseInt((d2 - d1) / 1000);//两个时间相差的秒数
     }
+
 })
