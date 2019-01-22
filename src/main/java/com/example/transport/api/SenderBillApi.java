@@ -1,5 +1,6 @@
 package com.example.transport.api;
 
+import com.example.transport.dao.CompanyLinesMapper;
 import com.example.transport.dao.SysCompanyMapper;
 import com.example.transport.pojo.*;
 import com.example.transport.service.BillService;
@@ -49,6 +50,9 @@ public class SenderBillApi {
 
     @Autowired
     private SysUserTokenService sysUserTokenService;
+
+    @Autowired
+    private CompanyLinesMapper companyLinesMapper;
 
     Semaphore semaphore = new Semaphore(1);
 
@@ -1385,14 +1389,16 @@ public class SenderBillApi {
 //                }
                 //endregion
 
+                CompanyLines companyLines = companyLinesMapper.selectByPrimaryKey(bill.getLine_id());
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String finish_time = formatter.format(bill.getFinish_time());
+                String bigtitle = bill.getCompany_name()+"托运单";
                 List<List<List<String>>> allValue = new ArrayList<>();
                 List<String> content1 = Arrays.asList(new String[]{bill.getRec_name(),bill.getRec_tel(),bill.getRec_procity(),bill.getRec_detailarea()});
                 List<String> content2 = Arrays.asList(new String[]{bill.getSender_name(),bill.getSender_tel(),bill.getSender_procity(),bill.getRec_detailarea()});
                 List<String> content3 = Arrays.asList(new String[]{bill.getCompany_code(),bill.getGoodsname(),bill.getShop_name(),finish_time});
-                List<String> h4 = Arrays.asList(new String[]{"托单号","数量","物流名称","运费"});
-                List<String> content4 = Arrays.asList(new String[]{bill.getBill_code(),bill.getGoodsnum()+"",bill.getCompany_name(),bill.getPrice()+""});
+                List<String> h4 = Arrays.asList(new String[]{"物流线路","数量","到站地址","物流公司运费","备注"});
+                List<String> content4 = Arrays.asList(new String[]{companyLines.getBeginAddr()+"-->"+companyLines.getArriveAddr(),bill.getGoodsnum()+"",companyLines.getArriveAddr(),bill.getPrice()+"",bill.getBillinfo()});
                 List<List<String>> contentArray1 = new ArrayList<>();
                 contentArray1.add(content1);
                 List<List<String>> contentArray2 = new ArrayList<>();
@@ -1409,7 +1415,7 @@ public class SenderBillApi {
                 List<String[]> headTitles = new ArrayList<>();
                 String[] h1 = new String[]{"姓名","电话","省市区","详细地址"};
                 String[] h2 = new String[]{"姓名","电话","省市区","详细地址"};
-                String[] h3 = new String[]{"运单号","品名","店铺名称","日期"};
+                String[] h3 = new String[]{"运单号","品名","店铺名称","到站电话","日期"};
                 headTitles.add(h1);
                 headTitles.add(h2);
                 headTitles.add(h3);
@@ -1418,7 +1424,7 @@ public class SenderBillApi {
                 titles.add("收件人信息");
                 titles.add("寄件人信息");
                 titles.add("运单信息");
-                BufferedImage image = graphicsutils.graphicsGeneration(allValue,titles,headTitles ,"",4);
+                BufferedImage image = graphicsutils.graphicsGeneration(allValue,titles,headTitles ,"",4,bigtitle);
                 //旋转90度
                 image = ImageUtil.rotateImage(image,90);
 

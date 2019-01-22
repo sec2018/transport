@@ -154,10 +154,11 @@ $(function () {
                 });
 
                 var count = 0;
+                var cellData;
                 setInterval(function () {
                     for(var i = 0;i<billviewdata.length;i++){
                         // dt.row(i).data()["statustime"] = timelength(billviewdata[i]["statustime"]) + "秒";
-                        var cellData  = $.extend(true,[],billviewdata[i]);
+                        cellData  = $.extend(true,[],billviewdata[i]);
                         cellData["statustime"] = timelength(billviewdata[i]["statustime"]) + "秒";
                         dt.row(i).data(cellData);
                     }
