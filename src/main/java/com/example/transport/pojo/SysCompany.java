@@ -1,10 +1,6 @@
 package com.example.transport.pojo;
 
-import org.springframework.data.annotation.Id;
-
 public class SysCompany {
-
-    @Id
     private Integer companyId;
 
     private String companyName;
@@ -25,7 +21,9 @@ public class SysCompany {
 
     private Integer evaluation;
 
-    public SysCompany(Integer companyId, String companyName, String companyProcity, String companyDetailarea, Long wxuserId, String companyTel, String licenceUrl, String complainTel, String serviceTel, Integer evaluation) {
+    private Integer defaultLineid;
+
+    public SysCompany(Integer companyId, String companyName, String companyProcity, String companyDetailarea, Long wxuserId, String companyTel, String licenceUrl, String complainTel, String serviceTel, Integer evaluation, Integer defaultLineid) {
         this.companyId = companyId;
         this.companyName = companyName;
         this.companyProcity = companyProcity;
@@ -36,6 +34,7 @@ public class SysCompany {
         this.complainTel = complainTel;
         this.serviceTel = serviceTel;
         this.evaluation = evaluation;
+        this.defaultLineid = defaultLineid;
     }
 
     public SysCompany() {
@@ -120,5 +119,13 @@ public class SysCompany {
 
     public void setEvaluation(Integer evaluation) {
         this.evaluation = evaluation;
+    }
+
+    public Integer getDefaultLineid() {
+        return defaultLineid;
+    }
+
+    public void setDefaultLineid(Integer defaultLineid) {
+        this.defaultLineid = defaultLineid;
     }
 }

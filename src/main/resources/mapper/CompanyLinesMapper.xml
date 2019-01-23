@@ -8,6 +8,7 @@
       <arg column="arrive_addr" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="arrive_tel" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="begin_addr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="arrive_detail_addr" jdbcType="VARCHAR" javaType="java.lang.String" />
     </constructor>
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -69,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, company_id, arrive_addr, arrive_tel, begin_addr
+    id, company_id, arrive_addr, arrive_tel, begin_addr, arrive_detail_addr
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.example.transport.model.CompanyLinesExample" >
     select
@@ -103,9 +104,11 @@
   </delete>
   <insert id="insert" parameterType="com.example.transport.pojo.CompanyLines" >
     insert into company_lines (id, company_id, arrive_addr, 
-      arrive_tel, begin_addr)
+      arrive_tel, begin_addr, arrive_detail_addr
+      )
     values (#{id,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, #{arriveAddr,jdbcType=VARCHAR}, 
-      #{arriveTel,jdbcType=VARCHAR}, #{beginAddr,jdbcType=VARCHAR})
+      #{arriveTel,jdbcType=VARCHAR}, #{beginAddr,jdbcType=VARCHAR}, #{arriveDetailAddr,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.example.transport.pojo.CompanyLines" >
     insert into company_lines
@@ -125,6 +128,9 @@
       <if test="beginAddr != null" >
         begin_addr,
       </if>
+      <if test="arriveDetailAddr != null" >
+        arrive_detail_addr,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -141,6 +147,9 @@
       </if>
       <if test="beginAddr != null" >
         #{beginAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="arriveDetailAddr != null" >
+        #{arriveDetailAddr,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -168,6 +177,9 @@
       <if test="record.beginAddr != null" >
         begin_addr = #{record.beginAddr,jdbcType=VARCHAR},
       </if>
+      <if test="record.arriveDetailAddr != null" >
+        arrive_detail_addr = #{record.arriveDetailAddr,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -179,7 +191,8 @@
       company_id = #{record.companyId,jdbcType=INTEGER},
       arrive_addr = #{record.arriveAddr,jdbcType=VARCHAR},
       arrive_tel = #{record.arriveTel,jdbcType=VARCHAR},
-      begin_addr = #{record.beginAddr,jdbcType=VARCHAR}
+      begin_addr = #{record.beginAddr,jdbcType=VARCHAR},
+      arrive_detail_addr = #{record.arriveDetailAddr,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -199,6 +212,9 @@
       <if test="beginAddr != null" >
         begin_addr = #{beginAddr,jdbcType=VARCHAR},
       </if>
+      <if test="arriveDetailAddr != null" >
+        arrive_detail_addr = #{arriveDetailAddr,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -207,24 +223,23 @@
     set company_id = #{companyId,jdbcType=INTEGER},
       arrive_addr = #{arriveAddr,jdbcType=VARCHAR},
       arrive_tel = #{arriveTel,jdbcType=VARCHAR},
-      begin_addr = #{beginAddr,jdbcType=VARCHAR}
+      begin_addr = #{beginAddr,jdbcType=VARCHAR},
+      arrive_detail_addr = #{arriveDetailAddr,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
   <!--批量插入-->
   <insert id="insertLineList" parameterType="java.util.List" >
     <selectKey resultType ="java.lang.Integer" keyProperty= "id"
-         order= "AFTER">
-        SELECT LAST_INSERT_ID()
+               order= "AFTER">
+      SELECT LAST_INSERT_ID()
     </selectKey >
     insert into company_lines (id, company_id, arrive_addr,
     arrive_tel, begin_addr)
     values
-     <foreach collection ="list" item="com.example.transport.pojo.CompanyLines" index= "index" separator =",">
-       (#{id,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, #{arriveAddr,jdbcType=VARCHAR},
-       #{arriveTel,jdbcType=VARCHAR}, #{beginAddr,jdbcType=VARCHAR})
-     </foreach >
+    <foreach collection ="list" item="com.example.transport.pojo.CompanyLines" index= "index" separator =",">
+      (#{id,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, #{arriveAddr,jdbcType=VARCHAR},
+      #{arriveTel,jdbcType=VARCHAR}, #{beginAddr,jdbcType=VARCHAR})
+    </foreach >
   </insert>
-
-
 </mapper>

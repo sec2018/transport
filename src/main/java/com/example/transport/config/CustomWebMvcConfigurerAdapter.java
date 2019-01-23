@@ -29,6 +29,7 @@ public class CustomWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/js/**").addResourceLocations("classpath:/js/");
         registry.addResourceHandler("/layui/**").addResourceLocations("classpath:/layui/");
         registry.addResourceHandler("/img/**").addResourceLocations("classpath:/img/");
+        registry.addResourceHandler("/companyimages/**").addResourceLocations("classpath:/companyimages/");
         registry.addResourceHandler("/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/swagger-ui.html");
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");

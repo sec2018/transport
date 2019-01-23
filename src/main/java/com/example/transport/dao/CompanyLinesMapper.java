@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface CompanyLinesMapper {
@@ -38,5 +37,4 @@ public interface CompanyLinesMapper {
 
     @Delete({"delete from company_lines where company_id = #{company_id}"})
     int deleteByCompanyId(@Param("company_id")Integer company_id);
-
 }

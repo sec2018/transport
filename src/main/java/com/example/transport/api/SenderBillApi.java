@@ -1396,9 +1396,9 @@ public class SenderBillApi {
                 List<List<List<String>>> allValue = new ArrayList<>();
                 List<String> content1 = Arrays.asList(new String[]{bill.getRec_name(),bill.getRec_tel(),bill.getRec_procity(),bill.getRec_detailarea()});
                 List<String> content2 = Arrays.asList(new String[]{bill.getSender_name(),bill.getSender_tel(),bill.getSender_procity(),bill.getRec_detailarea()});
-                List<String> content3 = Arrays.asList(new String[]{bill.getCompany_code(),bill.getGoodsname(),bill.getShop_name(),finish_time});
+                List<String> content3 = Arrays.asList(new String[]{bill.getCompany_code(),bill.getGoodsname(),bill.getShop_name(),companyLines.getArriveTel(),finish_time});
                 List<String> h4 = Arrays.asList(new String[]{"物流线路","数量","到站地址","物流公司运费","备注"});
-                List<String> content4 = Arrays.asList(new String[]{companyLines.getBeginAddr()+"-->"+companyLines.getArriveAddr(),bill.getGoodsnum()+"",companyLines.getArriveAddr(),bill.getPrice()+"",bill.getBillinfo()});
+                List<String> content4 = Arrays.asList(new String[]{companyLines.getBeginAddr()+"-->"+companyLines.getArriveAddr(),bill.getGoodsnum()+"",companyLines.getArriveAddr(),bill.getDelivery_fee()+"",bill.getBillinfo()});
                 List<List<String>> contentArray1 = new ArrayList<>();
                 contentArray1.add(content1);
                 List<List<String>> contentArray2 = new ArrayList<>();

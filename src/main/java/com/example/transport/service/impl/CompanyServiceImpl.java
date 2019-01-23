@@ -1,6 +1,5 @@
 package com.example.transport.service.impl;
 
-import com.example.transport.api.Common;
 import com.example.transport.dao.CompanyLinesMapper;
 import com.example.transport.dao.SysCompanyMapper;
 import com.example.transport.pojo.CompanyLines;

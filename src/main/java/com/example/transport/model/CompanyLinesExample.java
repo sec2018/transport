@@ -150,6 +150,7 @@ public class CompanyLinesExample {
         }
 
         public Criteria andIdNotIn(List<Integer> values) {
+            addCriterion("id not in", values, "id");
             return (Criteria) this;
         }
 
@@ -430,6 +431,76 @@ public class CompanyLinesExample {
 
         public Criteria andBeginAddrNotBetween(String value1, String value2) {
             addCriterion("begin_addr not between", value1, value2, "beginAddr");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrIsNull() {
+            addCriterion("arrive_detail_addr is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrIsNotNull() {
+            addCriterion("arrive_detail_addr is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrEqualTo(String value) {
+            addCriterion("arrive_detail_addr =", value, "arriveDetailAddr");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrNotEqualTo(String value) {
+            addCriterion("arrive_detail_addr <>", value, "arriveDetailAddr");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrGreaterThan(String value) {
+            addCriterion("arrive_detail_addr >", value, "arriveDetailAddr");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrGreaterThanOrEqualTo(String value) {
+            addCriterion("arrive_detail_addr >=", value, "arriveDetailAddr");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrLessThan(String value) {
+            addCriterion("arrive_detail_addr <", value, "arriveDetailAddr");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrLessThanOrEqualTo(String value) {
+            addCriterion("arrive_detail_addr <=", value, "arriveDetailAddr");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrLike(String value) {
+            addCriterion("arrive_detail_addr like", value, "arriveDetailAddr");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrNotLike(String value) {
+            addCriterion("arrive_detail_addr not like", value, "arriveDetailAddr");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrIn(List<String> values) {
+            addCriterion("arrive_detail_addr in", values, "arriveDetailAddr");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrNotIn(List<String> values) {
+            addCriterion("arrive_detail_addr not in", values, "arriveDetailAddr");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrBetween(String value1, String value2) {
+            addCriterion("arrive_detail_addr between", value1, value2, "arriveDetailAddr");
+            return (Criteria) this;
+        }
+
+        public Criteria andArriveDetailAddrNotBetween(String value1, String value2) {
+            addCriterion("arrive_detail_addr not between", value1, value2, "arriveDetailAddr");
             return (Criteria) this;
         }
     }

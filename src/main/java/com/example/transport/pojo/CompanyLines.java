@@ -11,12 +11,15 @@ public class CompanyLines {
 
     private String beginAddr;
 
-    public CompanyLines(Integer id, Integer companyId, String arriveAddr, String arriveTel, String beginAddr) {
+    private String arriveDetailAddr;
+
+    public CompanyLines(Integer id, Integer companyId, String arriveAddr, String arriveTel, String beginAddr, String arriveDetailAddr) {
         this.id = id;
         this.companyId = companyId;
         this.arriveAddr = arriveAddr;
         this.arriveTel = arriveTel;
         this.beginAddr = beginAddr;
+        this.arriveDetailAddr = arriveDetailAddr;
     }
 
     public CompanyLines() {
@@ -61,5 +64,13 @@ public class CompanyLines {
 
     public void setBeginAddr(String beginAddr) {
         this.beginAddr = beginAddr == null ? null : beginAddr.trim();
+    }
+
+    public String getArriveDetailAddr() {
+        return arriveDetailAddr;
+    }
+
+    public void setArriveDetailAddr(String arriveDetailAddr) {
+        this.arriveDetailAddr = arriveDetailAddr == null ? null : arriveDetailAddr.trim();
     }
 }

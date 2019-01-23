@@ -773,6 +773,66 @@ public class SysCompanyExample {
             addCriterion("evaluation not between", value1, value2, "evaluation");
             return (Criteria) this;
         }
+
+        public Criteria andDefaultLineidIsNull() {
+            addCriterion("default_lineid is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultLineidIsNotNull() {
+            addCriterion("default_lineid is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultLineidEqualTo(Integer value) {
+            addCriterion("default_lineid =", value, "defaultLineid");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultLineidNotEqualTo(Integer value) {
+            addCriterion("default_lineid <>", value, "defaultLineid");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultLineidGreaterThan(Integer value) {
+            addCriterion("default_lineid >", value, "defaultLineid");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultLineidGreaterThanOrEqualTo(Integer value) {
+            addCriterion("default_lineid >=", value, "defaultLineid");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultLineidLessThan(Integer value) {
+            addCriterion("default_lineid <", value, "defaultLineid");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultLineidLessThanOrEqualTo(Integer value) {
+            addCriterion("default_lineid <=", value, "defaultLineid");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultLineidIn(List<Integer> values) {
+            addCriterion("default_lineid in", values, "defaultLineid");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultLineidNotIn(List<Integer> values) {
+            addCriterion("default_lineid not in", values, "defaultLineid");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultLineidBetween(Integer value1, Integer value2) {
+            addCriterion("default_lineid between", value1, value2, "defaultLineid");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultLineidNotBetween(Integer value1, Integer value2) {
+            addCriterion("default_lineid not between", value1, value2, "defaultLineid");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
