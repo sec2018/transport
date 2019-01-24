@@ -21,4 +21,6 @@ public interface UserService {
     boolean updateWxUser(WxUser wxUser);
 
     long getWxUserId(String openid);
+
+    WxUser getWxUserById(long id);
 }

@@ -65,5 +65,10 @@ public class UserServiceImpl implements UserService {
         return userDao.getWxUserId(openid);
     }
 
+    @Override
+    public WxUser getWxUserById(long id) {
+        return userDao.getWxUserById(id);
+    }
+
 
 }

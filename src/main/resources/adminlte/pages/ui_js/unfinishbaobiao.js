@@ -85,7 +85,7 @@ $(function () {
                         { "data": "shop_name" },
                         { "data": "rec_name","class": "center" },
                         { "data": "company_name" },
-                        { "data": "ststus" },
+                        { "data": "status" },
                         { "data": "statustime" },
                         // {
                         //     data: 'statustime',

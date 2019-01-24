@@ -1,14 +1,14 @@
 /**
  * Created by 03010335 on 2018/8/22.
  */
-var billviewdata;
-var billdata;
+var viewdata;
 $(function () {
     var senddata = {};
     senddata.startitem = 1;
     senddata.pagesize = 10;
+    senddata.isfinishflag = 1;
     $.ajax({
-        url: "/transport/api/getusertabbill",
+        url: "/transport/api/getallcompany",
         method: "GET",
         data: senddata,
         beforeSend: function(request) {
@@ -20,14 +20,12 @@ $(function () {
                 alert(data.msg);
                 return;
             }else{
-                billviewdata = $.extend(true,[],data.data.billviewdata);
-                billdata = $.extend(true,[],data.data.billdata);
-                for(var i = 0;i<data.data.billviewdata.length;i++){
-                    data.data.billviewdata[i].statustime = timetrans(data.data.billviewdata[i].statustime).replace('T'," ");
-                    data.data.billviewdata[i].action = "<a href='#'>删除</a>"
+                for(var i = 0;i<data.data.length;i++){
+                    data.data[i].action = "<a href='#'>删除</a>"
                 }
+                viewdata = $.extend(true,[],data.data);
                 var dt = $('#datatable').DataTable({
-                    data: data.data.billviewdata,
+                    data: data.data,
                     "jQueryUI": true,
                     'paging'      : true,
                     lengthMenu: [　//显示几条数据设置
@@ -72,13 +70,13 @@ $(function () {
                             "defaultContent": "",
                             "width": "1px"
                         },
-                        { "data": "bill_code","width":"140px"},
-                        { "data": "line" },
-                        { "data": "shop_name" },
-                        { "data": "rec_name" },
+                        { "data": "company_id"},
                         { "data": "company_name" },
-                        { "data": "status"},
-                        { "data": "statustime","width":"140px" },
+                        { "data": "nickname" },
+                        { "data": "company_tel" },
+                        { "data": "line" },
+                        { "data": "company_procity","width":"140px"},
+                        { "data": "company_tel"},
                         { "data": "action" }
                     ],
                     buttons: [
@@ -144,9 +142,10 @@ $(function () {
 
 
     function format ( index ) {
-        return '运单编号: '+billdata[index].bill_code+'   &nbsp;&nbsp;&nbsp;&nbsp;物流公司名称：'+billdata[index].company_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;商品名称：'+billdata[index].goodsname+
-            '   &nbsp;&nbsp;&nbsp;&nbsp;商品数量: '+billdata[index].goodsnum+ '   &nbsp;&nbsp;&nbsp;&nbsp;快递费用: '+billdata[index].delivery_fee+ '<br>' +'收件人姓名: '+billdata[index].rec_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;收件人地址: '+billdata[index].rec_procity+billdata[index].rec_detailarea+  '   &nbsp;&nbsp;&nbsp;&nbsp;收件人电话: '+billdata[index].rec_tel+ '<br>' +
-            '寄件人姓名: '+billdata[index].sender_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;寄件人地址: '+billdata[index].sender_procity+billdata[index].sender_detailarea+ '   &nbsp;&nbsp;&nbsp;&nbsp;寄件人电话: '+billdata[index].sender_tel+ '<br>';
+        // return '运单编号: '+billdata[index].bill_code+'   &nbsp;&nbsp;&nbsp;&nbsp;物流公司名称：'+billdata[index].company_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;商品名称：'+billdata[index].goodsname+
+        //     '   &nbsp;&nbsp;&nbsp;&nbsp;商品数量: '+billdata[index].goodsnum+ '   &nbsp;&nbsp;&nbsp;&nbsp;快递费用: '+billdata[index].delivery_fee+ '<br>' +'收件人姓名: '+billdata[index].rec_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;收件人地址: '+billdata[index].rec_procity+billdata[index].rec_detailarea+  '   &nbsp;&nbsp;&nbsp;&nbsp;收件人电话: '+billdata[index].rec_tel+ '<br>' +
+        //     '寄件人姓名: '+billdata[index].sender_name+ '   &nbsp;&nbsp;&nbsp;&nbsp;寄件人地址: '+billdata[index].sender_procity+billdata[index].sender_detailarea+ '   &nbsp;&nbsp;&nbsp;&nbsp;寄件人电话: '+billdata[index].sender_tel+ '<br>';
+        return "aaa";
     }
 
     function timetrans(date){
@@ -160,7 +159,7 @@ $(function () {
         var s = (date.getSeconds() <10 ? '0' + date.getSeconds() : date.getSeconds());
         return Y+M+D+h+m+s;
     }
-    
+
     function deleteRow(obj) {
         alert(obj.id);
     }

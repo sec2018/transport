@@ -10,7 +10,7 @@ public class BillView {
     private String shop_name;
     private String rec_name;
     private String company_name;
-    private String ststus;
+    private String status;
     private Date statustime;
 
     public long getId() {
@@ -61,12 +61,12 @@ public class BillView {
         this.company_name = company_name;
     }
 
-    public String getStstus() {
-        return ststus;
+    public String getStatus() {
+        return status;
     }
 
-    public void setStstus(String ststus) {
-        this.ststus = ststus;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Date getStatustime() {

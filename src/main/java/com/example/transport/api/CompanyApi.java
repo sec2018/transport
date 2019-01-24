@@ -346,8 +346,6 @@ public class CompanyApi {
                 }
                 boolean flag = companyService.insert(sysCompany,companyLines);
                 if(flag){
-                    //修改营业执照图片名称
-
                     r.setCode("200");
                     r.setMsg("添加物流公司成功！");
                     r.setData(null);
@@ -485,28 +483,28 @@ public class CompanyApi {
 
 
 
-    //角色1,2，3,4
-    @ApiOperation(value = "查询所有物流公司", notes = "查询所有物流公司")
-    @RequestMapping(value="getcompanies",method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<JsonResult> GetCompanies(){
-        JsonResult r = new JsonResult();
-        try {
-            SysCompanyExample example = new SysCompanyExample();
-            List<SysCompany> companylist = sysCompanyMapper.selectByExample(example);
-            r.setCode("200");
-            r.setMsg("获取物流公司成功！");
-            r.setData(companylist);
-            r.setSuccess(true);
-        } catch (Exception e) {
-            r.setCode(Constant.COMPANY_GETFAILURE.getCode()+"");
-            r.setData(e.getClass().getName() + ":" + e.getMessage());
-            r.setMsg(Constant.COMPANY_GETFAILURE.getMsg());
-            r.setSuccess(false);
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok(r);
-    }
+    //角色1,2，3,4(无权限)
+//    @ApiOperation(value = "查询所有物流公司(暂不要用)", notes = "查询所有物流公司(暂不要用)")
+//    @RequestMapping(value="getcompanies",method = RequestMethod.GET)
+//    @ResponseBody
+//    public ResponseEntity<JsonResult> GetCompanies(){
+//        JsonResult r = new JsonResult();
+//        try {
+//            SysCompanyExample example = new SysCompanyExample();
+//            List<SysCompany> companylist = sysCompanyMapper.selectByExample(example);
+//            r.setCode("200");
+//            r.setMsg("获取物流公司成功！");
+//            r.setData(companylist);
+//            r.setSuccess(true);
+//        } catch (Exception e) {
+//            r.setCode(Constant.COMPANY_GETFAILURE.getCode()+"");
+//            r.setData(e.getClass().getName() + ":" + e.getMessage());
+//            r.setMsg(Constant.COMPANY_GETFAILURE.getMsg());
+//            r.setSuccess(false);
+//            e.printStackTrace();
+//        }
+//        return ResponseEntity.ok(r);
+//    }
 
     //角色1,2，3,4
     @ApiOperation(value = "查询所有物流公司个数", notes = "查询所有物流公司个数")
@@ -533,7 +531,7 @@ public class CompanyApi {
 
 
 
-    //角色1,2
+    //角色1,4
     @ApiOperation(value = "查询用户物流公司", notes = "查询物流公司")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
@@ -578,6 +576,94 @@ public class CompanyApi {
         }
         return ResponseEntity.ok(r);
     }
+
+
+    //角色1,4
+    @ApiOperation(value = "查询所有物流公司", notes = "查询所有物流公司")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="getallcompany",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> GetAllCompany(HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("0") && !roleid.equals("1") && !roleid.equals("4")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        String token = request.getHeader("token");
+        r = ConnectRedisCheckToken(token);
+
+        //超级管理员,PC端
+        if (roleid.equals("0")) {
+            token = getAdminToken();
+            if (!token.equals(token)) {
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
+            } else {
+                r = GetAllCompanies();
+            }
+        } else {
+            r = ConnectRedisCheckToken(token);
+            String tokenvalue = "";
+            try {
+                tokenvalue = r.getData().toString();
+                if (tokenvalue != null) {
+                    r = GetAllCompanies();
+                }
+            } catch (Exception e) {
+                r = Common.TokenError();
+                e.printStackTrace();
+                return ResponseEntity.ok(r);
+            }
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    public JsonResult GetAllCompanies(){
+        JsonResult r = new JsonResult();
+        try {
+            SysCompanyExample example = new SysCompanyExample();
+            List<SysCompany> companylist = sysCompanyMapper.selectByExample(example);
+            List<Map<String,Object>> cmaplist = new ArrayList<>();
+            Map<String,Object> cmap = null;
+            CompanyLines companyLines = null;
+            for(SysCompany sc : companylist){
+                cmap = new HashMap<String,Object>();
+                cmap.put("company_id",sc.getCompanyId());
+                cmap.put("company_name",sc.getCompanyName());
+                cmap.put("company_procity",sc.getCompanyProcity());
+                cmap.put("company_detailarea",sc.getCompanyDetailarea());
+                cmap.put("wxuser_id",sc.getWxuserId());
+                cmap.put("nickname",userService.getWxUserById(sc.getWxuserId()).getNickname());
+                cmap.put("company_tel",sc.getCompanyTel());
+                cmap.put("licence_url",sc.getLicenceUrl());
+                cmap.put("complain_tel",sc.getComplainTel());
+                cmap.put("service_tel",sc.getServiceTel());
+                cmap.put("evaluation",sc.getEvaluation());
+                cmap.put("default_lineid",sc.getDefaultLineid());
+                companyLines = companyLinesMapper.selectByPrimaryKey(sc.getDefaultLineid());
+                cmap.put("line",companyLines.getBeginAddr()+"-->"+companyLines.getArriveAddr());
+                cmap.put("arrive_detail_addr",companyLines.getArriveDetailAddr());
+                cmaplist.add(cmap);
+            }
+            r.setCode("200");
+            r.setMsg("获取物流公司成功！");
+            r.setData(cmaplist);
+            r.setSuccess(true);
+        } catch (Exception e) {
+            r.setCode(Constant.COMPANY_GETFAILURE.getCode()+"");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg(Constant.COMPANY_GETFAILURE.getMsg());
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return  r;
+    }
+
 
 
     public JsonResult ConnectRedisCheckToken(String token){
@@ -753,7 +839,8 @@ public class CompanyApi {
                     if (StringUtils.isNotBlank(fileName)) {
                         // 文件上传的最终保存路径
                         //target/class里面
-                        String finalimagePath = ResourceUtils.getURL("classpath:").getPath()+"companyimages/"+UUID.randomUUID().toString()+".png";
+                        String filefinalname = UUID.randomUUID().toString()+".png";
+                        String finalimagePath = ResourceUtils.getURL("classpath:").getPath()+"companyimages/"+ filefinalname;
                         File outFile = new File(finalimagePath);
                         if (outFile.getParentFile() != null || !outFile.getParentFile().isDirectory()) {
                             // 创建父文件夹
@@ -764,7 +851,8 @@ public class CompanyApi {
                         IOUtils.copy(inputStream, fileOutputStream);
                         r.setCode("200");
                         r.setMsg("上传物流公司营业执照成功！");
-                        r.setData(outFile.getAbsolutePath());
+//                        r.setData(outFile.getAbsolutePath());
+                        r.setData(filefinalname);
                         r.setSuccess(true);
                     }
                 } else {

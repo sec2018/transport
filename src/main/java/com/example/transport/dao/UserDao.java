@@ -27,4 +27,7 @@ public interface UserDao {
 
     @Select("select id from wx_user where openid = #{openid}")
     long getWxUserId(String openid);
+
+    @Select("select * from wx_user where id = #{id}")
+    WxUser getWxUserById(long id);
 }

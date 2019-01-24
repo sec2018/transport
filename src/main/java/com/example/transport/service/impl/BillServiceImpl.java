@@ -405,15 +405,15 @@ public class BillServiceImpl implements BillService{
             billView.setCompany_name(sb.getCompany_name());
             switch (sb.getBill_status()){
                 case 1:
-                    billView.setStstus("已下单，待接单");
+                    billView.setStatus("已下单，待接单");
                     billView.setStatustime(sb.getCreate_time());
                     break;
                 case 2:
-                    billView.setStstus("已接单，待揽收");
+                    billView.setStatus("已接单，待揽收");
                     billView.setStatustime(sb.getRec_time());
                     break;
                 case 3:
-                    billView.setStstus("已揽收，托运中");
+                    billView.setStatus("已揽收，托运中");
                     billView.setStatustime(sb.getPay_time());
                     break;
             }
@@ -444,7 +444,7 @@ public class BillServiceImpl implements BillService{
             billView.setShop_name(sb.getShop_name());
             billView.setRec_name(sb.getRec_name());
             billView.setCompany_name(sb.getCompany_name());
-            billView.setStstus("运单完成");
+            billView.setStatus("运单完成");
             billView.setStatustime(sb.getFinish_time());
             viewList.add(billView);
         }
