@@ -102,7 +102,7 @@ public class CompanyApi {
             String key = cl.getBeginAddr()+"-->"+cl.getArriveAddr();
             companyname = sysCompanyMapper.selectByPrimaryKey(cl.getCompanyId()).getCompanyName();
             companylistmap = new HashMap<Integer,String>();
-            companylistmap.put(cl.getCompanyId(),companyname);
+            companylistmap.put(cl.getId(),companyname);
             if(linemaplist.size() == 0){
                 lp = new LineMap();
                 lp.setKey(key);
@@ -112,12 +112,12 @@ public class CompanyApi {
                 for(int i=0;i<linemaplist.size();i++){
                     if(linemaplist.get(i).getKey().equals(key)){
                         if(!linemaplist.get(i).getValuemap().containsKey(cl.getCompanyId())){
-                            linemaplist.get(i).getValuemap().put(cl.getCompanyId(),companyname);
+                            linemaplist.get(i).getValuemap().put(cl.getId(),companyname);
                             break;
                         }
                     }else{
                         companylistmap = new HashMap<Integer,String>();
-                        companylistmap.put(cl.getCompanyId(),companyname);
+                        companylistmap.put(cl.getId(),companyname);
                         lp = new LineMap();
                         lp.setKey(key);
                         lp.setValuemap(companylistmap);
@@ -252,9 +252,10 @@ public class CompanyApi {
             @ApiImplicitParam(name = "complain_tel", value = "投诉电话", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "service_tel", value = "服务电话", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "evaluation", value = "评价", required = true, dataType = "Integer",paramType = "query"),
-            @ApiImplicitParam(name = "begin_addr", value = "默认线路出发地", required = true, dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "arrive_addr", value = "默认线路到站地址", required = true, dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "arrive_tel", value = "默认线路到达电话", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "begin_addr", value = "默认线路出发地", required = false, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "arrive_addr", value = "默认线路到站地址", required = false, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "arrive_tel", value = "默认线路到达电话", required = false, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "arrive_detail_addr", value = "默认线路到站详细地址", required = false, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "line_id", value = "默认线路id", required = false, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
@@ -270,9 +271,10 @@ public class CompanyApi {
                                                  @RequestParam(value = "complain_tel")String complain_tel,
                                                  @RequestParam(value = "service_tel")String service_tel,
                                                  @RequestParam(value = "evaluation")Integer evaluation,
-                                                 @RequestParam(value = "begin_addr")String begin_addr,
-                                                 @RequestParam(value = "arrive_addr")String arrive_addr,
-                                                 @RequestParam(value = "arrive_tel")String arrive_tel,
+                                                 @RequestParam(value = "begin_addr",required = false)String begin_addr,
+                                                 @RequestParam(value = "arrive_addr",required = false)String arrive_addr,
+                                                 @RequestParam(value = "arrive_tel",required = false)String arrive_tel,
+                                                 @RequestParam(value = "arrive_detail_addr",required = false)String arrive_detail_addr,
                                                  @RequestParam(value = "line_id",required = false)Integer line_id,
                                                  HttpServletRequest request){
         String roleid = request.getHeader("roleid");
@@ -290,9 +292,9 @@ public class CompanyApi {
                 r = Common.TokenError();
                 return ResponseEntity.ok(r);
             } else {
-                r = AddCompany(token,"",companyid,companyname,company_tel,company_procity,
+                r = AddOrUpdateCompany(token,"",companyid,companyname,company_tel,company_procity,
                         company_detailarea,licence_url,complain_tel,service_tel,
-                        evaluation,begin_addr,arrive_addr,arrive_tel,line_id);
+                        evaluation,begin_addr,arrive_addr,arrive_tel,arrive_detail_addr,line_id);
             }
         }else{
             r = ConnectRedisCheckToken(token);
@@ -304,17 +306,17 @@ public class CompanyApi {
                 e.printStackTrace();
                 return ResponseEntity.ok(r);
             }
-            r = AddCompany("",tokenvalue,companyid,companyname,company_tel,company_procity,
+            r = AddOrUpdateCompany("",tokenvalue,companyid,companyname,company_tel,company_procity,
                     company_detailarea,licence_url,complain_tel,service_tel,
-                    evaluation,begin_addr,arrive_addr,arrive_tel,line_id);
+                    evaluation,begin_addr,arrive_addr,arrive_tel,arrive_detail_addr,line_id);
         }
         return ResponseEntity.ok(r);
     }
 
 
-    public JsonResult AddCompany(String token,String tokenvalue,Integer companyid,String companyname,String company_tel,String company_procity,
+    public JsonResult AddOrUpdateCompany(String token,String tokenvalue,Integer companyid,String companyname,String company_tel,String company_procity,
                                                  String company_detailarea,String licence_url,String complain_tel,String service_tel,
-                                                 Integer evaluation,String begin_addr,String arrive_addr,String arrive_tel,
+                                                 Integer evaluation,String begin_addr,String arrive_addr,String arrive_tel,String arrive_detail_addr,
                                                  Integer line_id){
         JsonResult r = new JsonResult();
         if(companyid == null) {
@@ -327,11 +329,13 @@ public class CompanyApi {
             sysCompany.setLicenceUrl(licence_url);
             sysCompany.setServiceTel(service_tel);
             sysCompany.setEvaluation(evaluation);
+            sysCompany.setComplainTel(complain_tel);
 
             CompanyLines companyLines = new CompanyLines();
             companyLines.setBeginAddr(begin_addr);
             companyLines.setArriveAddr(arrive_addr);
             companyLines.setArriveTel(arrive_tel);
+            companyLines.setArriveDetailAddr(arrive_detail_addr);
             try {
                 if(tokenvalue != "" && token == "") {
                     redisService.expire(token, Constant.expire.getExpirationTime());
@@ -562,6 +566,7 @@ public class CompanyApi {
                 String openid = tokenvalue.split("\\|")[0];
                 long wxuserid = userService.getWxUserId(openid);
                 SysCompany sysCompany = sysCompanyMapper.selectByWxuserid(wxuserid);
+                sysCompany.setLicenceUrl("/companyimages/"+sysCompany.getLicenceUrl());
                 r.setCode("200");
                 r.setMsg("查询物流公司成功！");
                 r.setData(sysCompany);

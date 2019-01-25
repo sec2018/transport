@@ -102,7 +102,7 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.example.transport.pojo.CompanyLines" >
+  <insert id="insert" parameterType="com.example.transport.pojo.CompanyLines"   useGeneratedKeys="true" keyProperty="id">
     insert into company_lines (id, company_id, arrive_addr, 
       arrive_tel, begin_addr, arrive_detail_addr
       )

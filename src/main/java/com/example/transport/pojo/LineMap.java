@@ -23,4 +23,6 @@ public class LineMap {
     }
 
     private Map<Integer,String> valuemap;
+
+    private Integer id;
 }

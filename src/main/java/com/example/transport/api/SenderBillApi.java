@@ -82,6 +82,7 @@ public class SenderBillApi {
             @ApiImplicitParam(name = "rec_procity", value = "收件人省市", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "rec_detailarea", value = "收件人详细地址", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "price", value = "总价", required = true, dataType = "Double",paramType = "query"),
+            @ApiImplicitParam(name = "line_id", value = "线路标示", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "company_code", value = "运单号", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header")
@@ -92,7 +93,7 @@ public class SenderBillApi {
                         @RequestParam(value = "shop_id")int shop_id,@RequestParam(value = "shop_name")String shop_name, @RequestParam(value = "company_id")int company_id, @RequestParam(value = "company_name")String company_name,
                         @RequestParam(value = "batch_code")String batch_code,@RequestParam(value = "lat")String lat,@RequestParam(value = "lng")String lng,@RequestParam(value = "billinfo")String billinfo,
                         @RequestParam(value = "sender_procity")String sender_procity,@RequestParam(value = "sender_detailarea")String sender_detailarea,@RequestParam(value = "rec_name")String rec_name,
-                        @RequestParam(value = "rec_tel")String rec_tel,@RequestParam(value = "rec_procity")String rec_procity,@RequestParam(value = "rec_detailarea")String rec_detailarea,@RequestParam(value = "price")double price,
+                        @RequestParam(value = "rec_tel")String rec_tel,@RequestParam(value = "rec_procity")String rec_procity,@RequestParam(value = "rec_detailarea")String rec_detailarea,@RequestParam(value = "price")double price,@RequestParam(value = "line_id")int line_id,
                                                  @RequestParam(value = "company_code")String company_code,HttpServletRequest request) {
         String token = request.getHeader("token");
         String roleid = request.getHeader("roleid");
@@ -146,6 +147,7 @@ public class SenderBillApi {
                 sysBill.setRec_detailarea(rec_detailarea);
                 sysBill.setPrice(price);
                 sysBill.setCompany_code(company_code);
+                sysBill.setLine_id(line_id);
 //                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");//注意格式化的表达式
 //                sysBill.setCreate_time(format.parse(format.format(new Date())));
                 sysBill.setCreate_time(new Date());
@@ -397,6 +399,8 @@ public class SenderBillApi {
             @ApiImplicitParam(name = "rec_procity", value = "收件人省市", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "rec_detailarea", value = "收件人详细地址", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "price", value = "总价", required = true, dataType = "Double",paramType = "query"),
+            @ApiImplicitParam(name = "delivery_fee", value = "物流运费", required = true, dataType = "Double",paramType = "query"),
+            @ApiImplicitParam(name = "line_id", value = "线路标示", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
@@ -410,7 +414,7 @@ public class SenderBillApi {
                         @RequestParam(value = "sender_detailarea")String sender_detailarea,@RequestParam(value = "rec_name")String rec_name,
                         @RequestParam(value = "rec_tel")String rec_tel,@RequestParam(value = "rec_procity")String rec_procity,
                         @RequestParam(value = "rec_detailarea")String rec_detailarea,@RequestParam(value = "price")double price,
-                        HttpServletRequest request){
+                        @RequestParam(value = "delivery_fee")double delivery_fee,@RequestParam(value = "line_id")int line_id,HttpServletRequest request){
         JsonResult r = new JsonResult();
         String token = request.getHeader("token");
         String roleid = request.getHeader("roleid");
@@ -451,6 +455,8 @@ public class SenderBillApi {
                 sysBill.setRec_procity(rec_procity);
                 sysBill.setRec_detailarea(rec_detailarea);
                 sysBill.setPrice(price);
+                sysBill.setDelivery_fee(delivery_fee);
+                sysBill.setLine_id(line_id);
                 boolean flag = billService.SenderUpdateBill(sysBill);
                 if (flag) {
                     r = Common.BillUpdateSuccess();

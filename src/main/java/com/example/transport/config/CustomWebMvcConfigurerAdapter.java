@@ -18,6 +18,7 @@ public class CustomWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
         //拦截所有的controller
         registry.addInterceptor(loginInterceptor).addPathPatterns("/*")
                 .excludePathPatterns("/login")
+                .excludePathPatterns("/wx/wxlogin*")
                 .excludePathPatterns("/sublogin*");
         super.addInterceptors(registry);
     }

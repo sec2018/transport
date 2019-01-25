@@ -108,7 +108,7 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.example.transport.pojo.SysCompany" >
+  <insert id="insert" parameterType="com.example.transport.pojo.SysCompany"  useGeneratedKeys="true" keyProperty="companyId">
     insert into sys_company (company_id, company_name, company_procity, 
       company_detailarea, wxuser_id, company_tel, 
       licence_url, complain_tel, service_tel, 

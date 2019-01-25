@@ -29,8 +29,10 @@ public class CompanyServiceImpl implements CompanyService{
             int companyid = sysCompanyMapper.insert(record);
             if(companyid>0 && record.getCompanyId()!=null){
                 companyLines.setCompanyId(record.getCompanyId());
-                boolean flag  = companyLinesMapper.insert(companyLines)==1?true:false;
-                if(flag){
+                int lineid  = companyLinesMapper.insert(companyLines);
+                if(lineid>0 && companyLines.getId()!=null){
+                    record.setDefaultLineid(companyLines.getId());
+                    sysCompanyMapper.updateByPrimaryKey(record);
                     return true;
                 }else{
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

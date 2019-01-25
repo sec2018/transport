@@ -11,7 +11,7 @@ import java.util.Map;
 public interface BillDao {
 
     //新增订单
-    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_id,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng,goodsname,goodsnum,billinfo,sender_procity,sender_detailarea,rec_name,rec_tel,rec_procity,rec_detailarea,price,company_code,create_time) values(0,#{bill_code},#{sender_id},#{sender_name},#{sender_tel},#{shop_id},#{shop_name},#{company_id},#{company_name},#{trans_id},#{trans_name},#{batch_code},#{bill_status},#{sender_lat},#{sender_lng},#{goodsname},#{goodsnum},#{billinfo},#{sender_procity},#{sender_detailarea},#{rec_name},#{rec_tel},#{rec_procity},#{rec_detailarea},#{price},#{company_code},#{create_time})"})
+    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_id,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng,goodsname,goodsnum,billinfo,sender_procity,sender_detailarea,rec_name,rec_tel,rec_procity,rec_detailarea,price,company_code,create_time,line_id) values(0,#{bill_code},#{sender_id},#{sender_name},#{sender_tel},#{shop_id},#{shop_name},#{company_id},#{company_name},#{trans_id},#{trans_name},#{batch_code},#{bill_status},#{sender_lat},#{sender_lng},#{goodsname},#{goodsnum},#{billinfo},#{sender_procity},#{sender_detailarea},#{rec_name},#{rec_tel},#{rec_procity},#{rec_detailarea},#{price},#{company_code},#{create_time},#{line_id})"})
     int insertBill(SysBill sysBill);
 
     //根据sender_id来查询某用户下所有订单
@@ -37,7 +37,7 @@ public interface BillDao {
     List<SysBill> selectAllUnBills();
 
     //商户更新订单内容
-    @Update({"update sys_bill set sender_name = #{sender_name},sender_tel = #{sender_tel},shop_id=#{shop_id},shop_name=#{shop_name},company_id=#{company_id},company_name=#{company_name},goodsname=#{goodsname},goodsnum=#{goodsnum},batch_code=#{batch_code},sender_lat=#{sender_lat},sender_lng=#{sender_lng},billinfo=#{billinfo},sender_procity=#{sender_procity},sender_detailarea=#{sender_detailarea},rec_name=#{rec_name},rec_tel=#{rec_tel},rec_procity=#{rec_procity},rec_detailarea=#{rec_detailarea},price=#{price} where id = #{id}"})
+    @Update({"update sys_bill set sender_name = #{sender_name},sender_tel = #{sender_tel},shop_id=#{shop_id},shop_name=#{shop_name},company_id=#{company_id},company_name=#{company_name},goodsname=#{goodsname},goodsnum=#{goodsnum},batch_code=#{batch_code},sender_lat=#{sender_lat},sender_lng=#{sender_lng},billinfo=#{billinfo},sender_procity=#{sender_procity},sender_detailarea=#{sender_detailarea},rec_name=#{rec_name},rec_tel=#{rec_tel},rec_procity=#{rec_procity},rec_detailarea=#{rec_detailarea},price=#{price},delivery_fee={#delivery_fee},line_id=#{line_id} where id = #{id}"})
     int SenderUpdateBill(SysBill sysBill);
 
     //支付订单

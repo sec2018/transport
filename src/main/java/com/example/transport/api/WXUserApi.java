@@ -264,6 +264,7 @@ public class WXUserApi {
                     if(shopnum<1){
                         r.setCode(Constant.RoleShop_ERROR.getCode()+"");
                         r.setMsg(Constant.RoleShop_ERROR.getMsg());
+                        jsonObject.put("isfirst", true);     //此data为token
                         r.setData(jsonObject);
                         r.setSuccess(false);
                         return ResponseEntity.ok(r);
@@ -276,6 +277,7 @@ public class WXUserApi {
                     if(companynum<1){
                         r.setCode(Constant.RoleCompany_ERROR.getCode()+"");
                         r.setMsg(Constant.RoleCompany_ERROR.getMsg());
+                        jsonObject.put("isfirst", true);     //此data为token
                         r.setData(jsonObject);
                         r.setSuccess(false);
                         return ResponseEntity.ok(r);
