@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
@@ -30,7 +32,9 @@ public class ScheduleTask {
     @Autowired
     private SysCompanyMapper sysCompanyMapper;
 
-    @Scheduled(cron = "10 10 17 * * ?")   //每天17点07分10秒触发任务
+
+    @Transactional
+    @Scheduled(cron = "10 53 9 * * ?")   //每天17点07分10秒触发任务
 //    @Scheduled(fixedRate = 50)
     public void FormatLicenceUrl() {
 
@@ -43,11 +47,15 @@ public class ScheduleTask {
             if(licence_url.length()>15){
                 try {
                     licence_url = ResourceUtils.getURL("classpath:").getPath()+"companyimages/"+licence_url;
-                    new_licence_url = sc.getCompanyId()+".png";
+                    new_licence_url = sc.getCompanyId()+"";
                     licence_url = FixFileName(licence_url,new_licence_url);
                     System.out.println(licence_url);
+                    //修改数据库
+                    sc.setLicenceUrl(new_licence_url+".png");
+                    sysCompanyMapper.updateByPrimaryKey(sc);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 }
             }
         }

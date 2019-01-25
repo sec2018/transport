@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Created by WangZJ on 2018/8/13.
@@ -68,6 +69,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public WxUser getWxUserById(long id) {
         return userDao.getWxUserById(id);
+    }
+
+    @Override
+    public List<WxUser> getAllWxUser() {
+        return userDao.getAllWxUser();
     }
 
 

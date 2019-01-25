@@ -589,7 +589,7 @@ public class CompanyApi {
     public ResponseEntity<JsonResult> GetAllCompany(HttpServletRequest request){
         JsonResult r = new JsonResult();
         String roleid = request.getHeader("roleid");
-        if(!roleid.equals("0") && !roleid.equals("1") && !roleid.equals("4")){
+        if(!roleid.equals("0") && !roleid.equals("1")){
             r = Common.RoleError();
             return ResponseEntity.ok(r);
         }
@@ -648,6 +648,7 @@ public class CompanyApi {
                 companyLines = companyLinesMapper.selectByPrimaryKey(sc.getDefaultLineid());
                 cmap.put("line",companyLines.getBeginAddr()+"-->"+companyLines.getArriveAddr());
                 cmap.put("arrive_detail_addr",companyLines.getArriveDetailAddr());
+                cmap.put("arrive_tel",companyLines.getArriveTel());
                 cmaplist.add(cmap);
             }
             r.setCode("200");

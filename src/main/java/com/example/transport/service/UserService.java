@@ -4,6 +4,8 @@ package com.example.transport.service;
 import com.example.transport.pojo.User;
 import com.example.transport.pojo.WxUser;
 
+import java.util.List;
+
 /**
  * Created by WangZJ on 2018/8/13.
  */
@@ -23,4 +25,6 @@ public interface UserService {
     long getWxUserId(String openid);
 
     WxUser getWxUserById(long id);
-}
+
+    List<WxUser> getAllWxUser();
+ }

@@ -4,6 +4,8 @@ import com.example.transport.pojo.User;
 import com.example.transport.pojo.WxUser;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 
 /**
  * Created by WangZJ on 2018/8/13.
@@ -30,4 +32,7 @@ public interface UserDao {
 
     @Select("select * from wx_user where id = #{id}")
     WxUser getWxUserById(long id);
+
+    @Select("select * from wx_user")
+    List<WxUser> getAllWxUser();
 }
