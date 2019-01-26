@@ -69,7 +69,7 @@ public class SenderBillApi {
             @ApiImplicitParam(name = "sender_tel", value = "商家电话", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "shop_id", value = "商铺id", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "shop_name", value = "商铺名称", required = true, dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "company_id", value = "物流公司id", required = true, dataType = "Integer",paramType = "query"),
+//            @ApiImplicitParam(name = "company_id", value = "物流公司id", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "company_name", value = "物流公司名称", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "batch_code", value = "批量下单编号(0代表非批量,1代表批量已保存,或string代表批量成功可查询)", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "lat", value = "经度", required = true, dataType = "String",paramType = "query"),
@@ -90,7 +90,7 @@ public class SenderBillApi {
     @RequestMapping(value = "createbill",method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<JsonResult> createBill(@RequestParam(value = "sender_name")String sender_name,@RequestParam(value = "goodsname")String goodsname, @RequestParam(value = "goodsnum")Integer goodsnum,@RequestParam(value = "sender_tel")String sender_tel,
-                        @RequestParam(value = "shop_id")int shop_id,@RequestParam(value = "shop_name")String shop_name, @RequestParam(value = "company_id")int company_id, @RequestParam(value = "company_name")String company_name,
+                        @RequestParam(value = "shop_id")int shop_id,@RequestParam(value = "shop_name")String shop_name, @RequestParam(value = "company_name")String company_name,
                         @RequestParam(value = "batch_code")String batch_code,@RequestParam(value = "lat")String lat,@RequestParam(value = "lng")String lng,@RequestParam(value = "billinfo")String billinfo,
                         @RequestParam(value = "sender_procity")String sender_procity,@RequestParam(value = "sender_detailarea")String sender_detailarea,@RequestParam(value = "rec_name")String rec_name,
                         @RequestParam(value = "rec_tel")String rec_tel,@RequestParam(value = "rec_procity")String rec_procity,@RequestParam(value = "rec_detailarea")String rec_detailarea,@RequestParam(value = "price")double price,@RequestParam(value = "line_id")int line_id,
@@ -131,6 +131,7 @@ public class SenderBillApi {
                 sysBill.setSender_tel(sender_tel);
                 sysBill.setShop_id(shop_id);
                 sysBill.setShop_name(shop_name);
+                int company_id = companyLinesMapper.selectByPrimaryKey(line_id).getCompanyId();
                 sysBill.setCompany_id(company_id);
                 sysBill.setCompany_name(company_name);
                 sysBill.setBatch_code(batch_code);

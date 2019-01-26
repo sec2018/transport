@@ -74,7 +74,7 @@ public class UserApi {
     }
 
 
-    //角色1,4
+    //角色0,1
     @ApiOperation(value = "查询所有用户", notes = "查询所有用户")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),

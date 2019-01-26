@@ -33,7 +33,7 @@ public interface CompanyLinesMapper {
 
     int updateByPrimaryKey(CompanyLines record);
 
-    int insertLineList(List<CompanyLines> list);
+    int insertLineList(@Param("linelist")List<CompanyLines> list);
 
     @Delete({"delete from company_lines where company_id = #{company_id}"})
     int deleteByCompanyId(@Param("company_id")Integer company_id);

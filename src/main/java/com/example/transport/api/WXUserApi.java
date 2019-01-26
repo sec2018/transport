@@ -6,6 +6,7 @@ import com.example.transport.dao.SysCompanyMapper;
 import com.example.transport.dao.SysShopMapper;
 import com.example.transport.model.SysCompanyExample;
 import com.example.transport.model.SysShopExample;
+import com.example.transport.pojo.SysShop;
 import com.example.transport.pojo.WxUser;
 import com.example.transport.service.Constant;
 import com.example.transport.service.UserService;
@@ -264,10 +265,14 @@ public class WXUserApi {
                     if(shopnum<1){
                         r.setCode(Constant.RoleShop_ERROR.getCode()+"");
                         r.setMsg(Constant.RoleShop_ERROR.getMsg());
-                        jsonObject.put("isfirst", true);     //此data为token
+                        jsonObject.put("isfirst", true);
                         r.setData(jsonObject);
                         r.setSuccess(false);
                         return ResponseEntity.ok(r);
+                    }else if(shopnum == 1){
+                        jsonObject.put("isfirst", false);     //此data为token
+                        SysShop sysShop = sysShopMapper.selectByWxuserid(wx_user_id);
+                        jsonObject.put("ischecked",sysShop.getShopcheckstatus());
                     }
                 }else if(roleid.equals("4")){
                     SysCompanyExample example = new SysCompanyExample();

@@ -230,16 +230,16 @@
 
   <!--批量插入-->
   <insert id="insertLineList" parameterType="java.util.List" >
-    <selectKey resultType ="java.lang.Integer" keyProperty= "id"
-               order= "AFTER">
-      SELECT LAST_INSERT_ID()
-    </selectKey >
+    <!--<selectKey resultType ="java.lang.Integer" keyProperty= "id"-->
+               <!--order= "AFTER">-->
+      <!--SELECT LAST_INSERT_ID()-->
+    <!--</selectKey >-->
     insert into company_lines (id, company_id, arrive_addr,
-    arrive_tel, begin_addr)
+    arrive_tel, begin_addr, arrive_detail_addr)
     values
-    <foreach collection ="list" item="com.example.transport.pojo.CompanyLines" index= "index" separator =",">
+    <foreach collection ="linelist" item="com.example.transport.pojo.CompanyLines" separator =",">
       (#{id,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, #{arriveAddr,jdbcType=VARCHAR},
-      #{arriveTel,jdbcType=VARCHAR}, #{beginAddr,jdbcType=VARCHAR})
+      #{arriveTel,jdbcType=VARCHAR}, #{beginAddr,jdbcType=VARCHAR},#{arrive_detail_addr,jdbcType=VARCHAR})
     </foreach >
   </insert>
 </mapper>

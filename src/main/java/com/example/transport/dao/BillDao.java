@@ -75,11 +75,13 @@ public interface BillDao {
 
 
     //商家根据sender_id和状态bill_status = 1，2 或 3 来查询未完成订单
-    @Select({"select * from sys_bill where sender_id = #{sender_id} and (bill_status = 1 or bill_status = 2 or bill_status = 3) and batch_code!=1"})
+//    @Select({"select * from sys_bill where sender_id = #{sender_id} and (bill_status = 1 or bill_status = 2 or bill_status = 3) and batch_code!=1"})
+    @Select({"select * from sys_bill as a inner join company_lines as b on a.sender_id = #{sender_id} and (a.bill_status = 1 or a.bill_status = 2 or a.bill_status = 3) and a.batch_code!=1 and a.line_id = b.id"})
     List<SysBill>  selectUnfinishBill(@Param("sender_id")long sender_id);
 
     //商家根据sender_id和状态bill_status = 4来查询已完成订单
-    @Select({"select * from sys_bill where sender_id = #{sender_id} and bill_status = 4"})
+//    @Select({"select * from sys_bill where sender_id = #{sender_id} and bill_status = 4"})
+    @Select({"select * from sys_bill as a inner join company_lines as b on a.sender_id = #{sender_id} and a.bill_status = 4 and a.line_id = b.id"})
     List<SysBill>  selectfinishedBill(@Param("sender_id")long sender_id);
 
 

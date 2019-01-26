@@ -24,8 +24,6 @@ public interface SysShopMapper {
 
     SysShop selectByPrimaryKey(Integer shopId);
 
-    SysShop selectByWxuserid(long wxuser_id);
-
     int updateByExampleSelective(@Param("record") SysShop record, @Param("example") SysShopExample example);
 
     int updateByExample(@Param("record") SysShop record, @Param("example") SysShopExample example);
@@ -33,4 +31,6 @@ public interface SysShopMapper {
     int updateByPrimaryKeySelective(SysShop record);
 
     int updateByPrimaryKey(SysShop record);
+
+    SysShop selectByWxuserid(long wxuser_id);
 }

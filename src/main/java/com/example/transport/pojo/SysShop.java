@@ -13,13 +13,16 @@ public class SysShop {
 
     private String shopTel;
 
-    public SysShop(Integer shopId, String shopName, String shopProcity, String shopDetailarea, Long wxuserId, String shopTel) {
+    private Integer shopcheckstatus;
+
+    public SysShop(Integer shopId, String shopName, String shopProcity, String shopDetailarea, Long wxuserId, String shopTel, Integer shopcheckstatus) {
         this.shopId = shopId;
         this.shopName = shopName;
         this.shopProcity = shopProcity;
         this.shopDetailarea = shopDetailarea;
         this.wxuserId = wxuserId;
         this.shopTel = shopTel;
+        this.shopcheckstatus = shopcheckstatus;
     }
 
     public SysShop() {
@@ -72,5 +75,13 @@ public class SysShop {
 
     public void setShopTel(String shopTel) {
         this.shopTel = shopTel == null ? null : shopTel.trim();
+    }
+
+    public Integer getShopcheckstatus() {
+        return shopcheckstatus;
+    }
+
+    public void setShopcheckstatus(Integer shopcheckstatus) {
+        this.shopcheckstatus = shopcheckstatus;
     }
 }

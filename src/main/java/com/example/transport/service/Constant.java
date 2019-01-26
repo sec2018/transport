@@ -73,11 +73,14 @@ public class Constant {
     public static  Constant COMPANY_DELETEFAILURE = new Constant(500506, "删除公司失败");
     public static  Constant COMPANY_LICENCEFAILURE = new Constant(500507, "生成物流公司营业执照地址失败");
     public static  Constant COMPANY_UPLOADIMAGEFAILURE = new Constant(500508, "物流公司上传营业执照失败");
+    public static  Constant COMPANYLINE_GETFAILURE = new Constant(500509, "线路获取失败");
+
 
     //商户模块
     public static  Constant SHOP_ADDFAILURE = new Constant(500601, "添加商铺失败");
     public static  Constant SHOP_GETFAILURE = new Constant(500602, "获取商铺列表失败");
     public static  Constant SHOP_UPDATEFAILURE =  new Constant(500603, "修改商铺失败");
+    public static  Constant SHOP_CHECKFAILURE =  new Constant(500604, "商铺审核不通过，被驳回！");
 
     //个人信息模块
     public static  Constant PERSONINFO_FAILURE = new Constant(500701, "获取个人信息失败");

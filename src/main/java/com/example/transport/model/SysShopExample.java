@@ -503,6 +503,66 @@ public class SysShopExample {
             addCriterion("shop_tel not between", value1, value2, "shopTel");
             return (Criteria) this;
         }
+
+        public Criteria andShopcheckstatusIsNull() {
+            addCriterion("shopcheckstatus is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopcheckstatusIsNotNull() {
+            addCriterion("shopcheckstatus is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopcheckstatusEqualTo(Integer value) {
+            addCriterion("shopcheckstatus =", value, "shopcheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopcheckstatusNotEqualTo(Integer value) {
+            addCriterion("shopcheckstatus <>", value, "shopcheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopcheckstatusGreaterThan(Integer value) {
+            addCriterion("shopcheckstatus >", value, "shopcheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopcheckstatusGreaterThanOrEqualTo(Integer value) {
+            addCriterion("shopcheckstatus >=", value, "shopcheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopcheckstatusLessThan(Integer value) {
+            addCriterion("shopcheckstatus <", value, "shopcheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopcheckstatusLessThanOrEqualTo(Integer value) {
+            addCriterion("shopcheckstatus <=", value, "shopcheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopcheckstatusIn(List<Integer> values) {
+            addCriterion("shopcheckstatus in", values, "shopcheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopcheckstatusNotIn(List<Integer> values) {
+            addCriterion("shopcheckstatus not in", values, "shopcheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopcheckstatusBetween(Integer value1, Integer value2) {
+            addCriterion("shopcheckstatus between", value1, value2, "shopcheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopcheckstatusNotBetween(Integer value1, Integer value2) {
+            addCriterion("shopcheckstatus not between", value1, value2, "shopcheckstatus");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

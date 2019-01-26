@@ -9,6 +9,7 @@
       <arg column="shop_detailarea" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="wxuser_id" jdbcType="BIGINT" javaType="java.lang.Long" />
       <arg column="shop_tel" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="shopcheckstatus" jdbcType="INTEGER" javaType="java.lang.Integer" />
     </constructor>
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -70,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    shop_id, shop_name, shop_procity, shop_detailarea, wxuser_id, shop_tel
+    shop_id, shop_name, shop_procity, shop_detailarea, wxuser_id, shop_tel, shopcheckstatus
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.example.transport.model.SysShopExample" >
     select
@@ -92,14 +93,6 @@
     from sys_shop
     where shop_id = #{shopId,jdbcType=INTEGER}
   </select>
-
-  <select id="selectByWxuserid" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select
-    <include refid="Base_Column_List" />
-    from sys_shop
-    where wxuser_id = #{wxuser_id,jdbcType=BIGINT}
-  </select>
-
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sys_shop
     where shop_id = #{shopId,jdbcType=INTEGER}
@@ -112,11 +105,11 @@
   </delete>
   <insert id="insert" parameterType="com.example.transport.pojo.SysShop" >
     insert into sys_shop (shop_id, shop_name, shop_procity, 
-      shop_detailarea, wxuser_id, shop_tel
-      )
+      shop_detailarea, wxuser_id, shop_tel, 
+      shopcheckstatus)
     values (#{shopId,jdbcType=INTEGER}, #{shopName,jdbcType=VARCHAR}, #{shopProcity,jdbcType=VARCHAR}, 
-      #{shopDetailarea,jdbcType=VARCHAR}, #{wxuserId,jdbcType=BIGINT}, #{shopTel,jdbcType=VARCHAR}
-      )
+      #{shopDetailarea,jdbcType=VARCHAR}, #{wxuserId,jdbcType=BIGINT}, #{shopTel,jdbcType=VARCHAR}, 
+      #{shopcheckstatus,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.example.transport.pojo.SysShop" >
     insert into sys_shop
@@ -139,6 +132,9 @@
       <if test="shopTel != null" >
         shop_tel,
       </if>
+      <if test="shopcheckstatus != null" >
+        shopcheckstatus,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="shopId != null" >
@@ -158,6 +154,9 @@
       </if>
       <if test="shopTel != null" >
         #{shopTel,jdbcType=VARCHAR},
+      </if>
+      <if test="shopcheckstatus != null" >
+        #{shopcheckstatus,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -188,6 +187,9 @@
       <if test="record.shopTel != null" >
         shop_tel = #{record.shopTel,jdbcType=VARCHAR},
       </if>
+      <if test="record.shopcheckstatus != null" >
+        shopcheckstatus = #{record.shopcheckstatus,jdbcType=INTEGER},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -200,7 +202,8 @@
       shop_procity = #{record.shopProcity,jdbcType=VARCHAR},
       shop_detailarea = #{record.shopDetailarea,jdbcType=VARCHAR},
       wxuser_id = #{record.wxuserId,jdbcType=BIGINT},
-      shop_tel = #{record.shopTel,jdbcType=VARCHAR}
+      shop_tel = #{record.shopTel,jdbcType=VARCHAR},
+      shopcheckstatus = #{record.shopcheckstatus,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -223,6 +226,9 @@
       <if test="shopTel != null" >
         shop_tel = #{shopTel,jdbcType=VARCHAR},
       </if>
+      <if test="shopcheckstatus != null" >
+        shopcheckstatus = #{shopcheckstatus,jdbcType=INTEGER},
+      </if>
     </set>
     where shop_id = #{shopId,jdbcType=INTEGER}
   </update>
@@ -232,7 +238,15 @@
       shop_procity = #{shopProcity,jdbcType=VARCHAR},
       shop_detailarea = #{shopDetailarea,jdbcType=VARCHAR},
       wxuser_id = #{wxuserId,jdbcType=BIGINT},
-      shop_tel = #{shopTel,jdbcType=VARCHAR}
+      shop_tel = #{shopTel,jdbcType=VARCHAR},
+      shopcheckstatus = #{shopcheckstatus,jdbcType=INTEGER}
     where shop_id = #{shopId,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByWxuserid" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from sys_shop
+    where wxuser_id = #{wxuser_id,jdbcType=BIGINT}
+  </select>
 </mapper>
