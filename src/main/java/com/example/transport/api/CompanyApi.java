@@ -546,38 +546,50 @@ public class CompanyApi {
     public ResponseEntity<JsonResult> SearchShop(HttpServletRequest request){
         JsonResult r = new JsonResult();
         String roleid = request.getHeader("roleid");
-        if(!roleid.equals("1") && !roleid.equals("4")){
+        if(!roleid.equals("0") && !roleid.equals("1") && !roleid.equals("4")){
             r = Common.RoleError();
             return ResponseEntity.ok(r);
         }
         String token = request.getHeader("token");
-        r = ConnectRedisCheckToken(token);
-        String tokenvalue = "";
-        try{
-            tokenvalue = r.getData().toString();
-        }catch (Exception e) {
-            r = Common.TokenError();
-            e.printStackTrace();
-            return ResponseEntity.ok(r);
-        }
-        try {
-            if(tokenvalue!=""){
-                redisService.expire(token, Constant.expire.getExpirationTime());
-                String openid = tokenvalue.split("\\|")[0];
-                long wxuserid = userService.getWxUserId(openid);
-                SysCompany sysCompany = sysCompanyMapper.selectByWxuserid(wxuserid);
-                sysCompany.setLicenceUrl("/companyimages/"+sysCompany.getLicenceUrl());
-                r.setCode("200");
-                r.setMsg("查询物流公司成功！");
-                r.setData(sysCompany);
-                r.setSuccess(true);
-            }else{
+
+        //超级管理员,PC端
+        if (roleid.equals("0")) {
+            token = getAdminToken();
+            if (!token.equals(token)) {
                 r = Common.TokenError();
-                ResponseEntity.ok(r);
+                return ResponseEntity.ok(r);
+            } else {
+                //查询某公司
             }
-        } catch (Exception e) {
-            r = Common.SearchError(e);
-            e.printStackTrace();
+        } else {
+            r = ConnectRedisCheckToken(token);
+            String tokenvalue = "";
+            try{
+                tokenvalue = r.getData().toString();
+            }catch (Exception e) {
+                r = Common.TokenError();
+                e.printStackTrace();
+                return ResponseEntity.ok(r);
+            }
+            try {
+                if(tokenvalue!=""){
+                    redisService.expire(token, Constant.expire.getExpirationTime());
+                    String openid = tokenvalue.split("\\|")[0];
+                    long wxuserid = userService.getWxUserId(openid);
+                    SysCompany sysCompany = sysCompanyMapper.selectByWxuserid(wxuserid);
+                    sysCompany.setLicenceUrl("/companyimages/"+sysCompany.getLicenceUrl());
+                    r.setCode("200");
+                    r.setMsg("查询物流公司成功！");
+                    r.setData(sysCompany);
+                    r.setSuccess(true);
+                }else{
+                    r = Common.TokenError();
+                    ResponseEntity.ok(r);
+                }
+            } catch (Exception e) {
+                r = Common.SearchError(e);
+                e.printStackTrace();
+            }
         }
         return ResponseEntity.ok(r);
     }

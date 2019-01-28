@@ -21,7 +21,7 @@ $(function () {
             }else{
                 for(var i = 0;i<data.data.length;i++){
                     data.data[i].timestamp = timetrans(data.data[i].timestamp).replace('T'," ");
-                    data.data[i].action = "<a href='#'>删除</a>&nbsp;&nbsp;<a href='"+data.data[i].avatarurl+"' target='_blank'>头像</a>"
+                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow(\""+ data.data[i].avatarurl + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 头像</a>";
                 }
                 viewdata = $.extend(true,[],data.data);
                 var dt = $('#datatable').DataTable({
@@ -111,8 +111,9 @@ $(function () {
         var s = (date.getSeconds() <10 ? '0' + date.getSeconds() : date.getSeconds());
         return Y+M+D+h+m+s;
     }
-
-    function deleteRow(obj) {
-        alert(obj.id);
-    }
 })
+
+function checkThisRow(url) {
+    $('#myModal').modal('toggle');
+    $("#userimage").attr("src",url);
+}

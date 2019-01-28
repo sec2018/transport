@@ -24,7 +24,7 @@ $(function () {
                 return;
             }else{
                 for(var i = 0;i<data.data.length;i++){
-                    data.data[i].action = "<a href='javascript:void(0);'onclick='deleteThisRow("+ data.data[i].shop_id + ")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>&nbsp;&nbsp;<a href='javascript:void(0);' class='up btn btn-default btn-xs'><i class='fa fa-arrow-up'></i> 删除</a>";
+                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow("+ data.data[i].shop_id + ")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>";
                 }
                 viewdata = $.extend(true,[],data.data);
                 var dt = $('#datatable').DataTable({
@@ -129,7 +129,7 @@ $(function () {
 })
 
 
-function deleteThisRow(id) {
+function checkThisRow(id) {
     $('#myModal').modal('toggle');
     checkshopid = id;
 }

@@ -2,6 +2,7 @@ package com.example.transport.service;
 
 
 import com.example.transport.pojo.SysBill;
+import com.example.transport.pojo.SysBillAndLine;
 
 import java.util.Date;
 import java.util.List;
@@ -42,7 +43,7 @@ public interface BillService {
     boolean cancelTransBill(long id,long trans_id);
 
     //商家根据sender_id和状态bill_status 来查询未完成订单
-    List<SysBill>  selectUnfinishBill(long sender_id);
+    List<SysBillAndLine>  selectUnfinishBill(long sender_id);
 
     //商家根据sender_id和状态bill_status 来查询未完成订单(分页)
     Map<String, Object> selectUnfinishBill(long sender_id, int startitem, int pagesize) throws Exception;

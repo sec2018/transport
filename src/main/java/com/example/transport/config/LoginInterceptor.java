@@ -6,6 +6,7 @@ import com.example.transport.pojo.User;
 import com.example.transport.service.SysUserTokenService;
 import com.example.transport.service.UserService;
 import com.example.transport.util.JSONUtil;
+import com.example.transport.util.JsonResult;
 import com.example.transport.util.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -65,7 +66,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
                     }
                 }else{
                     //将redis缓存中的用户信息取出
-                    String userstr = redisService.get("token:" + token);
+//                    String userstr = redisService.get("token:" + token);
+                    String userstr = ConnectRedisCheckToken("token:" + token).getData().toString();
                     String username = ((User) JSONUtil.JSONToObj(userstr, User.class)).getLoginname();
                     String value_token = redisService.get("token:" + username);
                     System.out.println(username);
@@ -89,5 +91,37 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         User user = userService.getUserByLoginName("system");
         String admintoken  = sysUserTokenService.getToken(user.getId());
         return admintoken;
+    }
+
+    public JsonResult ConnectRedisCheckToken(String token){
+        String tokenvalue = "";
+        JsonResult r = new JsonResult();
+        int retry = 1;
+        while (retry<=3){
+            try
+            {
+                //业务代码
+                tokenvalue = redisService.get(token);
+                r.setCode(200+"");
+                r.setData(tokenvalue);
+                r.setMsg("连接成功！");
+                r.setSuccess(true);
+                break;
+            }
+            catch(Exception ex)
+            {
+                //重试
+                retry++;
+                if(retry == 4){
+                    //记录错误
+                    r.setCode(com.example.transport.service.Constant.Redis_TIMEDOWN.getCode()+"");
+                    r.setData("");
+                    r.setMsg(com.example.transport.service.Constant.Redis_TIMEDOWN.getMsg());
+                    r.setSuccess(false);
+                    return r;
+                }
+            }
+        }
+        return r;
     }
 }

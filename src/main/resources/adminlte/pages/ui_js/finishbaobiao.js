@@ -25,7 +25,7 @@ $(function () {
                 billdata = $.extend(true,[],data.data.billdata);
                 for(var i = 0;i<data.data.billviewdata.length;i++){
                     data.data.billviewdata[i].statustime = timetrans(data.data.billviewdata[i].statustime).replace('T'," ");
-                    data.data.billviewdata[i].action = "<a href='#'>删除</a>"
+                    data.data.billviewdata[i].action = "<a href='#'>电话</a>"
                 }
                 var dt = $('#datatable').DataTable({
                     data: data.data.billviewdata,

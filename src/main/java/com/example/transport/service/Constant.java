@@ -14,9 +14,11 @@ public class Constant {
     //微信openId
     public final static String WX_OPEN_ID = "oDLUf5cFGMF4FjEUMjBJessKXitI";
     //微信appid
-    public final static String WX_APP_ID = "wxdee53430e84ef6ad";
+    public final static String WX_APP_ID = "wx2e17c4169a946806";
+//    public final static String WX_APP_ID = "wxdee53430e84ef6ad";
     //微信appSecret
-    public final static String WX_APP_SECRET = "e49c4c59187af413c5cf20dcf0949008";
+//    public final static String WX_APP_SECRET = "e49c4c59187af413c5cf20dcf0949008";
+    public final static String WX_APP_SECRET = "ce98f136d2ce70d3111edbac1fde287b";
 
 
     //redis过期时间

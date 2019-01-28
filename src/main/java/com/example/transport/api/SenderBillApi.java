@@ -667,7 +667,7 @@ public class SenderBillApi {
                         redisService.expire(token, Constant.expire.getExpirationTime());
                         if(roleid.equals("2")){
                             //商家查询所下未完成订单
-                            List<SysBill> billList = billService.selectUnfinishBill(wxuserid);
+                            List<SysBillAndLine> billList = billService.selectUnfinishBill(wxuserid);
                             r.setData(billList);
                         }else if(roleid.equals("3")){
                             //承运员未完成订单

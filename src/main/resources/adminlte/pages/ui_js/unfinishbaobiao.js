@@ -29,8 +29,8 @@ $(function () {
                 for(var i = 0;i<data.data.billviewdata.length;i++){
                     billviewdata[i].showstatustime = timetrans(data.data.billviewdata[i].statustime).replace('T'," ");
                     data.data.billviewdata[i].statustime = timelength(data.data.billviewdata[i].statustime)+"秒";
-                    data.data.billviewdata[i].action = "<a href='#'>删除</a>";
-                    billviewdata[i].action = "<a href='#'>删除</a>"
+                    data.data.billviewdata[i].action = "<a href='#'>电话</a>";
+                    billviewdata[i].action = "<a href='#'>电话</a>"
                 }
 
                 var dt = $('#datatable').DataTable({

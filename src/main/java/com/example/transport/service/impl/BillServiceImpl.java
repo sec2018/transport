@@ -6,6 +6,7 @@ import com.example.transport.dao.CompanyLinesMapper;
 import com.example.transport.pojo.BillView;
 import com.example.transport.pojo.CompanyLines;
 import com.example.transport.pojo.SysBill;
+import com.example.transport.pojo.SysBillAndLine;
 import com.example.transport.service.BillService;
 import com.example.transport.util.MapUtil;
 import com.github.pagehelper.Page;
@@ -152,14 +153,16 @@ public class BillServiceImpl implements BillService{
     }
 
     @Override
-    public List<SysBill> selectUnfinishBill(long sender_id) {
-        return billDao.selectUnfinishBill(sender_id);
+    public List<SysBillAndLine> selectUnfinishBill(long sender_id) {
+//        return billDao.selectUnfinishBill(sender_id);
+       return billDao.selectUnfinishBill(sender_id);
     }
 
     @Override
     public Map<String, Object> selectUnfinishBill(long sender_id, int startPage, int pageSize) throws Exception {
         Page page = PageHelper.startPage(startPage, pageSize);
-        List<SysBill>  sysbilllist = billDao.selectUnfinishBill(sender_id);
+//        List<SysBill>  sysbilllist = billDao.selectUnfinishBill(sender_id);
+        List<SysBillAndLine>  sysbilllist = billDao.selectUnfinishBill(sender_id);
         Map<String, Object> map = new HashMap<String,Object>();
         //每页信息
         map.put("data", sysbilllist);
