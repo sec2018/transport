@@ -1,8 +1,5 @@
 package com.example.transport.api;
 
-import com.example.transport.dao.SysRoleMapper;
-import com.example.transport.model.SysCompanyExample;
-import com.example.transport.model.SysRoleExample;
 import com.example.transport.pojo.*;
 import com.example.transport.service.Constant;
 import com.example.transport.service.SysUserTokenService;

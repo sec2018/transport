@@ -647,6 +647,7 @@ public class CompanyApi {
             List<SysCompany> companylist = sysCompanyMapper.selectByExample(example);
             List<Map<String,Object>> cmaplist = new ArrayList<>();
             Map<String,Object> cmap = null;
+            String companycheckstatus = "进行中";
             CompanyLines companyLines = null;
             for(SysCompany sc : companylist){
                 cmap = new HashMap<String,Object>();
@@ -662,6 +663,19 @@ public class CompanyApi {
                 cmap.put("service_tel",sc.getServiceTel());
                 cmap.put("evaluation",sc.getEvaluation());
                 cmap.put("default_lineid",sc.getDefaultLineid());
+
+                switch (sc.getCompanycheckstatus()){
+                    case 0:
+                        companycheckstatus = "进行中";
+                        break;
+                    case 1:
+                        companycheckstatus = "通过";
+                        break;
+                    case 2:
+                        companycheckstatus = "不通过";
+                        break;
+                }
+                cmap.put("companycheckstatus",companycheckstatus);
                 companyLines = companyLinesMapper.selectByPrimaryKey(sc.getDefaultLineid());
                 cmap.put("line",companyLines.getBeginAddr()+"-->"+companyLines.getArriveAddr());
                 cmap.put("arrive_detail_addr",companyLines.getArriveDetailAddr());
@@ -901,5 +915,66 @@ public class CompanyApi {
             e.printStackTrace();
         }
         return r;
+    }
+
+
+    //角色0,1
+    @ApiOperation(value = "审核物流公司", notes = "审核物流公司")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "companyid", value = "物流公司id", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "ispass", value = "是否通过审核", required = true, dataType = "Boolean",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="admincheckcompany",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<JsonResult> adminCheckCompany(@RequestParam(value = "companyid",required = true)Integer companyid,@RequestParam(value = "ispass",required = true)Boolean ispass,HttpServletRequest request){
+        String roleid = request.getHeader("roleid");
+        JsonResult r = new JsonResult();
+        if(!roleid.equals("0") && !roleid.equals("1")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+
+        String token = request.getHeader("token");
+        try {
+            token = getAdminToken();
+            if (!token.equals(token)) {
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
+            }else{
+                SysCompany sysCompany = sysCompanyMapper.selectByPrimaryKey(companyid);
+                if(ispass){
+                    sysCompany.setCompanycheckstatus(1);    //1代表审核通过
+                    sysCompanyMapper.updateByPrimaryKey(sysCompany);
+                    r.setCode("200");
+                    r.setMsg("审核物流公司通过！");
+                    r.setSuccess(true);
+                }else{
+                    sysCompany.setCompanycheckstatus(2);    //2代表审核不通过，被驳回
+                    sysCompanyMapper.updateByPrimaryKey(sysCompany);
+                    r.setCode(Constant.COMPANY_CHECKFAILURE.getCode()+"");
+                    r.setMsg(Constant.COMPANY_CHECKFAILURE.getMsg());
+                    r.setSuccess(true);
+                }
+                boolean flag = sysCompanyMapper.updateByPrimaryKey(sysCompany)==1?true:false;
+                if(flag){
+                    r.setData(null);
+
+                }else{
+                    r.setCode(Constant.COMPANY_UPDATEFAILURE.getCode()+"");
+                    r.setMsg(Constant.COMPANY_UPDATEFAILURE.getMsg());
+                    r.setData(null);
+                    r.setSuccess(false);
+                }
+            }
+        } catch (Exception e) {
+            r.setCode(Constant.COMPANY_UPDATEFAILURE.getCode()+"");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg(Constant.COMPANY_UPDATEFAILURE.getMsg());
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
     }
 }

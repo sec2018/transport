@@ -3,6 +3,7 @@ package com.example.transport.model;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class SysCompanyExample {
     protected String orderByClause;
 
@@ -831,6 +832,66 @@ public class SysCompanyExample {
 
         public Criteria andDefaultLineidNotBetween(Integer value1, Integer value2) {
             addCriterion("default_lineid not between", value1, value2, "defaultLineid");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanycheckstatusIsNull() {
+            addCriterion("companycheckstatus is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanycheckstatusIsNotNull() {
+            addCriterion("companycheckstatus is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanycheckstatusEqualTo(Integer value) {
+            addCriterion("companycheckstatus =", value, "companycheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanycheckstatusNotEqualTo(Integer value) {
+            addCriterion("companycheckstatus <>", value, "companycheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanycheckstatusGreaterThan(Integer value) {
+            addCriterion("companycheckstatus >", value, "companycheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanycheckstatusGreaterThanOrEqualTo(Integer value) {
+            addCriterion("companycheckstatus >=", value, "companycheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanycheckstatusLessThan(Integer value) {
+            addCriterion("companycheckstatus <", value, "companycheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanycheckstatusLessThanOrEqualTo(Integer value) {
+            addCriterion("companycheckstatus <=", value, "companycheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanycheckstatusIn(List<Integer> values) {
+            addCriterion("companycheckstatus in", values, "companycheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanycheckstatusNotIn(List<Integer> values) {
+            addCriterion("companycheckstatus not in", values, "companycheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanycheckstatusBetween(Integer value1, Integer value2) {
+            addCriterion("companycheckstatus between", value1, value2, "companycheckstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCompanycheckstatusNotBetween(Integer value1, Integer value2) {
+            addCriterion("companycheckstatus not between", value1, value2, "companycheckstatus");
             return (Criteria) this;
         }
     }

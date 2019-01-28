@@ -1,9 +1,7 @@
 package com.example.transport.config;
 
 import com.example.transport.dao.SysCompanyMapper;
-import com.example.transport.model.CompanyLinesExample;
 import com.example.transport.model.SysCompanyExample;
-import com.example.transport.pojo.CompanyLines;
 import com.example.transport.pojo.SysCompany;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

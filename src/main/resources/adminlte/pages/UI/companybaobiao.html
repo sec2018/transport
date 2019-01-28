@@ -49,6 +49,7 @@
             margin-bottom: 3px !important;
         }
     </style>
+    <script src="../../bootstrap/js/bootstrap.js"></script>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <!-- Content Header (Page header) -->
@@ -67,16 +68,17 @@
                     <div class="box box-solid">
                         <table data-toggle="table" class="table  table-bordered" id="datatable" style="table-layout:fixed;">
                             <thead>
-                            <tr>
-                                <th>顺序编号</th>
-                                <th>公司名称</th>
-                                <th>所属微信号</th>
-                                <th>注册电话</th>
-                                <th>默认路线</th>
-                                <th>省市区</th>
-                                <th>投诉电话</th>
-                                <th>操作</th>
-                            </tr>
+                                <tr>
+                                    <th>顺序编号</th>
+                                    <th>公司名称</th>
+                                    <th>所属微信号</th>
+                                    <th>注册电话</th>
+                                    <th>默认路线</th>
+                                    <th>省市区</th>
+                                    <th>投诉电话</th>
+                                    <th>审核状态</th>
+                                    <th>操作</th>
+                                </tr>
                             </thead>
                             <tbody id="tbody">
 
@@ -90,6 +92,34 @@
     <!-- /.content -->
 </div>
 
+
+<!-- /.content -->
+<div class="modal fade" tabindex="-1" id="myModal" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">请审核该公司</h4>
+            </div>
+            <div class="modal-body">
+                <div class="checkradio">
+                    <label>
+                        <input type="radio" name="optionsRadios" id="optionsRadios1" value="1" checked="checked">
+                        审核通过
+                    </label>
+                    <label style="margin-left: 50px">
+                        <input type="radio" name="optionsRadios" id="optionsRadios2" value="2">
+                        审核不通过
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" id="btnsave" class="btn btn-primary">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 </body>
 </html>

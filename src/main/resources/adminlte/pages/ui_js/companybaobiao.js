@@ -2,6 +2,7 @@
  * Created by 03010335 on 2018/8/22.
  */
 var viewdata;
+var checkcompanyid;
 $(function () {
     var senddata = {};
     senddata.startitem = 1;
@@ -20,7 +21,7 @@ $(function () {
                 return;
             }else{
                 for(var i = 0;i<data.data.length;i++){
-                    data.data[i].action = "<a href='#'>电话</a>";
+                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow("+ data.data[i].company_id + ")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>";
                 }
                 viewdata = $.extend(true,[],data.data);
                 var dt = $('#datatable').DataTable({
@@ -69,6 +70,7 @@ $(function () {
                         { "data": "line" },
                         { "data": "company_procity","width":"140px"},
                         { "data": "company_tel"},
+                        { "data": "companycheckstatus"},
                         { "data": "action" }
                     ],
                     buttons: [
@@ -151,7 +153,34 @@ $(function () {
         return Y+M+D+h+m+s;
     }
 
-    function deleteRow(obj) {
-        alert(obj.id);
-    }
+    $("#btnsave").click(function () {
+        var selectvalue = $(".checkradio input:radio:checked").val()=="1"?true:false;
+        var senddata = {};
+        senddata.companyid = checkcompanyid;
+        senddata.ispass = selectvalue;
+        $.ajax({
+            url: "/transport/api/admincheckcompany",
+            method: "POST",
+            data: senddata,
+            beforeSend: function(request) {
+                request.setRequestHeader("roleid", "0");
+                request.setRequestHeader("token", window.localStorage.getItem("transport_token"));
+            },
+            success: function (data) {
+                $('#myModal').modal('hide');
+                if (data.data == null) {
+                    alert(data.msg);
+                    window.location.reload();
+                    return;
+                }
+            }
+        });
+    });
 })
+
+
+
+function checkThisRow(id) {
+    $('#myModal').modal('toggle');
+    checkcompanyid = id;
+}

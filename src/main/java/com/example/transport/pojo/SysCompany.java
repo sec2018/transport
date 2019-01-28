@@ -1,6 +1,7 @@
 package com.example.transport.pojo;
 
 public class SysCompany {
+
     private Integer companyId;
 
     private String companyName;
@@ -23,7 +24,9 @@ public class SysCompany {
 
     private Integer defaultLineid;
 
-    public SysCompany(Integer companyId, String companyName, String companyProcity, String companyDetailarea, Long wxuserId, String companyTel, String licenceUrl, String complainTel, String serviceTel, Integer evaluation, Integer defaultLineid) {
+    private Integer companycheckstatus;
+
+    public SysCompany(Integer companyId, String companyName, String companyProcity, String companyDetailarea, Long wxuserId, String companyTel, String licenceUrl, String complainTel, String serviceTel, Integer evaluation, Integer defaultLineid, Integer companycheckstatus) {
         this.companyId = companyId;
         this.companyName = companyName;
         this.companyProcity = companyProcity;
@@ -35,6 +38,7 @@ public class SysCompany {
         this.serviceTel = serviceTel;
         this.evaluation = evaluation;
         this.defaultLineid = defaultLineid;
+        this.companycheckstatus = companycheckstatus;
     }
 
     public SysCompany() {
@@ -127,5 +131,13 @@ public class SysCompany {
 
     public void setDefaultLineid(Integer defaultLineid) {
         this.defaultLineid = defaultLineid;
+    }
+
+    public Integer getCompanycheckstatus() {
+        return companycheckstatus;
+    }
+
+    public void setCompanycheckstatus(Integer companycheckstatus) {
+        this.companycheckstatus = companycheckstatus;
     }
 }

@@ -76,6 +76,7 @@ public class Constant {
     public static  Constant COMPANY_LICENCEFAILURE = new Constant(500507, "生成物流公司营业执照地址失败");
     public static  Constant COMPANY_UPLOADIMAGEFAILURE = new Constant(500508, "物流公司上传营业执照失败");
     public static  Constant COMPANYLINE_GETFAILURE = new Constant(500509, "线路获取失败");
+    public static  Constant COMPANY_CHECKFAILURE = new Constant(500510, "物流公司审核不通过");
 
 
     //商户模块
