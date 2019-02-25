@@ -24,7 +24,7 @@ public interface UserDao {
     @Select("select * from wx_user where openid = #{openid}")
     WxUser getWxUser(String openid);
 
-    @Update({"update wx_user set nickname = #{nickname},gender = #{gender},city = #{city},province = #{province},country = #{country},avatarurl = #{avatarurl},language = #{language},timestamp = #{timestamp} where openid = #{openid}"})
+    @Update({"update wx_user set nickname = #{nickname},gender = #{gender},city = #{city},province = #{province},country = #{country},avatarurl = #{avatarurl},language = #{language},timestamp = #{timestamp},trancheckstatus=#{trancheckstatus} where openid = #{openid}"})
     int updateWxUser(WxUser wxUser);
 
     @Select("select id from wx_user where openid = #{openid}")

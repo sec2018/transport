@@ -87,6 +87,7 @@ public class Constant {
 
     //个人信息模块
     public static  Constant PERSONINFO_FAILURE = new Constant(500701, "获取个人信息失败");
+    public static  Constant USER_CHECKFAILURE = new Constant(500702, "审核承运员失败");
 
     private Constant( ) { }
     private Constant( int code,String msg ) {

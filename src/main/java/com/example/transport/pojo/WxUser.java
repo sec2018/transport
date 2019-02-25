@@ -11,11 +11,23 @@ public class WxUser {
     private String nickname;
     private Integer gender;
     private String city;
+
+
     private String province;
     private String country;
     private String avatarurl;
     private String language;
     private Date timestamp;
+    private Integer trancheckstatus;
+
+
+    public Integer getTrancheckstatus() {
+        return trancheckstatus;
+    }
+
+    public void setTrancheckstatus(Integer trancheckstatus) {
+        this.trancheckstatus = trancheckstatus;
+    }
 
     public Date getTimestamp() {
         return timestamp;

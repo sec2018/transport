@@ -2,6 +2,7 @@
  * Created by 03010335 on 2018/8/22.
  */
 var viewdata;
+var checkuserid;
 $(function () {
     var senddata = {};
     senddata.startitem = 1;
@@ -21,7 +22,7 @@ $(function () {
             }else{
                 for(var i = 0;i<data.data.length;i++){
                     data.data[i].timestamp = timetrans(data.data[i].timestamp).replace('T'," ");
-                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow(\""+ data.data[i].avatarurl + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 头像</a>";
+                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow(\""+ data.data[i].avatarurl + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 头像</a>&nbsp;&nbsp;<a href='javascript:void(0);'onclick='checkThisUser(\""+ data.data[i].id + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>";
                 }
                 viewdata = $.extend(true,[],data.data);
                 var dt = $('#datatable').DataTable({
@@ -69,6 +70,7 @@ $(function () {
                         { "data": "province" },
                         { "data": "city" },
                         { "data": "timestamp","width":"140px" },
+                        { "data": "trancheckstatus"},
                         { "data": "action" }
                     ],
                     buttons: [
@@ -95,9 +97,38 @@ $(function () {
                         }
                     ]
                 });
+
+
+
+
             }
         }
     })
+
+
+    $("#btnsave").click(function () {
+        var selectvalue = $(".checkradio input:radio:checked").val()=="1"?true:false;
+        var senddata = {};
+        senddata.userid = checkuserid;
+        senddata.ispass = selectvalue;
+        $.ajax({
+            url: "/transport/api/adminchecktran",
+            method: "POST",
+            data: senddata,
+            beforeSend: function(request) {
+                request.setRequestHeader("roleid", "0");
+                request.setRequestHeader("token", window.localStorage.getItem("transport_token"));
+            },
+            success: function (data) {
+                $('#myModal').modal('hide');
+                if (data.data == null) {
+                    alert(data.msg);
+                    window.location.reload();
+                    return;
+                }
+            }
+        });
+    });
 
 
     function timetrans(date){
@@ -116,4 +147,9 @@ $(function () {
 function checkThisRow(url) {
     $('#myModal').modal('toggle');
     $("#userimage").attr("src",url);
+}
+
+function checkThisUser(id) {
+    $('#userModal').modal('toggle');
+    checkuserid = id;
 }

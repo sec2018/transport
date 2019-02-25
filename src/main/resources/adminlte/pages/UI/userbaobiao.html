@@ -62,7 +62,7 @@
 <!-- Content Header (Page header) -->
 <div class="bcolor" >
     <section class="content-header">
-        <h1> 用户报表</h1>
+        <h1> 承运员报表</h1>
 
 
     </section>
@@ -82,6 +82,7 @@
                                 <th>省份(直辖市)</th>
                                 <th>市、地区</th>
                                 <th>注册时间</th>
+                                <th>审核状态</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
@@ -114,5 +115,33 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+
+<!-- /.content -->
+<div class="modal fade" tabindex="-1" id="userModal" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">请审核该承运员</h4>
+            </div>
+            <div class="modal-body">
+                <div class="checkradio">
+                    <label>
+                        <input type="radio" name="optionsRadios" id="optionsRadios1" value="1" checked="checked">
+                        审核通过
+                    </label>
+                    <label style="margin-left: 50px">
+                        <input type="radio" name="optionsRadios" id="optionsRadios2" value="2">
+                        审核不通过
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" id="btnsave" class="btn btn-primary">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </body>
 </html>

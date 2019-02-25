@@ -132,6 +132,19 @@ public class UserApi {
                 umap.put("country",wu.getCountry());
                 umap.put("avatarurl",wu.getAvatarurl());
                 umap.put("timestamp",wu.getTimestamp());
+                String trancheckstatus = "进行中";
+                switch (wu.getTrancheckstatus()){
+                    case 0:
+                        trancheckstatus = "进行中";
+                        break;
+                    case 1:
+                        trancheckstatus = "通过";
+                        break;
+                    case 2:
+                        trancheckstatus = "不通过";
+                        break;
+                }
+                umap.put("trancheckstatus",trancheckstatus);
                 umaplist.add(umap);
             }
             r.setCode("200");
@@ -185,5 +198,67 @@ public class UserApi {
         User user = userService.getUserByLoginName("system");
         String admintoken  = sysUserTokenService.getToken(user.getId());
         return admintoken;
+    }
+
+
+
+    //角色0,1
+    @ApiOperation(value = "审核承运员", notes = "审核承运员")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "承运员id", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "ispass", value = "是否通过审核", required = true, dataType = "Boolean",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="adminchecktran",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<JsonResult> adminCheckShop(@RequestParam(value = "userid",required = true)Integer userid,@RequestParam(value = "ispass",required = true)Boolean ispass,HttpServletRequest request){
+        String roleid = request.getHeader("roleid");
+        JsonResult r = new JsonResult();
+        if(!roleid.equals("0") && !roleid.equals("1")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+
+        String token = request.getHeader("token");
+        try {
+            token = getAdminToken();
+            if (!token.equals(token)) {
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
+            }else{
+
+                WxUser wxUser = userService.getWxUserById(userid);
+                if(ispass){
+                    wxUser.setTrancheckstatus(1);    //1代表审核通过
+                    userService.updateWxUser(wxUser);
+                    r.setCode("200");
+                    r.setMsg("审核承运员通过！");
+                    r.setSuccess(true);
+                }else{
+                    wxUser.setTrancheckstatus(2);    //2代表审核不通过，被驳回
+                    userService.updateWxUser(wxUser);
+                    r.setCode("200");
+                    r.setMsg("承运员未通过审核！");
+                    r.setSuccess(true);
+                }
+                boolean flag = userService.updateWxUser(wxUser);
+                if(flag){
+                    r.setData(null);
+                }else{
+                    r.setCode(Constant.USER_CHECKFAILURE.getCode()+"");
+                    r.setMsg(Constant.USER_CHECKFAILURE.getMsg());
+                    r.setData(null);
+                    r.setSuccess(false);
+                }
+            }
+        } catch (Exception e) {
+            r.setCode(Constant.USER_CHECKFAILURE.getCode()+"");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg(Constant.USER_CHECKFAILURE.getMsg());
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
     }
 }

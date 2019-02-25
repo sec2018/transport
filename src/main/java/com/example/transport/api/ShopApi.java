@@ -291,7 +291,6 @@ public class ShopApi {
                 boolean flag = sysShopMapper.updateByPrimaryKey(sysShop)==1?true:false;
                 if(flag){
                     r.setData(null);
-
                 }else{
                     r.setCode(Constant.SHOP_UPDATEFAILURE.getCode()+"");
                     r.setMsg(Constant.SHOP_UPDATEFAILURE.getMsg());
