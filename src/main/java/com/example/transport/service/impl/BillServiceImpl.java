@@ -286,9 +286,11 @@ public class BillServiceImpl implements BillService{
         }
         List<SysBill> templist = new ArrayList<SysBill>();
         for (SysBill sysBill:list) {
-            double distance = MapUtil.getDistance(sender_lng,sender_lat,sysBill.getSender_lng(),sysBill.getSender_lat());
-            if(distance<=2.0){
-                templist.add(sysBill);
+            if(sysBill.getBill_status() == 1){
+                double distance = MapUtil.getDistance(sender_lng,sender_lat,sysBill.getSender_lng(),sysBill.getSender_lat());
+                if(distance<=2.0){
+                    templist.add(sysBill);
+                }
             }
         }
         return templist;

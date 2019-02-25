@@ -114,6 +114,7 @@ public class CompanyLinesApi {
                         companyLines.setArriveDetailAddr(jsonObject.getString("arrive_detail_addr"));
                         int issuccess = companyLinesMapper.insert(companyLines);
                         if (issuccess != 0) {
+                            new CompanyApi().GetAllCompanyLines();
                             r.setCode("200");
                             r.setMsg("添加物流公司线路成功！");
                             r.setData(null);
@@ -153,6 +154,7 @@ public class CompanyLinesApi {
                     companyLines.setArriveDetailAddr(jsonObject.getString("arrive_detail_addr"));
                     int issuccess = companyLinesMapper.updateByPrimaryKey(companyLines);
                     if (issuccess != 0) {
+                        new CompanyApi().GetAllCompanyLines();
                         r.setCode("200");
                         r.setMsg("更新物流公司线路成功！");
                         r.setData(null);
@@ -236,6 +238,7 @@ public class CompanyLinesApi {
         try {
             int issuccess = companyLinesMapper.deleteByPrimaryKey(line_id);
             if (issuccess != 0) {
+                new CompanyApi().GetAllCompanyLines();
                 r.setCode("200");
                 r.setMsg("删除物流公司线路成功！");
                 r.setData(null);

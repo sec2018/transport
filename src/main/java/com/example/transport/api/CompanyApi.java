@@ -61,7 +61,7 @@ public class CompanyApi {
 
 
 //    private static Map<String,Map<Integer,String>> linemap = new HashMap();
-   private static List<LineMap> linemaplist = new ArrayList<>();
+   public static List<LineMap> linemaplist = new ArrayList<>();
 
 
 

@@ -30,7 +30,7 @@ public interface BillDao {
 
     //根据经纬度,周围2公里来查询未接运单
     //SELECT * FROM sys_bill where (abs(sender_lng - 121.46754455) <= (2/111) and abs(sender_lat - 31.25249099) <= abs((2/111) /cos(121.46754455 *PI()/180)) and trans_id=-1 and batch_code != 1);
-    @Select({"SELECT * FROM sys_bill where (abs(sender_lng - #{sender_lng}) <= (2/111) and abs(sender_lat - #{sender_lat}) <= abs((2/111) /cos(#{sender_lng} *PI()/180)) and trans_id=-1 and batch_code != 1)"})
+    @Select({"SELECT * FROM sys_bill where (abs(sender_lng - #{sender_lng}) <= (2/111) and abs(sender_lat - #{sender_lat}) <= abs((2/111) /cos(#{sender_lng} *PI()/180)) and trans_id=-1 and batch_code != 1 and bill_status = 1)"})
     List<SysBill> selectBillsByLnglat(@Param("sender_lng")String sender_lng,@Param("sender_lat")String sender_lat);  //经度lng,维度lat
 
     //所有未接订单列表

@@ -921,6 +921,11 @@ public class SenderBillApi {
                 Date datetime = new Date();
                 boolean flag =  billService.payBill(datetime,id);
                 if(flag){
+                    for(SysBill sb : Common.unbilllist){
+                        if(sb.getId() == id){
+                            sb.setBill_status(3);
+                        }
+                    }
                     r.setCode("200");
                     r.setMsg("支付成功！");
                     r.setData(null);
@@ -977,6 +982,11 @@ public class SenderBillApi {
                 Date date = new Date();
                 boolean flag =  billService.finishBill(date,id,company_code,delivery_fee);
                 if(flag){
+                    for(SysBill sb : Common.unbilllist){
+                        if(sb.getId() == id){
+                            Common.unbilllist.remove(sb);
+                        }
+                    }
                     r.setCode("200");
                     r.setMsg("运单完成！");
                     r.setData(null);
@@ -1122,6 +1132,11 @@ public class SenderBillApi {
                 WxUser wxuser = userService.getWxUser(openid);
                 boolean flag = billService.updateBillSetTrans_id(id,datetime,wxuser.getId(),wxuser.getNickname());
                 if (flag) {
+                    for(SysBill sb : Common.unbilllist){
+                        if(sb.getId() == id){
+                            sb.setBill_status(2);
+                        }
+                    }
                     r.setCode("200");
                     r.setMsg("抢单成功！");
                     r.setData(null);
