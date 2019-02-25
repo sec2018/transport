@@ -1,8 +1,10 @@
 package com.example.transport.api;
 
 import com.example.transport.dao.CompanyLinesMapper;
+import com.example.transport.dao.SysCompanyMapper;
 import com.example.transport.model.CompanyLinesExample;
 import com.example.transport.pojo.CompanyLines;
+import com.example.transport.pojo.LineMap;
 import com.example.transport.pojo.User;
 import com.example.transport.service.Constant;
 import com.example.transport.service.SysUserTokenService;
@@ -24,7 +26,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("api")
 @Controller
@@ -33,6 +37,8 @@ public class CompanyLinesApi {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private SysCompanyMapper sysCompanyMapper;
 
     @Autowired
     private RedisService redisService;
@@ -113,7 +119,27 @@ public class CompanyLinesApi {
                         companyLines.setArriveTel(jsonObject.getString("arrive_tel"));
                         companyLines.setArriveDetailAddr(jsonObject.getString("arrive_detail_addr"));
                         int issuccess = companyLinesMapper.insert(companyLines);
+                        String key = companyLines.getBeginAddr()+"-->"+companyLines.getArriveAddr();
+                        String companyname = sysCompanyMapper.selectByPrimaryKey(companyLines.getCompanyId()).getCompanyName();
+                        Map<Integer,String> companylistmap;
+                        LineMap lp;
                         if (issuccess != 0) {
+                            for(int k=0;k<CompanyApi.linemaplist.size();k++){
+                                if(CompanyApi.linemaplist.get(k).getKey().equals(key)){
+                                    if(!CompanyApi.linemaplist.get(k).getValuemap().containsKey(companyLines.getCompanyId())){
+                                        CompanyApi.linemaplist.get(k).getValuemap().put(companyLines.getId(),companyname);
+                                        break;
+                                    }
+                                }else{
+                                    companylistmap = new HashMap<Integer,String>();
+                                    companylistmap.put(companyLines.getId(),companyname);
+                                    lp = new LineMap();
+                                    lp.setKey(key);
+                                    lp.setValuemap(companylistmap);
+                                    CompanyApi.linemaplist.add(lp);
+                                    break;
+                                }
+                            }
                             r.setCode("200");
                             r.setMsg("添加物流公司线路成功！");
                             r.setData(null);
@@ -152,7 +178,27 @@ public class CompanyLinesApi {
                     companyLines.setArriveTel(jsonObject.getString("arrive_tel"));
                     companyLines.setArriveDetailAddr(jsonObject.getString("arrive_detail_addr"));
                     int issuccess = companyLinesMapper.updateByPrimaryKey(companyLines);
+                    String key = companyLines.getBeginAddr()+"-->"+companyLines.getArriveAddr();
+                    String companyname = sysCompanyMapper.selectByPrimaryKey(companyLines.getCompanyId()).getCompanyName();
+                    Map<Integer,String> companylistmap;
+                    LineMap lp;
                     if (issuccess != 0) {
+                        for(int k=0;k<CompanyApi.linemaplist.size();k++){
+                            if(CompanyApi.linemaplist.get(k).getKey().equals(key)){
+                                if(!CompanyApi.linemaplist.get(k).getValuemap().containsKey(companyLines.getCompanyId())){
+                                    CompanyApi.linemaplist.get(k).getValuemap().put(companyLines.getId(),companyname);
+                                    break;
+                                }
+                            }else{
+                                companylistmap = new HashMap<Integer,String>();
+                                companylistmap.put(companyLines.getId(),companyname);
+                                lp = new LineMap();
+                                lp.setKey(key);
+                                lp.setValuemap(companylistmap);
+                                CompanyApi.linemaplist.add(lp);
+                                break;
+                            }
+                        }
                         r.setCode("200");
                         r.setMsg("更新物流公司线路成功！");
                         r.setData(null);
@@ -236,6 +282,40 @@ public class CompanyLinesApi {
         try {
             int issuccess = companyLinesMapper.deleteByPrimaryKey(line_id);
             if (issuccess != 0) {
+                CompanyLinesExample example = new CompanyLinesExample();
+                List<CompanyLines> line = companyLinesMapper.selectByExample(example);
+                Map<Integer,String> companylistmap;
+                String companyname;
+                LineMap lp;
+                for (CompanyLines cl : line){
+                    String key = cl.getBeginAddr()+"-->"+cl.getArriveAddr();
+                    companyname = sysCompanyMapper.selectByPrimaryKey(cl.getCompanyId()).getCompanyName();
+                    companylistmap = new HashMap<Integer,String>();
+                    companylistmap.put(cl.getId(),companyname);
+                    if(CompanyApi.linemaplist.size() == 0){
+                        lp = new LineMap();
+                        lp.setKey(key);
+                        lp.setValuemap(companylistmap);
+                        CompanyApi.linemaplist.add(lp);
+                    }else{
+                        for(int i=0;i<CompanyApi.linemaplist.size();i++){
+                            if(CompanyApi.linemaplist.get(i).getKey().equals(key)){
+                                if(!CompanyApi.linemaplist.get(i).getValuemap().containsKey(cl.getCompanyId())){
+                                    CompanyApi.linemaplist.get(i).getValuemap().put(cl.getId(),companyname);
+                                    break;
+                                }
+                            }else{
+                                companylistmap = new HashMap<Integer,String>();
+                                companylistmap.put(cl.getId(),companyname);
+                                lp = new LineMap();
+                                lp.setKey(key);
+                                lp.setValuemap(companylistmap);
+                                CompanyApi.linemaplist.add(lp);
+                                break;
+                            }
+                        }
+                    }
+                }
                 r.setCode("200");
                 r.setMsg("删除物流公司线路成功！");
                 r.setData(null);
