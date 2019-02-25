@@ -946,14 +946,15 @@ public class SenderBillApi {
     //1,4
     @ApiOperation(value = "运单完成", notes = "运单完成")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "header"),
+            @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
             @ApiImplicitParam(name = "company_code", value = "运单号", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "delivery_fee", value = "运费", required = true, dataType = "Number",paramType = "query"),
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value="finishbill",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> finishBill(@RequestParam(value = "id") long id,@RequestParam(value = "company_code") String company_code, HttpServletRequest request){
+    public ResponseEntity<JsonResult> finishBill(@RequestParam(value = "id") long id,@RequestParam(value = "company_code") String company_code,@RequestParam(value = "delivery_fee") Double delivery_fee, HttpServletRequest request){
         JsonResult r = new JsonResult();
         String token = request.getHeader("token");
         String roleid = request.getHeader("roleid");
@@ -974,7 +975,7 @@ public class SenderBillApi {
             if(tokenvalue!=""){
                 redisService.expire(token, Constant.expire.getExpirationTime());
                 Date date = new Date();
-                boolean flag =  billService.finishBill(date,id,company_code);
+                boolean flag =  billService.finishBill(date,id,company_code,delivery_fee);
                 if(flag){
                     r.setCode("200");
                     r.setMsg("运单完成！");
@@ -1402,7 +1403,7 @@ public class SenderBillApi {
                 String bigtitle = bill.getCompany_name()+"托运单";
                 List<List<List<String>>> allValue = new ArrayList<>();
                 List<String> content1 = Arrays.asList(new String[]{bill.getRec_name(),bill.getRec_tel(),bill.getRec_procity(),bill.getRec_detailarea()});
-                List<String> content2 = Arrays.asList(new String[]{bill.getSender_name(),bill.getSender_tel(),bill.getSender_procity(),bill.getRec_detailarea()});
+                List<String> content2 = Arrays.asList(new String[]{bill.getSender_name(),bill.getSender_tel(),bill.getSender_procity(),bill.getSender_detailarea()});
                 List<String> content3 = Arrays.asList(new String[]{bill.getCompany_code(),bill.getGoodsname(),bill.getShop_name(),companyLines.getArriveTel(),finish_time});
                 List<String> h4 = Arrays.asList(new String[]{"物流线路","数量","到站地址","物流公司运费","备注"});
                 List<String> content4 = Arrays.asList(new String[]{companyLines.getBeginAddr()+"-->"+companyLines.getArriveAddr(),bill.getGoodsnum()+"",companyLines.getArriveAddr(),bill.getDelivery_fee()+"",bill.getBillinfo()});

@@ -25,7 +25,7 @@ public interface BillService {
     boolean payBill(Date pay_time, long id);
 
     //完成订单
-    boolean finishBill(Date finish_time,long id,String company_code);
+    boolean finishBill(Date finish_time,long id,String company_code,double delivery_fee);
 
     //删除订单,硬删除
     boolean deleteSenderUnRecBill(long id,long wxuserid);

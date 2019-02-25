@@ -46,8 +46,8 @@ public interface BillDao {
     int payBill(@Param("pay_time")Date pay_time, @Param("id")long id);
 
     //完成订单
-    @Update({"update sys_bill set bill_status = 4,finish_time=#{finish_time},company_code=#{company_code} where id = #{id}"})
-    int finishBill(@Param("finish_time")Date finish_time,@Param("id")long id,@Param("company_code")String company_code);
+    @Update({"update sys_bill set bill_status = 4,finish_time=#{finish_time},company_code=#{company_code},delivery_fee=#{delivery_fee} where id = #{id}"})
+    int finishBill(@Param("finish_time")Date finish_time,@Param("id")long id,@Param("company_code")String company_code,@Param("delivery_fee")double delivery_fee);
 
     //删除所下未接订单，硬删除
     //@Delete({"delete from sys_bill where id = #{id} and sender_id = #{sender_id} and trans_id = -1"})

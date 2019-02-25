@@ -19,6 +19,7 @@ public class CustomWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
         registry.addInterceptor(loginInterceptor).addPathPatterns("/*")
                 .excludePathPatterns("/login")
                 .excludePathPatterns("/wx/wxlogin*")
+                .excludePathPatterns("/api/*")
                 .excludePathPatterns("/sublogin*");
         super.addInterceptors(registry);
     }

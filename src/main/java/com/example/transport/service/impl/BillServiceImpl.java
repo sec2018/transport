@@ -81,9 +81,9 @@ public class BillServiceImpl implements BillService{
 
     @Transactional
     @Override
-    public boolean finishBill(Date datetime, long id, String company_code) {
+    public boolean finishBill(Date datetime, long id, String company_code,double delivery_fee) {
         try{
-            return billDao.finishBill(datetime,id,company_code)==1?true:false;
+            return billDao.finishBill(datetime,id,company_code,delivery_fee)==1?true:false;
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -282,7 +282,7 @@ public class BillServiceImpl implements BillService{
     public List<SysBill> selectBillsIn2Mills(String sender_lng, String sender_lat) {
         List<SysBill> list =  Common.unbilllist;
         if(list.size()==0){
-            list = billDao.selectAllUnBills();
+            list = billDao.selectBillsByLnglat(sender_lng,sender_lat);
         }
         List<SysBill> templist = new ArrayList<SysBill>();
         for (SysBill sysBill:list) {
