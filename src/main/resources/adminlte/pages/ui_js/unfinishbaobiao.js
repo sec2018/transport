@@ -28,6 +28,7 @@ $(function () {
 
                 for(var i = 0;i<data.data.billviewdata.length;i++){
                     billviewdata[i].showstatustime = timetrans(data.data.billviewdata[i].statustime).replace('T'," ");
+                    data.data.billviewdata[i].showstatustime = billviewdata[i].showstatustime;
                     data.data.billviewdata[i].statustime = timelength(data.data.billviewdata[i].statustime)+"秒";
                     data.data.billviewdata[i].action = "<a href='#'>电话</a>";
                     billviewdata[i].action = "<a href='#'>电话</a>"
@@ -85,15 +86,15 @@ $(function () {
                         { "data": "shop_name" },
                         { "data": "rec_name","class": "center" },
                         { "data": "company_name" },
-                        { "data": "status" },
-                        { "data": "statustime" },
+                        { "data": "status","width":"90px"},
+                        { "data": "showstatustime" , "width":"120px"},
+                        { "data": "statustime" }
                         // {
                         //     data: 'statustime',
                         //     render: function ( data, type, row ) {
                         //         return data;
                         //     }
                         // },
-                        { "data": "action" }
                     ],
                     buttons: [
                         'pageLength',
