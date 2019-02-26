@@ -14,7 +14,7 @@ public interface SysUserAddrService {
 
     int getAddrCount(long wxuserid);
 
-    List<SysUserAddr> getAddrList(long wxuserid);
+    List<SysUserAddr> getAddrList(long wxuserid,int addrrole);
 
     boolean updateSysUserAddr(SysUserAddr sysUserAddr);
 

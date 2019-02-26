@@ -51,13 +51,14 @@ public class SysUserAddrApi {
             @ApiImplicitParam(name = "pro_city", value = "省市区", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "detail_addr", value = "详细地址", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "isdefault", value = "是否设为默认地址", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "addrrole", value = "地址角色（0，寄件；1，收件）", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
     @Transactional
     @RequestMapping(value = "addaddr",method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<JsonResult> insertSysUserAddr(@RequestParam(value="uname") String uname, @RequestParam(value="tel")String tel, @RequestParam(value="pro_city")String pro_city,
-                       @RequestParam(value="detail_addr")String detail_addr, @RequestParam(value="isdefault")int isdefault, HttpServletRequest request){
+                       @RequestParam(value="detail_addr")String detail_addr, @RequestParam(value="isdefault")int isdefault,@RequestParam(value="addrrole")int addrrole, HttpServletRequest request){
         JsonResult r = new JsonResult();
         //手机号校验
         /* 运营商号段如下：
@@ -121,6 +122,7 @@ public class SysUserAddrApi {
                 }
                 sysUserAddr.setIsdefault(isdefault==1?1:0);
             }
+            sysUserAddr.setAddrrole(addrrole);
             boolean flag = sysUserAddrService.insertSysUserAddr(sysUserAddr);
             if(flag){
                 r.setCode("200");
@@ -142,11 +144,12 @@ public class SysUserAddrApi {
     //1,2,3,4
     @ApiOperation(value = "搜索用户地址接口", notes = "搜索地址")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "addrrole", value = "地址角色（0，寄件；1，收件）", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
     @RequestMapping(value = "searchaddr",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<JsonResult> searchSysUserAddr(HttpServletRequest request){
+    public ResponseEntity<JsonResult> searchSysUserAddr(@RequestParam(value="addrrole")int addrrole,HttpServletRequest request){
         String token = request.getHeader("token");
         JsonResult r = ConnectRedisCheckToken(token);
         String tokenvalue = "";
@@ -164,7 +167,7 @@ public class SysUserAddrApi {
                 String session_key = tokenvalue.split("\\|")[1];
                 //获取当前微信用户id
                 long wxuserid = userService.getWxUserId(openid);
-                List<SysUserAddr> addrList = sysUserAddrService.getAddrList(wxuserid);
+                List<SysUserAddr> addrList = sysUserAddrService.getAddrList(wxuserid,addrrole);
                 r.setCode("200");
                 r.setMsg("查询成功！");
                 r.setData(addrList);

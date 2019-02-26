@@ -133,6 +133,9 @@ public class UserApi {
                 umap.put("avatarurl",wu.getAvatarurl());
                 umap.put("timestamp",wu.getTimestamp());
                 String trancheckstatus = "进行中";
+                if(wu.getTrancheckstatus() == null){
+                    wu.setTrancheckstatus(0);
+                }
                 switch (wu.getTrancheckstatus()){
                     case 0:
                         trancheckstatus = "进行中";

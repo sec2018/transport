@@ -401,6 +401,13 @@ public class ShopApi {
     }
 
 
+    //店铺审核状态
+    public Integer checkShopStatus(int shopid){
+        SysShop shop = sysShopMapper.selectByPrimaryKey(shopid);
+        return shop.getShopcheckstatus();
+    }
+
+
     public String getAdminToken(){
         User user = userService.getUserByLoginName("system");
         String admintoken  = sysUserTokenService.getToken(user.getId());

@@ -18,8 +18,8 @@ public interface SysUserAddrDao {
     @Select("select count(*) from sys_user_addr where wxuser_id = #{wxuserid}")
     int getAddrCount(long wxuserid);
 
-    @Select("select * from sys_user_addr where wxuser_id = #{wxuserid}")
-    List<SysUserAddr> getAddrList(long wxuserid);
+    @Select("select * from sys_user_addr where wxuser_id = #{wxuserid} and addrrole = #{addrrole}")
+    List<SysUserAddr> getAddrList(long wxuserid,int addrrole);
 
     @Select("select * from sys_user_addr where id = #{id}")
     SysUserAddr getAddrById(long id);

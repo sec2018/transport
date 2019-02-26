@@ -36,8 +36,8 @@ public class SysUserAddrServiceImpl implements SysUserAddrService{
     }
 
     @Override
-    public List<SysUserAddr> getAddrList(long wxuserid) {
-        return sysUserAddrDao.getAddrList(wxuserid);
+    public List<SysUserAddr> getAddrList(long wxuserid, int addrole) {
+        return sysUserAddrDao.getAddrList(wxuserid,addrole);
     }
 
     @Transactional

@@ -11,6 +11,15 @@ public class SysUserAddr {
     private String detail_addr;
     private String uname;
     private int isdefault;
+    private int addrrole;
+
+    public int getAddrrole() {
+        return addrrole;
+    }
+
+    public void setAddrrole(int addrrole) {
+        this.addrrole = addrrole;
+    }
 
     @Override
     public String toString() {

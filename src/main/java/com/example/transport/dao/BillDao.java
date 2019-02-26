@@ -77,13 +77,13 @@ public interface BillDao {
 
     //商家根据sender_id和状态bill_status = 1，2 或 3 来查询未完成订单
 //    @Select({"select * from sys_bill where sender_id = #{sender_id} and (bill_status = 1 or bill_status = 2 or bill_status = 3) and batch_code!=1"})
-    @Select({"select * from sys_bill as a inner join company_lines as b on a.sender_id = #{sender_id} and (a.bill_status = 1 or a.bill_status = 2 or a.bill_status = 3) and a.batch_code!=1 and a.line_id = b.id"})
+    @Select({"select * from sys_bill as a inner join company_lines as b on a.sender_id = #{sender_id} and (a.bill_status = 1 or a.bill_status = 2 or a.bill_status = 3) and a.batch_code!=1 and a.line_id = b.id order by pay_time desc, rec_time desc, create_time desc"})
 //    List<SysBill>  selectUnfinishBill(@Param("sender_id")long sender_id);
     List<SysBillAndLine>  selectUnfinishBill(@Param("sender_id")long sender_id);
 
     //商家根据sender_id和状态bill_status = 4来查询已完成订单
 //    @Select({"select * from sys_bill where sender_id = #{sender_id} and bill_status = 4"})
-    @Select({"select * from sys_bill as a inner join company_lines as b on a.sender_id = #{sender_id} and a.bill_status = 4 and a.line_id = b.id"})
+    @Select({"select * from sys_bill as a inner join company_lines as b on a.sender_id = #{sender_id} and a.bill_status = 4 and a.line_id = b.id order by finish_time desc"})
     List<SysBill>  selectfinishedBill(@Param("sender_id")long sender_id);
 
 
@@ -116,20 +116,20 @@ public interface BillDao {
     int updateBillSetTrans_id(@Param("id")long id,@Param("datetime")Date datetime, @Param("trans_id")long trans_id,@Param("trans_name")String trans_name);
 
     //物流公司查询本公司所有已完成订单
-    @Select({"select * from sys_bill where company_id = #{company_id} and bill_status = 4"})
+    @Select({"select * from sys_bill where company_id = #{company_id} and bill_status = 4  order by finish_time desc"})
     List<SysBill>  selectfinishedBillByCompanyId(@Param("company_id")Integer company_id);
 
     //物流公司查询本公司所有未完成订单
-    @Select({"select * from sys_bill where company_id = #{company_id} and bill_status != 4"})
+    @Select({"select * from sys_bill where company_id = #{company_id} and bill_status != 4 order by pay_time desc, rec_time desc, create_time desc"})
     List<SysBill>  selectunfinishedBillByCompanyId(@Param("company_id")Integer company_id);
 
 
     //承运员查询未完成订单
-    @Select({"select * from sys_bill where trans_id = #{trans_id} and bill_status != 4"})
+    @Select({"select * from sys_bill where trans_id = #{trans_id} and bill_status != 4 order by pay_time desc, rec_time desc, create_time desc"})
     List<SysBill>  selectunfinishedBillByTransId(@Param("trans_id")long trans_id);
 
     //承运员查询已完成订单
-    @Select({"select * from sys_bill where trans_id = #{trans_id} and bill_status = 4"})
+    @Select({"select * from sys_bill where trans_id = #{trans_id} and bill_status = 4 order by finish_time desc"})
     List<SysBill>  selectfinishedBillByTransId(@Param("trans_id")long trans_id);
 
     //商户查询所保存批量未下订单
@@ -141,10 +141,10 @@ public interface BillDao {
     int updateBatchBillsCode(@Param("sender_id")long sender_id,@Param("batch_code")String batch_code);
 
     //管理员查看所有未完成订单
-    @Select({"select * from sys_bill where bill_status != 4"})
+    @Select({"select * from sys_bill where bill_status != 4 order by pay_time desc, rec_time desc, create_time desc"})
     List<SysBill> adminSelectunfinishedBill();
 
     //管理员查看所有已完成订单
-    @Select({"select * from sys_bill where bill_status = 4"})
+    @Select({"select * from sys_bill where bill_status = 4  order by finish_time desc"})
     List<SysBill> adminSelectfinishedBill();
 }
