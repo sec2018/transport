@@ -217,7 +217,7 @@ public class WXUserApi {
             if(openid != null){
                 String sesssiontoken = TokenGenerator.generateValue();
                 redisService.set(sesssiontoken, openid+"|"+session_key);
-//                jsonObject.remove("openid");
+                jsonObject.remove("openid");
                 jsonObject.remove("session_key");
                 jsonObject.put("token", sesssiontoken);     //此data为token
                 WxUser wxUser = userService.getWxUser(openid);
@@ -253,11 +253,10 @@ public class WXUserApi {
                     if(flag){
                         logger.info("插入成功！");
                     }
-                }
-                String roleid = request.getHeader("roleid");
-                long wx_user_id = userService.getWxUserId(openid);
-                //商户
-                if(roleid.equals("2")){
+                    String roleid = request.getHeader("roleid");
+                    long wx_user_id = userService.getWxUserId(openid);
+                    //商户
+                    if(roleid.equals("2")){
 //                    SysShopExample example = new SysShopExample();
 //                    SysShopExample.Criteria criteria = example.createCriteria();
 //                    criteria.andWxuserIdEqualTo(wx_user_id);
@@ -274,13 +273,13 @@ public class WXUserApi {
 //                        SysShop sysShop = sysShopMapper.selectByWxuserid(wx_user_id);
 //                        jsonObject.put("ischecked",sysShop.getShopcheckstatus());
 //                    }
-                    r.setCode(Constant.RoleShop_ERROR.getCode()+"");
-                    r.setMsg(Constant.RoleShop_ERROR.getMsg());
-                    jsonObject.put("isfirst", true);
-                    r.setData(jsonObject);
-                    r.setSuccess(false);
-                    return ResponseEntity.ok(r);
-                }else if(roleid.equals("4")){
+                        r.setCode(Constant.RoleShop_ERROR.getCode()+"");
+                        r.setMsg(Constant.RoleShop_ERROR.getMsg());
+                        jsonObject.put("isfirst", true);
+                        r.setData(jsonObject);
+                        r.setSuccess(false);
+                        return ResponseEntity.ok(r);
+                    }else if(roleid.equals("4")){
 //                    SysCompanyExample example = new SysCompanyExample();
 //                    SysCompanyExample.Criteria criteria = example.createCriteria();
 //                    criteria.andWxuserIdEqualTo(wx_user_id);
@@ -293,12 +292,13 @@ public class WXUserApi {
 //                        r.setSuccess(false);
 //                        return ResponseEntity.ok(r);
 //                    }
-                    r.setCode(Constant.RoleCompany_ERROR.getCode()+"");
-                    r.setMsg(Constant.RoleCompany_ERROR.getMsg());
-                    jsonObject.put("isfirst", true);     //此data为token
-                    r.setData(jsonObject);
-                    r.setSuccess(false);
-                    return ResponseEntity.ok(r);
+                        r.setCode(Constant.RoleCompany_ERROR.getCode()+"");
+                        r.setMsg(Constant.RoleCompany_ERROR.getMsg());
+                        jsonObject.put("isfirst", true);     //此data为token
+                        r.setData(jsonObject);
+                        r.setSuccess(false);
+                        return ResponseEntity.ok(r);
+                    }
                 }
                 logger.info(wxUser.toString());
                 r.setCode("200");

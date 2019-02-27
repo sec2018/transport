@@ -27,3 +27,4 @@
 /mybatis-generator.properties
 /src/main/resources/application-dev.yml
 /log/
+/log/myspringboot.log

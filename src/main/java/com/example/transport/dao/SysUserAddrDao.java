@@ -12,14 +12,14 @@ import java.util.List;
 @Mapper
 public interface SysUserAddrDao {
 
-    @Insert({"insert into sys_user_addr(id,wxuser_id,tel,pro_city,detail_addr,uname,isdefault) values(0,#{wxuser_id},#{tel},#{pro_city},#{detail_addr},#{uname},#{isdefault})"})
+    @Insert({"insert into sys_user_addr(id,wxuser_id,tel,pro_city,detail_addr,uname,isdefault,addrrole) values(0,#{wxuser_id},#{tel},#{pro_city},#{detail_addr},#{uname},#{isdefault},#{addrrole})"})
     int insertSysUserAddr(SysUserAddr sysUserAddr);
 
     @Select("select count(*) from sys_user_addr where wxuser_id = #{wxuserid}")
     int getAddrCount(long wxuserid);
 
     @Select("select * from sys_user_addr where wxuser_id = #{wxuserid} and addrrole = #{addrrole}")
-    List<SysUserAddr> getAddrList(long wxuserid,int addrrole);
+    List<SysUserAddr> getAddrList(@Param("wxuserid")long wxuserid,@Param("addrrole")int addrrole);
 
     @Select("select * from sys_user_addr where id = #{id}")
     SysUserAddr getAddrById(long id);
