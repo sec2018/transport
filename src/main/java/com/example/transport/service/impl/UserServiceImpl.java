@@ -76,5 +76,10 @@ public class UserServiceImpl implements UserService {
         return userDao.getAllWxUser();
     }
 
+    @Override
+    public List<WxUser> getAllTrans() {
+        return userDao.getAllTrans();
+    }
+
 
 }

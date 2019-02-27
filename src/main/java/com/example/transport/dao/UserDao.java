@@ -35,4 +35,7 @@ public interface UserDao {
 
     @Select("select * from wx_user")
     List<WxUser> getAllWxUser();
+
+    @Select("select * from wx_user where roleid = 3")
+    List<WxUser> getAllTrans();
 }

@@ -72,12 +72,12 @@ public class UserApi {
 
 
     //角色0,1
-    @ApiOperation(value = "查询所有用户", notes = "查询所有用户")
+    @ApiOperation(value = "查询所有承运员", notes = "查询所有承运员")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header")
     })
-    @RequestMapping(value="getalluser",method = RequestMethod.GET)
+    @RequestMapping(value="getalltrans",method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<JsonResult> GetUsers(HttpServletRequest request){
         JsonResult r = new JsonResult();
@@ -96,7 +96,7 @@ public class UserApi {
                 r = Common.TokenError();
                 return ResponseEntity.ok(r);
             } else {
-                r = GetAllUsers();
+                r = getAllTrans();
             }
         } else {
             r = ConnectRedisCheckToken(token);
@@ -104,7 +104,7 @@ public class UserApi {
             try {
                 tokenvalue = r.getData().toString();
                 if (tokenvalue != null) {
-                    r = GetAllUsers();
+                    r = getAllTrans();
                 }
             } catch (Exception e) {
                 r = Common.TokenError();
@@ -116,10 +116,12 @@ public class UserApi {
     }
 
 
-    public JsonResult GetAllUsers(){
+
+
+    public JsonResult getAllTrans(){
         JsonResult r = new JsonResult();
         try {
-            List<WxUser>  userlist = userService.getAllWxUser();
+            List<WxUser>  userlist = userService.getAllTrans();
             List<Map<String,Object>> umaplist = new ArrayList<>();
             Map<String,Object> umap = null;
             for(WxUser wu : userlist){

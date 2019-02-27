@@ -3,13 +3,16 @@ package com.example.transport.wxpaytest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.transport.service.Constant;
-import com.jeesite.common.web.BaseController;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -25,11 +28,11 @@ import java.util.Map;
 
 @RequestMapping("api")
 @Controller
-public class WeiXinPaymentController extends BaseController {
+public class WeiXinPaymentController{
     private static final long serialVersionUID = 1L;
     private final String mch_id = Constant.WX_SHOP_ID;//商户号
     private final String spbill_create_ip = "填写终端IP";//终端IP
-    private final String notify_url = "localhost:8882/transport/api/paycallback";//通知地址
+    private final String notify_url = "https:wzjshuye.cn:8882/transport/api/paycallback";//通知地址
     private final String trade_type = "JSAPI";//交易类型
     private final String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";//统一下单API接口链接
     private final String key = Constant.WX_SHOP_KEY; // 商户支付密钥
@@ -45,7 +48,15 @@ public class WeiXinPaymentController extends BaseController {
      * @throws UnsupportedEncodingException
      * @throws DocumentException
      */
-    @RequestMapping("/payment")
+    //支付接口
+    @ApiOperation(value = "支付接口", notes = "支付接口")
+    @RequestMapping(value="payment")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "openId", value = "openId", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "total_fee", value = "费用总计", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "body", value = "简单描述", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "attach", value = "附加数据", required = true, dataType = "Integer",paramType = "query")
+    })
     @ResponseBody
     public JSONObject payment(@RequestParam(required = true) String openId, @RequestParam(required = true)String total_fee, @RequestParam(required = false) String body, @RequestParam(required = false) String attach) throws UnsupportedEncodingException, DocumentException {
         JSONObject JsonObject = new JSONObject() ;
@@ -136,7 +147,8 @@ public class WeiXinPaymentController extends BaseController {
      * 预支付时填写的 notify_url ，支付成功后的回调接口
      * @param request
      */
-    @RequestMapping("/paycallback")
+    @ApiOperation(value = "支付回调接口", notes = "支付回调接口")
+    @RequestMapping(value="paycallback")
     @ResponseBody
     public void paycallback(HttpServletRequest request) {
         try {

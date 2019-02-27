@@ -27,4 +27,6 @@ public interface UserService {
     WxUser getWxUserById(long id);
 
     List<WxUser> getAllWxUser();
+
+    List<WxUser> getAllTrans();
  }

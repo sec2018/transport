@@ -25,7 +25,6 @@ $(function () {
                 billdata = $.extend(true,[],data.data.billdata);
                 for(var i = 0;i<data.data.billviewdata.length;i++){
                     data.data.billviewdata[i].statustime = timetrans(data.data.billviewdata[i].statustime).replace('T'," ");
-                    data.data.billviewdata[i].action = "<a href='#'>电话</a>"
                 }
                 var dt = $('#datatable').DataTable({
                     data: data.data.billviewdata,
@@ -79,8 +78,7 @@ $(function () {
                         { "data": "rec_name" },
                         { "data": "company_name" },
                         { "data": "status"},
-                        { "data": "statustime","width":"140px" },
-                        { "data": "action" }
+                        { "data": "statustime","width":"140px" }
                     ],
                     buttons: [
                         'pageLength',

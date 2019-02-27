@@ -8,7 +8,7 @@ $(function () {
     senddata.startitem = 1;
     senddata.pagesize = 10;
     $.ajax({
-        url: "/transport/api/getalluser",
+        url: "/transport/api/getalltrans",
         method: "GET",
         data: senddata,
         beforeSend: function(request) {
