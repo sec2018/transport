@@ -214,30 +214,31 @@ public class WXUserApi {
         JSONObject WxUserInfo = getUserInfo(encryptedData,session_key,iv);
         String openid = WxUserInfo.getString("openId");
         try{
-            if(openid!=null){
+            if(openid != null){
                 String sesssiontoken = TokenGenerator.generateValue();
                 redisService.set(sesssiontoken, openid+"|"+session_key);
-                jsonObject.remove("openid");
+//                jsonObject.remove("openid");
                 jsonObject.remove("session_key");
                 jsonObject.put("token", sesssiontoken);     //此data为token
                 WxUser wxUser = userService.getWxUser(openid);
                 if(wxUser!=null){
-                    wxUser.setCountry(WxUserInfo.getString("country"));
-                    wxUser.setGender(Integer.parseInt(WxUserInfo.getString("gender")));
-                    wxUser.setProvince(WxUserInfo.getString("province"));
-                    wxUser.setCity(WxUserInfo.getString("city"));
-                    wxUser.setAvatarurl(WxUserInfo.getString("avatarUrl"));
-                    wxUser.setNickname(WxUserInfo.getString("nickName"));
-                    wxUser.setLanguage(WxUserInfo.getString("language"));
-                    String time = JSON.parseObject(WxUserInfo.getString("watermark")).getString("timestamp");
-                    Date timestamp = timeStampToDate(time+"000");
-                    wxUser.setTimestamp(timestamp);
-
-
-                    boolean flag = userService.updateWxUser(wxUser);
-                    if(flag){
-                        logger.info("更新成功！");
-                    }
+                    //暂不更新已有用户信息
+//                    wxUser.setCountry(WxUserInfo.getString("country"));
+//                    wxUser.setGender(Integer.parseInt(WxUserInfo.getString("gender")));
+//                    wxUser.setProvince(WxUserInfo.getString("province"));
+//                    wxUser.setCity(WxUserInfo.getString("city"));
+//                    wxUser.setAvatarurl(WxUserInfo.getString("avatarUrl"));
+//                    wxUser.setNickname(WxUserInfo.getString("nickName"));
+//                    wxUser.setLanguage(WxUserInfo.getString("language"));
+//                    String time = JSON.parseObject(WxUserInfo.getString("watermark")).getString("timestamp");
+//                    Date timestamp = timeStampToDate(time+"000");
+//                    wxUser.setTimestamp(timestamp);
+//                    boolean flag = userService.updateWxUser(wxUser);
+//                    if(flag){
+//                        logger.info("更新成功！");
+//                    }
+                    jsonObject.put("role", wxUser.getRoleid());
+                    logger.info("该用户为老用户！");
                 }else{
                     wxUser = new WxUser();
                     wxUser.setCountry(WxUserInfo.getString("country"));
@@ -254,39 +255,50 @@ public class WXUserApi {
                     }
                 }
                 String roleid = request.getHeader("roleid");
-
                 long wx_user_id = userService.getWxUserId(openid);
                 //商户
                 if(roleid.equals("2")){
-                    SysShopExample example = new SysShopExample();
-                    SysShopExample.Criteria criteria = example.createCriteria();
-                    criteria.andWxuserIdEqualTo(wx_user_id);
-                    int shopnum = sysShopMapper.countByExample(example);
-                    if(shopnum<1){
-                        r.setCode(Constant.RoleShop_ERROR.getCode()+"");
-                        r.setMsg(Constant.RoleShop_ERROR.getMsg());
-                        jsonObject.put("isfirst", true);
-                        r.setData(jsonObject);
-                        r.setSuccess(false);
-                        return ResponseEntity.ok(r);
-                    }else if(shopnum == 1){
-                        jsonObject.put("isfirst", false);     //此data为token
-                        SysShop sysShop = sysShopMapper.selectByWxuserid(wx_user_id);
-                        jsonObject.put("ischecked",sysShop.getShopcheckstatus());
-                    }
+//                    SysShopExample example = new SysShopExample();
+//                    SysShopExample.Criteria criteria = example.createCriteria();
+//                    criteria.andWxuserIdEqualTo(wx_user_id);
+//                    int shopnum = sysShopMapper.countByExample(example);
+//                    if(shopnum<1){
+//                        r.setCode(Constant.RoleShop_ERROR.getCode()+"");
+//                        r.setMsg(Constant.RoleShop_ERROR.getMsg());
+//                        jsonObject.put("isfirst", true);
+//                        r.setData(jsonObject);
+//                        r.setSuccess(false);
+//                        return ResponseEntity.ok(r);
+//                    }else if(shopnum == 1){
+//                        jsonObject.put("isfirst", false);     //此data为token
+//                        SysShop sysShop = sysShopMapper.selectByWxuserid(wx_user_id);
+//                        jsonObject.put("ischecked",sysShop.getShopcheckstatus());
+//                    }
+                    r.setCode(Constant.RoleShop_ERROR.getCode()+"");
+                    r.setMsg(Constant.RoleShop_ERROR.getMsg());
+                    jsonObject.put("isfirst", true);
+                    r.setData(jsonObject);
+                    r.setSuccess(false);
+                    return ResponseEntity.ok(r);
                 }else if(roleid.equals("4")){
-                    SysCompanyExample example = new SysCompanyExample();
-                    SysCompanyExample.Criteria criteria = example.createCriteria();
-                    criteria.andWxuserIdEqualTo(wx_user_id);
-                    int companynum = sysCompanyMapper.countByExample(example);
-                    if(companynum<1){
-                        r.setCode(Constant.RoleCompany_ERROR.getCode()+"");
-                        r.setMsg(Constant.RoleCompany_ERROR.getMsg());
-                        jsonObject.put("isfirst", true);     //此data为token
-                        r.setData(jsonObject);
-                        r.setSuccess(false);
-                        return ResponseEntity.ok(r);
-                    }
+//                    SysCompanyExample example = new SysCompanyExample();
+//                    SysCompanyExample.Criteria criteria = example.createCriteria();
+//                    criteria.andWxuserIdEqualTo(wx_user_id);
+//                    int companynum = sysCompanyMapper.countByExample(example);
+//                    if(companynum<1){
+//                        r.setCode(Constant.RoleCompany_ERROR.getCode()+"");
+//                        r.setMsg(Constant.RoleCompany_ERROR.getMsg());
+//                        jsonObject.put("isfirst", true);     //此data为token
+//                        r.setData(jsonObject);
+//                        r.setSuccess(false);
+//                        return ResponseEntity.ok(r);
+//                    }
+                    r.setCode(Constant.RoleCompany_ERROR.getCode()+"");
+                    r.setMsg(Constant.RoleCompany_ERROR.getMsg());
+                    jsonObject.put("isfirst", true);     //此data为token
+                    r.setData(jsonObject);
+                    r.setSuccess(false);
+                    return ResponseEntity.ok(r);
                 }
                 logger.info(wxUser.toString());
                 r.setCode("200");

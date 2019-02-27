@@ -19,7 +19,15 @@ public class WxUser {
     private String language;
     private Date timestamp;
     private Integer trancheckstatus;
+    private Integer roleid;
 
+    public Integer getRoleid() {
+        return roleid;
+    }
+
+    public void setRoleid(Integer roleid) {
+        this.roleid = roleid;
+    }
 
     public Integer getTrancheckstatus() {
         return trancheckstatus;

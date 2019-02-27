@@ -1642,5 +1642,4 @@ public class SenderBillApi {
         String admintoken  = sysUserTokenService.getToken(user.getId());
         return admintoken;
     }
-
 }

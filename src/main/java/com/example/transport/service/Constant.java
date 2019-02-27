@@ -19,6 +19,10 @@ public class Constant {
     //微信appSecret
 //    public final static String WX_APP_SECRET = "e49c4c59187af413c5cf20dcf0949008";
     public final static String WX_APP_SECRET = "ce98f136d2ce70d3111edbac1fde287b";
+    //微信商户号
+    public final static String WX_SHOP_ID = "1526798551";
+    //微信商户key
+    public final static String WX_SHOP_KEY = "jh1987727jh1987727jh1987727jh198";
 
 
     //redis过期时间
