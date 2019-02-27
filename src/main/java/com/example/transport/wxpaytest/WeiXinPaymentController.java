@@ -12,7 +12,6 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -32,7 +31,7 @@ public class WeiXinPaymentController{
     private static final long serialVersionUID = 1L;
     private final String mch_id = Constant.WX_SHOP_ID;//商户号
     private final String spbill_create_ip = "填写终端IP";//终端IP
-    private final String notify_url = "https:wzjshuye.cn:8882/transport/api/paycallback";//通知地址
+    private final String notify_url = "localhost:8882/transport/api/paycallback";//通知地址
     private final String trade_type = "JSAPI";//交易类型
     private final String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";//统一下单API接口链接
     private final String key = Constant.WX_SHOP_KEY; // 商户支付密钥
