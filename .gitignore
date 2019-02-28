@@ -28,3 +28,4 @@
 /src/main/resources/application-dev.yml
 /log/
 /log/myspringboot.log
+/src/main/java/com/example/transport/service/Constant.java
