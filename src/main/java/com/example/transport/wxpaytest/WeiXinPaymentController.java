@@ -35,7 +35,7 @@ public class WeiXinPaymentController{
     private static final long serialVersionUID = 1L;
     private final String mch_id = Constant.WX_SHOP_ID;//商户号
     private final String spbill_create_ip = "192.168.100.100";//终端IP
-    private final String notify_url = "localhost:8882/transport/api/paycallback";//通知地址
+    private final String notify_url = "10.84.5.236:8882/transport/api/paycallback";//通知地址
     private final String trade_type = "JSAPI";//交易类型
     private final String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";//统一下单API接口链接
     private final String key = Constant.WX_SHOP_KEY; // 商户支付密钥
@@ -100,33 +100,72 @@ public class WeiXinPaymentController{
                 paymentPo.setNotify_url(notify_url);
                 paymentPo.setTrade_type(trade_type);
                 paymentPo.setOpenid(openid);
-                // 把请求参数打包成数组
-                Map<String, Object> sParaTemp = new HashMap();
-                sParaTemp.put("appid", paymentPo.getAppid());
-                sParaTemp.put("mch_id", paymentPo.getMch_id());
-                sParaTemp.put("nonce_str", paymentPo.getNonce_str());
-                sParaTemp.put("body",  paymentPo.getBody());
-                sParaTemp.put("out_trade_no", paymentPo.getOut_trade_no());
-                sParaTemp.put("total_fee",paymentPo.getTotal_fee());
-//                sParaTemp.put("spbill_create_ip", paymentPo.getSpbill_create_ip());
-                sParaTemp.put("notify_url",paymentPo.getNotify_url());
-                sParaTemp.put("trade_type", paymentPo.getTrade_type());
-                sParaTemp.put("openid", paymentPo.getOpenid());
-                // 除去数组中的空值和签名参数
-                Map sPara = PayUtil.paraFilter(sParaTemp);
-                String prestr = PayUtil.createLinkString(sPara); // 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
 
-                //MD5运算生成签名
-                String mysign = PayUtil.sign(prestr, key, "utf-8").toUpperCase();
-                paymentPo.setSign(mysign);
-                //打包要发送的xml
-                String respXml = XmlUtil.messageToXML(paymentPo);
-                // 打印respXml发现，得到的xml中有“__”不对，应该替换成“_”
-                respXml = respXml.replace("__", "_");
-                System.out.println(respXml);
-                String param = respXml;
+
+                // 把请求参数打包成数组
+//                Map<String, Object> sParaTemp = new HashMap();
+//                sParaTemp.put("appid", paymentPo.getAppid());
+//                sParaTemp.put("mch_id", paymentPo.getMch_id());
+//                sParaTemp.put("nonce_str", paymentPo.getNonce_str());
+//                sParaTemp.put("body",  paymentPo.getBody());
+//                sParaTemp.put("out_trade_no", paymentPo.getOut_trade_no());
+//                sParaTemp.put("total_fee",paymentPo.getTotal_fee());
+////                sParaTemp.put("spbill_create_ip", paymentPo.getSpbill_create_ip());
+//                sParaTemp.put("notify_url",paymentPo.getNotify_url());
+//                sParaTemp.put("trade_type", paymentPo.getTrade_type());
+//                sParaTemp.put("openid", paymentPo.getOpenid());
+//                // 除去数组中的空值和签名参数
+//                Map sPara = PayUtil.paraFilter(sParaTemp);
+//                String prestr = PayUtil.createLinkString(sPara); // 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
+//
+//                //MD5运算生成签名
+//                String mysign = PayUtil.sign(prestr, key, "utf-8").toUpperCase();
+//                paymentPo.setSign(mysign);
+
+
+//                //打包要发送的xml
+//                String respXml = XmlUtil.messageToXML(paymentPo);
+//                // 打印respXml发现，得到的xml中有“__”不对，应该替换成“_”
+//                respXml = respXml.replace("__", "_");
+//                System.out.println(respXml);
+//                String param = respXml;
+
+
+                Map<String, String> packageParams = new HashMap<String, String>();
+                packageParams.put("appid", appid);
+                packageParams.put("mch_id", mch_id);
+                packageParams.put("nonce_str", paymentPo.getNonce_str());
+                packageParams.put("body", paymentPo.getBody());
+                packageParams.put("out_trade_no", paymentPo.getOut_trade_no());//商户订单号
+                packageParams.put("total_fee", total_fee);//支付金额，这边需要转成字符串类型，否则后面的签名会失败
+                packageParams.put("notify_url", paymentPo.getNotify_url());//支付成功后的回调地址
+                packageParams.put("trade_type", trade_type);//支付方式
+                packageParams.put("openid", paymentPo.getOpenid());
+
+                String prestr = com.example.transport.sdk.PayUtil.createLinkString(packageParams); // 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
+
+                //MD5运算生成签名，这里是第一次签名，用于调用统一下单接口
+                String mysign = com.example.transport.sdk.PayUtil.sign(prestr, key, "utf-8").toUpperCase();
+
+
+                //拼接统一下单接口使用的xml数据，要将上一步生成的签名一起拼接进去
+                String xml = "<xml>" + "<appid>" + appid + "</appid>"
+                        + "<body><![CDATA[" + paymentPo.getBody() + "]]></body>"
+                        + "<mch_id>" + mch_id + "</mch_id>"
+                        + "<nonce_str>" + paymentPo.getNonce_str() + "</nonce_str>"
+                        + "<notify_url>" + paymentPo.getNotify_url() + "</notify_url>"
+                        + "<openid>" + paymentPo.getOpenid() + "</openid>"
+                        + "<out_trade_no>" + paymentPo.getOut_trade_no() + "</out_trade_no>"
+		       /* + "<spbill_create_ip>" + paymentPo.getSpbill_create_ip() + "</spbill_create_ip>" */
+                        + "<total_fee>" + total_fee + "</total_fee>"
+                        + "<trade_type>" + trade_type + "</trade_type>"
+                        + "<sign>" + mysign + "</sign>"
+                        + "</xml>";
+
+
+
                 //String result = SendRequestForUrl.sendRequest(url, param);//发起请求
-                String result = PayUtil.httpRequest(url, "POST", param);
+                String result = PayUtil.httpRequest(url, "POST", xml);
                 System.out.println("请求微信预支付接口，返回 result："+result);
                 // 将解析结果存储在Map中
                 Map map = new HashMap();

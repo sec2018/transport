@@ -22,7 +22,8 @@ public class Constant {
     //微信商户号
     public final static String WX_SHOP_ID = "1526798551";
     //微信商户key
-    public final static String WX_SHOP_KEY = "jh1987727jh1987727jh1987727jh198";
+//    public final static String WX_SHOP_KEY = "jh1987727jh1987727jh1987727jh198";
+    public final static String WX_SHOP_KEY = "nhM9O8dkBU9QF8F1BTdGz25RpfRvhi20";
 
 
     //redis过期时间

@@ -3,12 +3,15 @@ package com.example.transport.sdk;
 import com.example.transport.service.Constant;
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import springfox.documentation.spring.web.readers.operation.CachingOperationNameGenerator;
 
 import javax.servlet.ServletException;
@@ -34,7 +37,7 @@ public class WXPayApi {
     private static final String mchId = Constant.WX_SHOP_ID;
     private static final String key = Constant.WX_SHOP_KEY;
     private static final String tradeType = "JSAPI";
-    private static final String payUrl = "localhost:8882/transport/api/pay/notify";
+    private static final String payUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 
 
     public String getOpenId(String code) throws Exception {
@@ -58,12 +61,28 @@ public class WXPayApi {
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    private Map<String, String> goPay(PaymentPo paymentPo) throws Exception {
+//    @RequestMapping(value="payment")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "total_fee", value = "费用总计", required = true, dataType = "Integer",paramType = "query"),
+//            @ApiImplicitParam(name = "body", value = "简单描述", required = true, dataType = "Integer",paramType = "query"),
+//            @ApiImplicitParam(name = "attach", value = "附加数据", required = true, dataType = "Integer",paramType = "query"),
+//            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "header")
+//    })
+    public Map<String, String> goPay(@RequestParam(required = true)String total_fee, @RequestParam(required = false) String body, @RequestParam(required = false) String attach, HttpServletRequest request) throws Exception {
         //商品名称
+        PaymentPo paymentPo = new PaymentPo();
+        paymentPo.setNonce_str("4028b88169333d4a0169333d4a4d0000");
+        paymentPo.setBody("头套");
+        paymentPo.setOut_trade_no("15267985512019022816340861844307");
+        paymentPo.setTotal_fee("1");
+        paymentPo.setNotify_url("http://localhost:8882/transport/api/paynotify");
+        paymentPo.setOpenid("oU27c4rjJaOZNhmSZpnz1DsV2xTc");
+
+
+
         //String body = "测试商品名称";
         //金额元=paymentPo.getTotal_fee()*100
-        String total_fee = String.valueOf(new BigDecimal(paymentPo.getTotal_fee()).multiply(new BigDecimal(100)).intValue());
+        total_fee = String.valueOf(new BigDecimal(paymentPo.getTotal_fee()).multiply(new BigDecimal(100)).intValue());
         //组装参数，用户生成统一下单接口的签名
         Map<String, String> packageParams = new HashMap<String, String>();
         packageParams.put("appid", appid);
@@ -135,7 +154,7 @@ public class WXPayApi {
      * @throws InterruptedException
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @RequestMapping(value="/pay/notify")
+    @RequestMapping(value="/paynotify")
     public synchronized void notify(HttpServletRequest request,HttpServletResponse response) throws InterruptedException{
 
         String orderId = null;
