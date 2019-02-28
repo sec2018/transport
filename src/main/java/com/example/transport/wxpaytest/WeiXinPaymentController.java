@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.transport.service.Constant;
 import com.example.transport.util.JsonResult;
 import com.example.transport.util.redis.RedisService;
+import com.github.wxpay.sdk.WXPayUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -276,24 +277,39 @@ public class WeiXinPaymentController{
 
         String returnCode = (String) map.get("return_code");
         if("SUCCESS".equals(returnCode)){
-            //验证签名是否正确
-            Map<String, String> validParams = PayUtil.paraFilter(map);  //回调验签时需要去除sign和空值参数
-            String validStr = PayUtil.createLinkString(validParams);//把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
-            String sign = PayUtil.sign(validStr, key, "utf-8").toUpperCase();//拼装生成服务器端验证的签名
-            // 因为微信回调会有八次之多,所以当第一次回调成功了,那么我们就不再执行逻辑了
 
-            //根据微信官网的介绍，此处不仅对回调的参数进行验签，还需要对返回的金额与系统订单的金额进行比对等
-            if(sign.equals(map.get("sign"))){
-                /**此处添加自己的业务逻辑代码start**/
-                // bla bla bla....
-                Date datetime = new Date();
-                System.out.println("我自己的业务逻辑！");
-                /**此处添加自己的业务逻辑代码end**/
-                //通知微信服务器已经支付成功
-                resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>"
-                        + "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
-            } else {
-                System.out.println("微信支付回调失败!签名不一致");
+            //重要！验证签名前不要修改reqParam中的键值对的内容，否则会验签不过
+            if (!WXPayUtil.isSignatureValid(sb.toString(), key)) {
+                System.out.println("验证签名结果[失败].");
+                //验签失败，需解决验签问题
+            }else {
+                //验证签名是否正确
+                Map<String, String> validParams = com.example.transport.sdk.PayUtil.paraFilter(map);  //回调验签时需要去除sign和空值参数
+                String validStr = com.example.transport.sdk.PayUtil.createLinkString(validParams);//把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
+                String sign = com.example.transport.sdk.PayUtil.sign(validStr, key, "utf-8").toUpperCase();//拼装生成服务器端验证的签名
+                //根据微信官网的介绍，此处不仅对回调的参数进行验签，还需要对返回的金额与系统订单的金额进行比对等
+                // 因为微信回调会有八次之多,所以当第一次回调成功了,那么我们就不再执行逻辑了
+
+                //根据微信官网的介绍，此处不仅对回调的参数进行验签，还需要对返回的金额与系统订单的金额进行比对等
+                if(sign.equals(map.get("sign"))){
+                    /**此处添加自己的业务逻辑代码start**/
+                    // bla bla bla....
+                    Date datetime = new Date();
+                    System.out.println("我自己的业务逻辑！");
+                    /**此处添加自己的业务逻辑代码end**/
+                    //通知微信服务器已经支付成功
+                    resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>"
+                            + "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
+
+
+//                    response.getWriter().write("<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>");
+//                    response.getWriter().flush();
+//                    response.getWriter().close();
+
+                } else {
+                    System.out.println("微信支付回调失败!签名不一致");
+                }
+
             }
         }else{
             resXml = "<xml>" + "<return_code><![CDATA[FAIL]]></return_code>"
@@ -308,6 +324,69 @@ public class WeiXinPaymentController{
         out.flush();
         out.close();
     }
+
+//    @RequestMapping(value="paycallback")
+//    public void wxNotify(HttpServletRequest request,HttpServletResponse response) throws Exception{
+//        try {
+//            response.setContentType("text/html");
+//            response.setCharacterEncoding("UTF-8");
+//            // 获取微信通知服务器发送的后台通知参数
+//            //读取参数
+//            InputStream inputStream ;
+//            StringBuffer sb = new StringBuffer();
+//            inputStream = request.getInputStream();
+//            String s ;
+//            BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+//            while ((s = in.readLine()) != null){
+//                sb.append(s);
+//            }
+//            in.close();
+//            inputStream.close();
+//
+//            System.out.println(sb.toString());
+//
+//            Map<String, String> valideData = WXPayUtil.xmlToMap(sb.toString());
+//            Map<String,String> map=new HashMap<>();
+//            //重要！验证签名前不要修改reqParam中的键值对的内容，否则会验签不过
+//            if (!WXPayUtil.isSignatureValid(sb.toString(), key)) {
+//                System.out.println("验证签名结果[失败].");
+//                //验签失败，需解决验签问题
+//            }
+//            else {
+//                //验证签名是否正确
+//                Map<String, String> validParams = com.example.transport.sdk.PayUtil.paraFilter(map);  //回调验签时需要去除sign和空值参数
+//                String validStr = com.example.transport.sdk.PayUtil.createLinkString(validParams);//把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
+//                String sign = com.example.transport.sdk.PayUtil.sign(validStr, key, "utf-8").toUpperCase();//拼装生成服务器端验证的签名
+//                //根据微信官网的介绍，此处不仅对回调的参数进行验签，还需要对返回的金额与系统订单的金额进行比对等
+//                if (sign.equals(map.get("sign"))) {
+//                    /**此处添加自己的业务逻辑代码start**/
+//                    //TODO
+//                    System.out.println("我的业务。。。。。。。。。。。。");
+//                    /**此处添加自己的业务逻辑代码end**/
+//                    //通知微信服务器已经支付成功
+////                    resXml = this.getXml();
+//                    System.out.println("已支付成功");
+////                    String resXml = null;
+////                    if(map.get("respCode").toString().equals("0")){
+////                        resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>"
+////                                + "<return_msg><![CDATA[OK]]></return_msg>"
+////                                + "</xml> ";
+////
+////                    }else {
+////                        resXml = "<xml>" + "<return_code><![CDATA[FAIL]]></return_code>"
+////                                + "<return_msg><![CDATA[报文为空]]></return_msg>" + "</xml> ";
+////                    }
+//                    System.out.println("微信支付回调数据结束");
+//
+//                    response.getWriter().write("<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>");
+//                    response.getWriter().flush();
+//                    response.getWriter().close();
+//                }
+//            }
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+//    }
 
 
     public JsonResult ConnectRedisCheckToken(String token){
