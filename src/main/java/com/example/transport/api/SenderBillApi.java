@@ -629,7 +629,7 @@ public class SenderBillApi {
             }
         }catch (Exception e) {
             r = Common.TokenError();
-            e.printStackTrace();
+            System.out.println(e.getMessage());
             return ResponseEntity.ok(r);
         }
         return ResponseEntity.ok(r);

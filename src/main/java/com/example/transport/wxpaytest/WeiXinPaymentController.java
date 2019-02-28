@@ -35,7 +35,7 @@ public class WeiXinPaymentController{
     private static final long serialVersionUID = 1L;
     private final String mch_id = Constant.WX_SHOP_ID;//商户号
     private final String spbill_create_ip = "192.168.100.100";//终端IP
-    private final String notify_url = "10.84.5.236:8882/transport/api/paycallback";//通知地址
+    private final String notify_url = "192.168.100.100:8882/transport/api/paycallback";//通知地址
     private final String trade_type = "JSAPI";//交易类型
     private final String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";//统一下单API接口链接
     private final String key = Constant.WX_SHOP_KEY; // 商户支付密钥
@@ -63,7 +63,7 @@ public class WeiXinPaymentController{
             @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "header")
     })
     @ResponseBody
-    public JSONObject payment(@RequestParam(required = true)String total_fee, @RequestParam(required = false) String body, @RequestParam(required = false) String attach,HttpServletRequest request) throws UnsupportedEncodingException, DocumentException {
+    public ResponseEntity<JsonResult> payment(@RequestParam(required = true)String total_fee, @RequestParam(required = false) String body, @RequestParam(required = false) String attach,HttpServletRequest request) throws UnsupportedEncodingException, DocumentException {
 
         total_fee = 1+"";
 
@@ -187,20 +187,42 @@ public class WeiXinPaymentController{
 
                 System.out.println("请求微信预支付接口，返回 code：" + return_code);
                 System.out.println("请求微信预支付接口，返回 msg：" + return_msg);
-                if("SUCCESS".equals(return_code) && "SUCCESS".equals(result_code)){
-                    // 业务结果
-                    String prepay_id = map.get("prepay_id").toString();//返回的预付单信息
-                    String nonceStr = UUIDHexGenerator.generate();
-                    JsonObject.put("nonceStr", nonceStr);
-                    JsonObject.put("package", "prepay_id=" + prepay_id);
+//                if("SUCCESS".equals(return_code) && "SUCCESS".equals(result_code)){
+//                    // 业务结果
+//                    String prepay_id = map.get("prepay_id").toString();//返回的预付单信息
+//                    String nonceStr = UUIDHexGenerator.generate();
+//                    JsonObject.put("nonceStr", nonceStr);
+//                    JsonObject.put("package", "prepay_id=" + prepay_id);
+//                    Long timeStamp = System.currentTimeMillis() / 1000;
+//                    JsonObject.put("timeStamp", timeStamp + "");
+//                    String stringSignTemp = "appId=" + appid + "&nonceStr=" + nonceStr + "&package=prepay_id=" + prepay_id + "&signType=MD5&timeStamp=" + timeStamp;
+//                    //再次签名
+//                    String paySign = PayUtil.sign(stringSignTemp, key, "utf-8").toUpperCase();
+//                    JsonObject.put("paySign", paySign);
+//                }
+
+                Map<String, String> res = new HashMap<String, String>();//返回给小程序端需要的参数
+                String prepay_id = null;
+                if(return_code=="SUCCESS"||return_code.equals(return_code)){
+                    prepay_id = (String) map.get("prepay_id");//返回的预付单信息
+                    res.put("nonceStr", paymentPo.getNonce_str());
+                    res.put("package", "prepay_id=" + prepay_id);
                     Long timeStamp = System.currentTimeMillis() / 1000;
-                    JsonObject.put("timeStamp", timeStamp + "");
-                    String stringSignTemp = "appId=" + appid + "&nonceStr=" + nonceStr + "&package=prepay_id=" + prepay_id + "&signType=MD5&timeStamp=" + timeStamp;
-                    //再次签名
-                    String paySign = PayUtil.sign(stringSignTemp, key, "utf-8").toUpperCase();
-                    JsonObject.put("paySign", paySign);
+                    res.put("timeStamp", timeStamp + "");//这边要将返回的时间戳转化成字符串，不然小程序端调用wx.requestPayment方法会报签名错误
+                    //拼接签名需要的参数
+                    String stringSignTemp = "appId=" + appid + "&nonceStr=" + paymentPo.getNonce_str() + "&package=prepay_id=" + prepay_id+ "&signType=MD5&timeStamp=" + timeStamp;
+                    //再次签名，这个签名用于小程序端调用wx.requesetPayment方法
+                    String paySign = com.example.transport.sdk.PayUtil.sign(stringSignTemp, key, "utf-8").toUpperCase();
+
+                    res.put("paySign", paySign);
                 }
-                return JsonObject;
+                System.out.println(res);
+                r.setCode("200");
+                r.setMsg("预支付订单成功！");
+                r.setData(res);
+                r.setSuccess(true);
+                return ResponseEntity.ok(r);
+
 
             }else{
 
