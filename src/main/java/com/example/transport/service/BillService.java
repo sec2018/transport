@@ -24,6 +24,9 @@ public interface BillService {
     //支付订单
     boolean payBill(Date pay_time, long id);
 
+    //支付订单2
+    boolean payNotifyBill(Date pay_time, long id, String out_trade_no,String transaction_id);
+
     //完成订单
     boolean finishBill(Date finish_time,long id,String company_code,double delivery_fee);
 
@@ -121,4 +124,7 @@ public interface BillService {
 
     //管理员查看所有未完成订单
     Map<String, Object> adminSelectfinishedBill(int startitem,int pagesize);
+
+    //退款订单
+    boolean refundBill(Date refund_time, String out_trade_no, int refundstatus, String refundcode);
 }

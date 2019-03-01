@@ -81,6 +81,18 @@ public class BillServiceImpl implements BillService{
 
     @Transactional
     @Override
+    public boolean payNotifyBill(Date pay_time, long id, String out_trade_no, String transaction_id) {
+        try{
+            return billDao.payNotifyBill(pay_time,id,out_trade_no,transaction_id)==1?true:false;
+        }
+        catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+    }
+
+    @Transactional
+    @Override
     public boolean finishBill(Date datetime, long id, String company_code,double delivery_fee) {
         try{
             return billDao.finishBill(datetime,id,company_code,delivery_fee)==1?true:false;
@@ -460,5 +472,10 @@ public class BillServiceImpl implements BillService{
         //管理员总数
         map.put("totalNum", page.getTotal());
         return map;
+    }
+
+    @Override
+    public boolean refundBill(Date refund_time, String out_trade_no, int refundstatus, String refundcode) {
+        return billDao.refundBill(refund_time,out_trade_no,refundstatus,refundcode)==1?true:false;
     }
 }

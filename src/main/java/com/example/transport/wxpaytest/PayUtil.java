@@ -21,6 +21,7 @@ public class PayUtil {
         return DigestUtils.md5Hex(getContentBytes(text, input_charset));
     }
 
+
     /**
      * 签名字符串
      *

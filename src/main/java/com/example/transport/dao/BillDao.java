@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface BillDao {
@@ -44,6 +43,10 @@ public interface BillDao {
     //支付订单
     @Update({"update sys_bill set bill_status = 3,pay_time=#{pay_time} where id = #{id}"})
     int payBill(@Param("pay_time")Date pay_time, @Param("id")long id);
+
+    //支付回调订单
+    @Update({"update sys_bill set bill_status = 3,pay_time=#{pay_time},out_trade_no=#{out_trade_no},transaction_id=#{transaction_id} where id = #{id}"})
+    int payNotifyBill(Date pay_time, long id, String out_trade_no, String transaction_id);
 
     //完成订单
     @Update({"update sys_bill set bill_status = 4,finish_time=#{finish_time},company_code=#{company_code},delivery_fee=#{delivery_fee} where id = #{id}"})
@@ -147,4 +150,9 @@ public interface BillDao {
     //管理员查看所有已完成订单
     @Select({"select * from sys_bill where bill_status = 4  order by finish_time desc"})
     List<SysBill> adminSelectfinishedBill();
+
+    //退款回调订单
+    @Update({"update sys_bill set refund_time=#{refund_time},refundstatus=#{refundstatus},refundcode=#{refundcode} where out_trade_no = #{out_trade_no}"})
+    int refundBill(Date refund_time, String out_trade_no, int refundstatus, String refundcode);
+
 }

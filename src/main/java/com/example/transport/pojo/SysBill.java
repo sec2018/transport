@@ -35,8 +35,54 @@ public class SysBill {
     private Date create_time;
     private Date rec_time;
     private Date pay_time;
+
+    public String getOut_trade_no() {
+        return out_trade_no;
+    }
+
+    public void setOut_trade_no(String out_trade_no) {
+        this.out_trade_no = out_trade_no;
+    }
+
+    public String getTransaction_id() {
+        return transaction_id;
+    }
+
+    public void setTransaction_id(String transaction_id) {
+        this.transaction_id = transaction_id;
+    }
+
+    public Integer getRefundstatus() {
+        return refundstatus;
+    }
+
+    public void setRefundstatus(Integer refundstatus) {
+        this.refundstatus = refundstatus;
+    }
+
+    public String getRefundcode() {
+        return refundcode;
+    }
+
+    public void setRefundcode(String refundcode) {
+        this.refundcode = refundcode;
+    }
+
     private Date finish_time;
     private Integer line_id;
+    private String out_trade_no;
+    private String transaction_id;
+    private Integer refundstatus;
+    private String refundcode;
+    private Date refund_time;
+
+    public Date getRefund_time() {
+        return refund_time;
+    }
+
+    public void setRefund_time(Date refund_time) {
+        this.refund_time = refund_time;
+    }
 
     public Integer getLine_id() {
         return line_id;
