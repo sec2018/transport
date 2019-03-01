@@ -18,7 +18,7 @@ public interface UserDao {
     @Select("select * from sys_user where loginname = #{loginname}")
     User getUserByLoginName(@Param("loginname") String loginname);
 
-    @Insert({"insert into wx_user(id,openid,nickname,gender,city,province,country,avatarurl,language,timestamp) values(0,#{openid},#{nickname},#{gender},#{city},#{province},#{country},#{avatarurl},#{language},#{timestamp})"})
+    @Insert({"insert into wx_user(id,openid,nickname,gender,city,province,country,avatarurl,language,timestamp,trancheckstatus,roleid) values(0,#{openid},#{nickname},#{gender},#{city},#{province},#{country},#{avatarurl},#{language},#{timestamp},#{trancheckstatus},#{roleid})"})
     int insertWxUser(WxUser wxUser);
 
     @Select("select * from wx_user where openid = #{openid}")
@@ -38,4 +38,5 @@ public interface UserDao {
 
     @Select("select * from wx_user where roleid = 3")
     List<WxUser> getAllTrans();
+
 }

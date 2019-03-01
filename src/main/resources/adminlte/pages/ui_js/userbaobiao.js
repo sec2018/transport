@@ -22,7 +22,7 @@ $(function () {
             }else{
                 for(var i = 0;i<data.data.length;i++){
                     data.data[i].timestamp = timetrans(data.data[i].timestamp).replace('T'," ");
-                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow(\""+ data.data[i].avatarurl + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 头像</a>&nbsp;&nbsp;<a href='javascript:void(0);'onclick='checkThisUser(\""+ data.data[i].id + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>";
+                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow(\""+ data.data[i].avatarurl + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 头像</a>&nbsp;&nbsp;<a href='javascript:void(0);'onclick='checkThisUser(\""+ data.data[i].id + "\",\""+ data.data[i].trancheckstatus + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>";
                 }
                 viewdata = $.extend(true,[],data.data);
                 var dt = $('#datatable').DataTable({
@@ -149,7 +149,12 @@ function checkThisRow(url) {
     $("#userimage").attr("src",url);
 }
 
-function checkThisUser(id) {
+function checkThisUser(id,checkstatus) {
+    if(checkstatus == "通过"){
+        $("#userModal #optionsRadios1").attr("checked", true);
+    }else{
+        $("#userModal #optionsRadios2").attr("checked", true);
+    }
     $('#userModal').modal('toggle');
     checkuserid = id;
 }

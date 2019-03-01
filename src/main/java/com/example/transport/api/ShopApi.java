@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -247,6 +248,7 @@ public class ShopApi {
 
 
     //角色0,1
+    @Transactional
     @ApiOperation(value = "审核商铺", notes = "审核商铺")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopid", value = "商户店铺id", required = true, dataType = "Integer", paramType = "query"),
@@ -263,7 +265,6 @@ public class ShopApi {
             r = Common.RoleError();
             return ResponseEntity.ok(r);
         }
-
         String token = request.getHeader("token");
         try {
             token = getAdminToken();
@@ -271,16 +272,22 @@ public class ShopApi {
                 r = Common.TokenError();
                 return ResponseEntity.ok(r);
             } else {
+                redisService.expire(token, Constant.expire.getExpirationTime());
                 SysShop sysShop = sysShopMapper.selectByPrimaryKey(shopid);
+                WxUser wxUser = userService.getWxUserById(sysShop.getWxuserId());
                 if (ispass) {
                     sysShop.setShopcheckstatus(1);    //1代表审核通过
                     sysShopMapper.updateByPrimaryKey(sysShop);
+                    wxUser.setTrancheckstatus(1);    //1代表审核通过
+                    userService.updateWxUser(wxUser);
                     r.setCode("200");
                     r.setMsg("审核商铺通过！");
                     r.setSuccess(true);
                 } else {
                     sysShop.setShopcheckstatus(2);    //2代表审核不通过，被驳回
                     sysShopMapper.updateByPrimaryKey(sysShop);
+                    wxUser.setTrancheckstatus(2);    //2代表审核不通过，被驳回
+                    userService.updateWxUser(wxUser);
                     r.setCode(Constant.SHOP_CHECKFAILURE.getCode() + "");
                     r.setMsg(Constant.SHOP_CHECKFAILURE.getMsg());
                     r.setSuccess(true);

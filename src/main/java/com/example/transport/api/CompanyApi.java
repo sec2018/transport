@@ -4,10 +4,7 @@ import com.example.transport.dao.CompanyLinesMapper;
 import com.example.transport.dao.SysCompanyMapper;
 import com.example.transport.model.CompanyLinesExample;
 import com.example.transport.model.SysCompanyExample;
-import com.example.transport.pojo.CompanyLines;
-import com.example.transport.pojo.LineMap;
-import com.example.transport.pojo.SysCompany;
-import com.example.transport.pojo.User;
+import com.example.transport.pojo.*;
 import com.example.transport.service.CompanyService;
 import com.example.transport.service.Constant;
 import com.example.transport.service.SysUserTokenService;
@@ -23,6 +20,7 @@ import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -919,6 +917,7 @@ public class CompanyApi {
 
 
     //角色0,1
+    @Transactional
     @ApiOperation(value = "审核物流公司", notes = "审核物流公司")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "companyid", value = "物流公司id", required = true, dataType = "Integer",paramType = "query"),
@@ -944,15 +943,20 @@ public class CompanyApi {
                 return ResponseEntity.ok(r);
             }else{
                 SysCompany sysCompany = sysCompanyMapper.selectByPrimaryKey(companyid);
+                WxUser wxUser = userService.getWxUserById(sysCompany.getWxuserId());
                 if(ispass){
                     sysCompany.setCompanycheckstatus(1);    //1代表审核通过
                     sysCompanyMapper.updateByPrimaryKey(sysCompany);
+                    wxUser.setTrancheckstatus(1);    //1代表审核通过
+                    userService.updateWxUser(wxUser);
                     r.setCode("200");
                     r.setMsg("审核物流公司通过！");
                     r.setSuccess(true);
                 }else{
                     sysCompany.setCompanycheckstatus(2);    //2代表审核不通过，被驳回
                     sysCompanyMapper.updateByPrimaryKey(sysCompany);
+                    wxUser.setTrancheckstatus(2);    //2代表审核不通过，被驳回
+                    userService.updateWxUser(wxUser);
                     r.setCode(Constant.COMPANY_CHECKFAILURE.getCode()+"");
                     r.setMsg(Constant.COMPANY_CHECKFAILURE.getMsg());
                     r.setSuccess(true);

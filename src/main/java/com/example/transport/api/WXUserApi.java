@@ -238,7 +238,16 @@ public class WXUserApi {
 //                        logger.info("更新成功！");
 //                    }
                     jsonObject.put("role", wxUser.getRoleid());
-                    logger.info("该用户为老用户！");
+                    if(wxUser.getTrancheckstatus()==2){
+                        jsonObject.put("status",false);
+                        r.setCode("200");
+                        r.setMsg("请等待审核通过后登录！");
+                        r.setData(jsonObject);
+                        r.setSuccess(true);
+                        return ResponseEntity.ok(r);
+                    }else{
+                        logger.info("该用户为已通过认证的老用户！");
+                    }
                 }else{
                     wxUser = new WxUser();
                     wxUser.setCountry(WxUserInfo.getString("country"));
@@ -249,12 +258,14 @@ public class WXUserApi {
                     wxUser.setOpenid(WxUserInfo.getString("openId"));
                     wxUser.setNickname(WxUserInfo.getString("nickName"));
                     wxUser.setLanguage(WxUserInfo.getString("language"));
+                    wxUser.setTrancheckstatus(2);
+                    String roleid = request.getHeader("roleid");
+                    wxUser.setRoleid(Integer.parseInt(roleid));
                     boolean flag = userService.insertWxUser(wxUser);
                     if(flag){
                         logger.info("插入成功！");
                     }
-                    String roleid = request.getHeader("roleid");
-                    long wx_user_id = userService.getWxUserId(openid);
+//                    long wx_user_id = userService.getWxUserId(openid);
                     //商户
                     if(roleid.equals("2")){
 //                    SysShopExample example = new SysShopExample();
@@ -280,6 +291,7 @@ public class WXUserApi {
                         r.setSuccess(false);
                         return ResponseEntity.ok(r);
                     }else if(roleid.equals("4")){
+
 //                    SysCompanyExample example = new SysCompanyExample();
 //                    SysCompanyExample.Criteria criteria = example.createCriteria();
 //                    criteria.andWxuserIdEqualTo(wx_user_id);
@@ -301,6 +313,7 @@ public class WXUserApi {
                     }
                 }
                 logger.info(wxUser.toString());
+                jsonObject.put("status",true);
                 r.setCode("200");
                 r.setMsg("登录成功！");
                 r.setData(jsonObject);

@@ -119,20 +119,20 @@ public class CompanyLinesApi {
                         companyLines.setArriveTel(jsonObject.getString("arrive_tel"));
                         companyLines.setArriveDetailAddr(jsonObject.getString("arrive_detail_addr"));
                         int issuccess = companyLinesMapper.insert(companyLines);
-                        String key = companyLines.getBeginAddr()+"-->"+companyLines.getArriveAddr();
+                        String key = companyLines.getBeginAddr() + "-->" + companyLines.getArriveAddr();
                         String companyname = sysCompanyMapper.selectByPrimaryKey(companyLines.getCompanyId()).getCompanyName();
-                        Map<Integer,String> companylistmap;
+                        Map<Integer, String> companylistmap;
                         LineMap lp;
                         if (issuccess != 0) {
-                            for(int k=0;k<CompanyApi.linemaplist.size();k++){
-                                if(CompanyApi.linemaplist.get(k).getKey().equals(key)){
-                                    if(!CompanyApi.linemaplist.get(k).getValuemap().containsKey(companyLines.getCompanyId())){
-                                        CompanyApi.linemaplist.get(k).getValuemap().put(companyLines.getId(),companyname);
+                            for (int k = 0; k < CompanyApi.linemaplist.size(); k++) {
+                                if (CompanyApi.linemaplist.get(k).getKey().equals(key)) {
+                                    if (!CompanyApi.linemaplist.get(k).getValuemap().containsKey(companyLines.getCompanyId())) {
+                                        CompanyApi.linemaplist.get(k).getValuemap().put(companyLines.getId(), companyname);
                                         break;
                                     }
-                                }else{
-                                    companylistmap = new HashMap<Integer,String>();
-                                    companylistmap.put(companyLines.getId(),companyname);
+                                } else {
+                                    companylistmap = new HashMap<Integer, String>();
+                                    companylistmap.put(companyLines.getId(), companyname);
                                     lp = new LineMap();
                                     lp.setKey(key);
                                     lp.setValuemap(companylistmap);
@@ -178,20 +178,20 @@ public class CompanyLinesApi {
                     companyLines.setArriveTel(jsonObject.getString("arrive_tel"));
                     companyLines.setArriveDetailAddr(jsonObject.getString("arrive_detail_addr"));
                     int issuccess = companyLinesMapper.updateByPrimaryKey(companyLines);
-                    String key = companyLines.getBeginAddr()+"-->"+companyLines.getArriveAddr();
+                    String key = companyLines.getBeginAddr() + "-->" + companyLines.getArriveAddr();
                     String companyname = sysCompanyMapper.selectByPrimaryKey(companyLines.getCompanyId()).getCompanyName();
-                    Map<Integer,String> companylistmap;
+                    Map<Integer, String> companylistmap;
                     LineMap lp;
                     if (issuccess != 0) {
-                        for(int k=0;k<CompanyApi.linemaplist.size();k++){
-                            if(CompanyApi.linemaplist.get(k).getKey().equals(key)){
-                                if(!CompanyApi.linemaplist.get(k).getValuemap().containsKey(companyLines.getCompanyId())){
-                                    CompanyApi.linemaplist.get(k).getValuemap().put(companyLines.getId(),companyname);
+                        for (int k = 0; k < CompanyApi.linemaplist.size(); k++) {
+                            if (CompanyApi.linemaplist.get(k).getKey().equals(key)) {
+                                if (!CompanyApi.linemaplist.get(k).getValuemap().containsKey(companyLines.getCompanyId())) {
+                                    CompanyApi.linemaplist.get(k).getValuemap().put(companyLines.getId(), companyname);
                                     break;
                                 }
-                            }else{
-                                companylistmap = new HashMap<Integer,String>();
-                                companylistmap.put(companyLines.getId(),companyname);
+                            } else {
+                                companylistmap = new HashMap<Integer, String>();
+                                companylistmap.put(companyLines.getId(), companyname);
                                 lp = new LineMap();
                                 lp.setKey(key);
                                 lp.setValuemap(companylistmap);
@@ -284,29 +284,29 @@ public class CompanyLinesApi {
             if (issuccess != 0) {
                 CompanyLinesExample example = new CompanyLinesExample();
                 List<CompanyLines> line = companyLinesMapper.selectByExample(example);
-                Map<Integer,String> companylistmap;
+                Map<Integer, String> companylistmap;
                 String companyname;
                 LineMap lp;
-                for (CompanyLines cl : line){
-                    String key = cl.getBeginAddr()+"-->"+cl.getArriveAddr();
+                for (CompanyLines cl : line) {
+                    String key = cl.getBeginAddr() + "-->" + cl.getArriveAddr();
                     companyname = sysCompanyMapper.selectByPrimaryKey(cl.getCompanyId()).getCompanyName();
-                    companylistmap = new HashMap<Integer,String>();
-                    companylistmap.put(cl.getId(),companyname);
-                    if(CompanyApi.linemaplist.size() == 0){
+                    companylistmap = new HashMap<Integer, String>();
+                    companylistmap.put(cl.getId(), companyname);
+                    if (CompanyApi.linemaplist.size() == 0) {
                         lp = new LineMap();
                         lp.setKey(key);
                         lp.setValuemap(companylistmap);
                         CompanyApi.linemaplist.add(lp);
-                    }else{
-                        for(int i=0;i<CompanyApi.linemaplist.size();i++){
-                            if(CompanyApi.linemaplist.get(i).getKey().equals(key)){
-                                if(!CompanyApi.linemaplist.get(i).getValuemap().containsKey(cl.getCompanyId())){
-                                    CompanyApi.linemaplist.get(i).getValuemap().put(cl.getId(),companyname);
+                    } else {
+                        for (int i = 0; i < CompanyApi.linemaplist.size(); i++) {
+                            if (CompanyApi.linemaplist.get(i).getKey().equals(key)) {
+                                if (!CompanyApi.linemaplist.get(i).getValuemap().containsKey(cl.getCompanyId())) {
+                                    CompanyApi.linemaplist.get(i).getValuemap().put(cl.getId(), companyname);
                                     break;
                                 }
-                            }else{
-                                companylistmap = new HashMap<Integer,String>();
-                                companylistmap.put(cl.getId(),companyname);
+                            } else {
+                                companylistmap = new HashMap<Integer, String>();
+                                companylistmap.put(cl.getId(), companyname);
                                 lp = new LineMap();
                                 lp.setKey(key);
                                 lp.setValuemap(companylistmap);

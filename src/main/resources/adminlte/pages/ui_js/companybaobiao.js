@@ -21,7 +21,7 @@ $(function () {
                 return;
             }else{
                 for(var i = 0;i<data.data.length;i++){
-                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow("+ data.data[i].company_id + ")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>";
+                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow("+ data.data[i].company_id + ",\""+ data.data[i].companycheckstatus + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>";
                 }
                 viewdata = $.extend(true,[],data.data);
                 var dt = $('#datatable').DataTable({
@@ -180,7 +180,12 @@ $(function () {
 
 
 
-function checkThisRow(id) {
+function checkThisRow(id,checkstatus) {
+    if(checkstatus == "通过"){
+        $("#myModal #optionsRadios1").attr("checked", true);
+    }else{
+        $("#myModal #optionsRadios2").attr("checked", true);
+    }
     $('#myModal').modal('toggle');
     checkcompanyid = id;
 }
