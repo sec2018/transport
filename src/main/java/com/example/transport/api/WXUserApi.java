@@ -4,8 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.transport.dao.SysCompanyMapper;
 import com.example.transport.dao.SysShopMapper;
-import com.example.transport.model.SysCompanyExample;
-import com.example.transport.model.SysShopExample;
+import com.example.transport.pojo.SysCompany;
 import com.example.transport.pojo.SysShop;
 import com.example.transport.pojo.WxUser;
 import com.example.transport.service.Constant;
@@ -41,7 +40,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.*;
 import java.security.spec.InvalidParameterSpecException;
-import java.sql.Date;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -191,12 +190,13 @@ public class WXUserApi {
             @ApiImplicitParam(name = "code", value = "小程序code", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "encryptedData", value = "小程序数据", required = true, dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "iv", value = "参数", required = true, dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "roleid", value = "角色", required = true, dataType = "String",paramType = "header")
+            @ApiImplicitParam(name = "roleid", value = "角色", required = true, dataType = "Integer",paramType = "header")
     })
     @RequestMapping(value="wxlogin",method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<JsonResult> getSessionKeyOropenid(@RequestParam(value = "code") String code, @RequestParam(value = "encryptedData") String encryptedData, @RequestParam(value = "iv") String iv,
                                                             HttpServletRequest request){
+        String roleid = request.getHeader("roleid");
         //微信端登录code值
         String wxCode = code;
         String requestUrl = "https://api.weixin.qq.com/sns/jscode2session";	//请求地址 https://api.weixin.qq.com/sns/jscode2session
@@ -237,11 +237,61 @@ public class WXUserApi {
 //                    if(flag){
 //                        logger.info("更新成功！");
 //                    }
-                    jsonObject.put("role", wxUser.getRoleid());
+                    int userroleid = wxUser.getRoleid();
+                    jsonObject.put("role", userroleid);
+                    SysShop sysShop = sysShopMapper.selectByWxuserid(wxUser.getId());
+                    SysCompany sysCompany = sysCompanyMapper.selectByWxuserid(wxUser.getId());
+                    if(roleid.equals(2+"")){
+                        if(sysShop==null && sysCompany==null){
+                            jsonObject.put("role", 2);
+                            wxUser.setRoleid(2);
+                            wxUser.setTimestamp(new Date());
+                            boolean flag = userService.updateWxUser(wxUser);
+                            if(flag){
+                                logger.info("更新成功！");
+                            }
+                            r.setCode(Constant.RoleShop_ERROR.getCode()+"");
+                            r.setMsg(Constant.RoleShop_ERROR.getMsg());
+                            jsonObject.put("isfirst", true);
+                            jsonObject.put("userinfo",wxUser);
+                            r.setData(jsonObject);
+                            r.setSuccess(false);
+                            return ResponseEntity.ok(r);
+                        }
+                    }else if(roleid.equals(4+"")){
+
+                        if(sysShop==null && sysCompany==null){
+                            jsonObject.put("role", 4);
+                            wxUser.setRoleid(4);
+                            wxUser.setTimestamp(new Date());
+                            boolean flag = userService.updateWxUser(wxUser);
+                            if(flag){
+                                logger.info("更新成功！");
+                            }
+                            r.setCode(Constant.RoleCompany_ERROR.getCode()+"");
+                            r.setMsg(Constant.RoleCompany_ERROR.getMsg());
+                            jsonObject.put("isfirst", true);     //此data为token
+                            jsonObject.put("userinfo",wxUser);
+                            r.setData(jsonObject);
+                            r.setSuccess(false);
+                            return ResponseEntity.ok(r);
+                        }
+                    }else if(roleid.equals(3+"")){
+                        if(sysShop==null && sysCompany==null){
+                            jsonObject.put("role", 3);
+                            wxUser.setRoleid(3);
+                            wxUser.setTimestamp(new Date());
+                            boolean flag = userService.updateWxUser(wxUser);
+                            if(flag){
+                                logger.info("更新成功！");
+                            }
+                        }
+                    }
                     if(wxUser.getTrancheckstatus()==2){
                         jsonObject.put("status",false);
                         r.setCode("200");
                         r.setMsg("请等待审核通过后登录！");
+                        jsonObject.put("userinfo",wxUser);
                         r.setData(jsonObject);
                         r.setSuccess(true);
                         return ResponseEntity.ok(r);
@@ -259,8 +309,8 @@ public class WXUserApi {
                     wxUser.setNickname(WxUserInfo.getString("nickName"));
                     wxUser.setLanguage(WxUserInfo.getString("language"));
                     wxUser.setTrancheckstatus(2);
-                    String roleid = request.getHeader("roleid");
                     wxUser.setRoleid(Integer.parseInt(roleid));
+                    wxUser.setTimestamp(new Date());
                     boolean flag = userService.insertWxUser(wxUser);
                     if(flag){
                         logger.info("插入成功！");
@@ -287,6 +337,7 @@ public class WXUserApi {
                         r.setCode(Constant.RoleShop_ERROR.getCode()+"");
                         r.setMsg(Constant.RoleShop_ERROR.getMsg());
                         jsonObject.put("isfirst", true);
+                        jsonObject.put("userinfo",wxUser);
                         r.setData(jsonObject);
                         r.setSuccess(false);
                         return ResponseEntity.ok(r);
@@ -307,6 +358,7 @@ public class WXUserApi {
                         r.setCode(Constant.RoleCompany_ERROR.getCode()+"");
                         r.setMsg(Constant.RoleCompany_ERROR.getMsg());
                         jsonObject.put("isfirst", true);     //此data为token
+                        jsonObject.put("userinfo",wxUser);
                         r.setData(jsonObject);
                         r.setSuccess(false);
                         return ResponseEntity.ok(r);
@@ -316,6 +368,7 @@ public class WXUserApi {
                 jsonObject.put("status",true);
                 r.setCode("200");
                 r.setMsg("登录成功！");
+                jsonObject.put("userinfo",wxUser);
                 r.setData(jsonObject);
                 r.setSuccess(true);
                 return ResponseEntity.ok(r);

@@ -9,6 +9,7 @@ import com.example.transport.service.CompanyService;
 import com.example.transport.service.Constant;
 import com.example.transport.service.SysUserTokenService;
 import com.example.transport.service.UserService;
+import com.example.transport.util.JSONUtil;
 import com.example.transport.util.JsonResult;
 import com.example.transport.util.redis.RedisService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -59,8 +60,7 @@ public class CompanyApi {
 
 
 //    private static Map<String,Map<Integer,String>> linemap = new HashMap();
-   public static List<LineMap> linemaplist = new ArrayList<>();
-
+//   public static List<LineMap> linemaplist = new ArrayList<>();
 
 
     @PostConstruct
@@ -91,6 +91,7 @@ public class CompanyApi {
 //    }
 
     public void GetAllCompanyLines(){
+        List<LineMap> linemaplist = new ArrayList<>();
         CompanyLinesExample example = new CompanyLinesExample();
         List<CompanyLines> line = companyLinesMapper.selectByExample(example);
         Map<Integer,String> companylistmap;
@@ -125,6 +126,13 @@ public class CompanyApi {
                 }
             }
         }
+        try {
+            String linemapliststr = JSONUtil.listToJson(linemaplist);
+            redisService.set("linemaplist", linemapliststr);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -328,6 +336,7 @@ public class CompanyApi {
             sysCompany.setServiceTel(service_tel);
             sysCompany.setEvaluation(evaluation);
             sysCompany.setComplainTel(complain_tel);
+            sysCompany.setCompanycheckstatus(0);
 
             CompanyLines companyLines = new CompanyLines();
             companyLines.setBeginAddr(begin_addr);
@@ -737,6 +746,8 @@ public class CompanyApi {
         JsonResult r = new JsonResult();
         r.setCode("200");
         r.setMsg("获取物流公司数量成功！");
+        String unbillstr = redisService.get("linemaplist");
+        List<LineMap> linemaplist = JSONUtil.jsonToList(unbillstr,LineMap.class);
         r.setData(linemaplist);
         r.setSuccess(true);
         return ResponseEntity.ok(r);

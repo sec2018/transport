@@ -1,9 +1,16 @@
 package com.example.transport.util;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.dom4j.Entity;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
 /**
  * Created by WangZJ on 2018/11/19.
  */
@@ -49,6 +56,28 @@ public class JSONUtil {
             throw e;
         }
         return new JSONObject(jsonStr);
+    }
+
+
+    /**
+     * List<T> 转 json
+     * @param ts
+     * @param <T>
+     * @return
+     */
+    public static <T> String listToJson(List<T> ts){
+        return JSON.toJSONString(ts);
+    }
+
+    /**
+     * json 转 List<T>
+     * @param jsonStr
+     * @param tClass
+     * @param <T>
+     * @return
+     */
+    public static <T> List<T> jsonToList(String jsonStr, Class<T> tClass) {
+        return JSONArray.parseArray(jsonStr, tClass);
     }
 }
 

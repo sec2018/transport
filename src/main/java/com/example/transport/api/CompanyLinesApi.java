@@ -9,6 +9,7 @@ import com.example.transport.pojo.User;
 import com.example.transport.service.Constant;
 import com.example.transport.service.SysUserTokenService;
 import com.example.transport.service.UserService;
+import com.example.transport.util.JSONUtil;
 import com.example.transport.util.JsonResult;
 import com.example.transport.util.redis.RedisService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -103,6 +104,8 @@ public class CompanyLinesApi {
 
     public JsonResult AddOrUpdateCompanyLines(Integer companyid, Integer flag, String lines_json, Integer line_id) {
         JsonResult r = new JsonResult();
+        String unbillstr = redisService.get("linemaplist");
+        List<LineMap> linemaplist = JSONUtil.jsonToList(unbillstr,LineMap.class);
         try {
             //添加线路
             if (flag == 0) {
@@ -124,10 +127,10 @@ public class CompanyLinesApi {
                         Map<Integer, String> companylistmap;
                         LineMap lp;
                         if (issuccess != 0) {
-                            for (int k = 0; k < CompanyApi.linemaplist.size(); k++) {
-                                if (CompanyApi.linemaplist.get(k).getKey().equals(key)) {
-                                    if (!CompanyApi.linemaplist.get(k).getValuemap().containsKey(companyLines.getCompanyId())) {
-                                        CompanyApi.linemaplist.get(k).getValuemap().put(companyLines.getId(), companyname);
+                            for (int k = 0; k < linemaplist.size(); k++) {
+                                if (linemaplist.get(k).getKey().equals(key)) {
+                                    if (!linemaplist.get(k).getValuemap().containsKey(companyLines.getCompanyId())) {
+                                        linemaplist.get(k).getValuemap().put(companyLines.getId(), companyname);
                                         break;
                                     }
                                 } else {
@@ -136,7 +139,7 @@ public class CompanyLinesApi {
                                     lp = new LineMap();
                                     lp.setKey(key);
                                     lp.setValuemap(companylistmap);
-                                    CompanyApi.linemaplist.add(lp);
+                                    linemaplist.add(lp);
                                     break;
                                 }
                             }
@@ -183,10 +186,10 @@ public class CompanyLinesApi {
                     Map<Integer, String> companylistmap;
                     LineMap lp;
                     if (issuccess != 0) {
-                        for (int k = 0; k < CompanyApi.linemaplist.size(); k++) {
-                            if (CompanyApi.linemaplist.get(k).getKey().equals(key)) {
-                                if (!CompanyApi.linemaplist.get(k).getValuemap().containsKey(companyLines.getCompanyId())) {
-                                    CompanyApi.linemaplist.get(k).getValuemap().put(companyLines.getId(), companyname);
+                        for (int k = 0; k < linemaplist.size(); k++) {
+                            if (linemaplist.get(k).getKey().equals(key)) {
+                                if (!linemaplist.get(k).getValuemap().containsKey(companyLines.getCompanyId())) {
+                                    linemaplist.get(k).getValuemap().put(companyLines.getId(), companyname);
                                     break;
                                 }
                             } else {
@@ -195,7 +198,7 @@ public class CompanyLinesApi {
                                 lp = new LineMap();
                                 lp.setKey(key);
                                 lp.setValuemap(companylistmap);
-                                CompanyApi.linemaplist.add(lp);
+                                linemaplist.add(lp);
                                 break;
                             }
                         }
@@ -221,6 +224,8 @@ public class CompanyLinesApi {
                 r.setData(null);
                 r.setSuccess(false);
             }
+            String linemapliststr = JSONUtil.listToJson(linemaplist);
+            redisService.set("linemaplist", linemapliststr);
         } catch (Exception e) {
             r.setCode(Constant.COMPANYLINE_ADDORUPDATEFAILURE.getCode() + "");
             r.setData(e.getClass().getName() + ":" + e.getMessage());
@@ -279,6 +284,8 @@ public class CompanyLinesApi {
 
     public JsonResult DeleteCompanyLines(Integer line_id) {
         JsonResult r = new JsonResult();
+        String unbillstr = redisService.get("linemaplist");
+        List<LineMap> linemaplist = JSONUtil.jsonToList(unbillstr,LineMap.class);
         try {
             int issuccess = companyLinesMapper.deleteByPrimaryKey(line_id);
             if (issuccess != 0) {
@@ -292,16 +299,16 @@ public class CompanyLinesApi {
                     companyname = sysCompanyMapper.selectByPrimaryKey(cl.getCompanyId()).getCompanyName();
                     companylistmap = new HashMap<Integer, String>();
                     companylistmap.put(cl.getId(), companyname);
-                    if (CompanyApi.linemaplist.size() == 0) {
+                    if (linemaplist.size() == 0) {
                         lp = new LineMap();
                         lp.setKey(key);
                         lp.setValuemap(companylistmap);
-                        CompanyApi.linemaplist.add(lp);
+                        linemaplist.add(lp);
                     } else {
-                        for (int i = 0; i < CompanyApi.linemaplist.size(); i++) {
-                            if (CompanyApi.linemaplist.get(i).getKey().equals(key)) {
-                                if (!CompanyApi.linemaplist.get(i).getValuemap().containsKey(cl.getCompanyId())) {
-                                    CompanyApi.linemaplist.get(i).getValuemap().put(cl.getId(), companyname);
+                        for (int i = 0; i < linemaplist.size(); i++) {
+                            if (linemaplist.get(i).getKey().equals(key)) {
+                                if (!linemaplist.get(i).getValuemap().containsKey(cl.getCompanyId())) {
+                                    linemaplist.get(i).getValuemap().put(cl.getId(), companyname);
                                     break;
                                 }
                             } else {
@@ -310,7 +317,7 @@ public class CompanyLinesApi {
                                 lp = new LineMap();
                                 lp.setKey(key);
                                 lp.setValuemap(companylistmap);
-                                CompanyApi.linemaplist.add(lp);
+                                linemaplist.add(lp);
                                 break;
                             }
                         }
@@ -326,6 +333,8 @@ public class CompanyLinesApi {
                 r.setData(null);
                 r.setSuccess(false);
             }
+            String linemapliststr = JSONUtil.listToJson(linemaplist);
+            redisService.set("linemaplist", linemapliststr);
         } catch (Exception e) {
             r.setCode(Constant.COMPANYLINE_DELETEFAILURE.getCode() + "");
             r.setData(e.getClass().getName() + ":" + e.getMessage());

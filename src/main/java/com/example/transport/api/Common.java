@@ -6,6 +6,7 @@ import com.example.transport.service.BillService;
 import com.example.transport.service.Constant;
 import com.example.transport.service.SysUserTokenService;
 import com.example.transport.service.UserService;
+import com.example.transport.util.JSONUtil;
 import com.example.transport.util.JsonResult;
 import com.example.transport.util.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -25,41 +27,50 @@ public class Common {
     @Resource
     private BillService billService;
 
-    public static List<SysBill> unbilllist;
+
+    @Autowired
+    private RedisService redisService;
 
     @PostConstruct
     public void init() {
-        this.unbilllist = billService.selectAllUnBills();
+        List<SysBill> unbilllist = billService.selectAllUnBills();
+        try {
+            String unbillliststr = JSONUtil.listToJson(unbilllist);
+            redisService.set("unbilllist", unbillliststr);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public static JsonResult TokenError(){
+    public static JsonResult TokenError() {
         JsonResult r = new JsonResult();
-        r.setCode(Constant.TOKEN_ERROR.getCode()+"");
+        r.setCode(Constant.TOKEN_ERROR.getCode() + "");
         r.setData(null);
         r.setMsg(Constant.TOKEN_ERROR.getMsg());
         r.setSuccess(false);
         return r;
     }
 
-    public static JsonResult TokenError(Exception e){
+    public static JsonResult TokenError(Exception e) {
         JsonResult r = new JsonResult();
-        r.setCode(Constant.TOKEN_ERROR.getCode()+"");
+        r.setCode(Constant.TOKEN_ERROR.getCode() + "");
         r.setData(e.getClass().getName() + ":" + e.getMessage());
         r.setMsg(Constant.TOKEN_ERROR.getMsg());
         r.setSuccess(false);
         return r;
     }
 
-    public static JsonResult RoleError(){
+    public static JsonResult RoleError() {
         JsonResult r = new JsonResult();
-        r.setCode(Constant.ROLE_ERROR.getCode()+"");
+        r.setCode(Constant.ROLE_ERROR.getCode() + "");
         r.setData(null);
         r.setMsg(Constant.ROLE_ERROR.getMsg());
         r.setSuccess(false);
         return r;
     }
 
-    public static JsonResult SearchError(Exception e){
+    public static JsonResult SearchError(Exception e) {
         JsonResult r = new JsonResult();
         r.setCode("500");
         r.setData(e.getClass().getName() + ":" + e.getMessage());
@@ -68,7 +79,7 @@ public class Common {
         return r;
     }
 
-    public static JsonResult BillUpdateSuccess(){
+    public static JsonResult BillUpdateSuccess() {
         JsonResult r = new JsonResult();
         r.setCode("200");
         r.setMsg("更新成功！");
@@ -77,7 +88,7 @@ public class Common {
         return r;
     }
 
-    public static JsonResult BillUpdateFailure(){
+    public static JsonResult BillUpdateFailure() {
         JsonResult r = new JsonResult();
         r.setCode("500");
         r.setMsg("更新失败！");
@@ -87,16 +98,16 @@ public class Common {
     }
 
 
-    public static JsonResult BillUpdateError(Exception e){
+    public static JsonResult BillUpdateError(Exception e) {
         JsonResult r = new JsonResult();
-        r.setCode(Constant.BILL_UPDATEFAILURE.getCode()+"");
+        r.setCode(Constant.BILL_UPDATEFAILURE.getCode() + "");
         r.setData(e.getClass().getName() + ":" + e.getMessage());
         r.setMsg(Constant.BILL_UPDATEFAILURE.getMsg());
         r.setSuccess(false);
         return r;
     }
 
-    public static JsonResult DeleteSuccess(){
+    public static JsonResult DeleteSuccess() {
         JsonResult r = new JsonResult();
         r.setCode("200");
         r.setMsg("删除成功！");
@@ -105,7 +116,7 @@ public class Common {
         return r;
     }
 
-    public static JsonResult DeleteFailure(){
+    public static JsonResult DeleteFailure() {
         JsonResult r = new JsonResult();
         r.setCode("500");
         r.setMsg("删除失败！");

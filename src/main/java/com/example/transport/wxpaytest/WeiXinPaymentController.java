@@ -5,6 +5,7 @@ import com.example.transport.api.Common;
 import com.example.transport.pojo.SysBill;
 import com.example.transport.service.BillService;
 import com.example.transport.service.Constant;
+import com.example.transport.util.JSONUtil;
 import com.example.transport.util.JsonResult;
 import com.example.transport.util.redis.RedisService;
 import com.github.wxpay.sdk.WXPayUtil;
@@ -249,12 +250,17 @@ public class WeiXinPaymentController{
                     //已经ok
                     boolean flag =  billService.payNotifyBill(new Date(),billid,out_trade_no,transaction_id);
                     if(flag) {
-                        for (SysBill sbill : Common.unbilllist) {
+                        String unbillstr = redisService.get("unbilllist");
+                        List<SysBill> unbilllist = JSONUtil.jsonToList(unbillstr,SysBill.class);
+                        for(SysBill sbill : unbilllist){
                             if (sbill.getId() == billid) {
                                 sbill.setBill_status(3);
                             }
                         }
+                        String unbillliststr = JSONUtil.listToJson(unbilllist);
+                        redisService.set("unbilllist", unbillliststr);
                     }
+
                     /**此处添加自己的业务逻辑代码end**/
                     //通知微信服务器已经支付成功
                     resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>"

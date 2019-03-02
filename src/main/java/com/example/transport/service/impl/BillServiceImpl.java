@@ -8,7 +8,9 @@ import com.example.transport.pojo.CompanyLines;
 import com.example.transport.pojo.SysBill;
 import com.example.transport.pojo.SysBillAndLine;
 import com.example.transport.service.BillService;
+import com.example.transport.util.JSONUtil;
 import com.example.transport.util.MapUtil;
+import com.example.transport.util.redis.RedisService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +30,18 @@ public class BillServiceImpl implements BillService{
     @Autowired
     private CompanyLinesMapper companyLinesMapper;
 
+    @Autowired
+    private RedisService redisService;
+
     @Transactional
     @Override
     public boolean insertBill(SysBill sysBill) {
         try{
             boolean flag = billDao.insertBill(sysBill)==1?true:false;
             if(flag){
-                Common.unbilllist  = billDao.selectAllUnBills();
+                List<SysBill> unbilllist  = billDao.selectAllUnBills();
+                String unbillliststr = JSONUtil.listToJson(unbilllist);
+                redisService.set("unbilllist", unbillliststr);
             }
             return flag;
         }
@@ -292,7 +299,8 @@ public class BillServiceImpl implements BillService{
 
     @Override
     public List<SysBill> selectBillsIn2Mills(String sender_lng, String sender_lat) {
-        List<SysBill> list =  Common.unbilllist;
+        String unbillstr = redisService.get("unbilllist");
+        List<SysBill> list = JSONUtil.jsonToList(unbillstr,SysBill.class);
         if(list.size()==0){
             list = billDao.selectBillsByLnglat(sender_lng,sender_lat);
         }

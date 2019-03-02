@@ -8,6 +8,7 @@ import com.example.transport.service.Constant;
 import com.example.transport.service.SysUserTokenService;
 import com.example.transport.service.UserService;
 import com.example.transport.util.ImageUtil;
+import com.example.transport.util.JSONUtil;
 import com.example.transport.util.JsonResult;
 import com.example.transport.util.graphicsutils;
 import com.example.transport.util.redis.RedisService;
@@ -921,11 +922,15 @@ public class SenderBillApi {
                 Date datetime = new Date();
                 boolean flag =  billService.payBill(datetime,id);
                 if(flag){
-                    for(SysBill sb : Common.unbilllist){
+                    String unbillstr = redisService.get("unbilllist");
+                    List<SysBill> unbilllist = JSONUtil.jsonToList(unbillstr,SysBill.class);
+                    for(SysBill sb : unbilllist){
                         if(sb.getId() == id){
                             sb.setBill_status(3);
                         }
                     }
+                    String unbillliststr = JSONUtil.listToJson(unbilllist);
+                    redisService.set("unbilllist", unbillliststr);
                     r.setCode("200");
                     r.setMsg("支付成功！");
                     r.setData(null);
@@ -982,11 +987,16 @@ public class SenderBillApi {
                 Date date = new Date();
                 boolean flag =  billService.finishBill(date,id,company_code,delivery_fee);
                 if(flag){
-                    for(SysBill sb : Common.unbilllist){
+
+                    String unbillstr = redisService.get("unbilllist");
+                    List<SysBill> unbilllist = JSONUtil.jsonToList(unbillstr,SysBill.class);
+                    for(SysBill sb : unbilllist){
                         if(sb.getId() == id){
-                            Common.unbilllist.remove(sb);
+                            unbilllist.remove(sb);
                         }
                     }
+                    String unbillliststr = JSONUtil.listToJson(unbilllist);
+                    redisService.set("unbilllist", unbillliststr);
                     r.setCode("200");
                     r.setMsg("运单完成！");
                     r.setData(null);
@@ -1132,11 +1142,15 @@ public class SenderBillApi {
                 WxUser wxuser = userService.getWxUser(openid);
                 boolean flag = billService.updateBillSetTrans_id(id,datetime,wxuser.getId(),wxuser.getNickname());
                 if (flag) {
-                    for(SysBill sb : Common.unbilllist){
+                    String unbillstr = redisService.get("unbilllist");
+                    List<SysBill> unbilllist = JSONUtil.jsonToList(unbillstr,SysBill.class);
+                    for(SysBill sb : unbilllist){
                         if(sb.getId() == id){
                             sb.setBill_status(2);
                         }
                     }
+                    String unbillliststr = JSONUtil.listToJson(unbilllist);
+                    redisService.set("unbilllist", unbillliststr);
                     r.setCode("200");
                     r.setMsg("抢单成功！");
                     r.setData(null);
