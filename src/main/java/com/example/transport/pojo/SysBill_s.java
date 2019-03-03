@@ -65,41 +65,45 @@ public class SysBill_s {
     private Date pay_time;
     @ApiModelProperty(value = "finish_time")
     private Date finish_time;
+    @ApiModelProperty(value = "pay_method")
+    private int pay_method;
+    @ApiModelProperty(value = "give_method")
+    private int give_method;
+    @ApiModelProperty(value = "keepfee")
+    private double keepfee;
+    @ApiModelProperty(value = "waitnote")
+    private int waitnote;
 
-    @Override
-    public String toString() {
-        return "SysBill{" +
-                "id=" + id +
-                ", bill_code='" + bill_code + '\'' +
-                ", sender_id=" + sender_id +
-                ", sender_name='" + sender_name + '\'' +
-                ", sender_tel='" + sender_tel + '\'' +
-                ", shop_id=" + shop_id +
-                ", shop_name='" + shop_name + '\'' +
-                ", company_id=" + company_id +
-                ", company_name='" + company_name + '\'' +
-                ", trans_id=" + trans_id +
-                ", goodsname='" + goodsname + '\'' +
-                ", goodsnum=" + goodsnum +
-                ", billinfo='" + billinfo + '\'' +
-                ", sender_procity='" + sender_procity + '\'' +
-                ", sender_detailarea='" + sender_detailarea + '\'' +
-                ", rec_name='" + rec_name + '\'' +
-                ", rec_tel='" + rec_tel + '\'' +
-                ", rec_procity='" + rec_procity + '\'' +
-                ", rec_detailarea='" + rec_detailarea + '\'' +
-                ", price=" + price +
-                ", create_time=" + create_time +
-                ", rec_time=" + rec_time +
-                ", pay_time=" + pay_time +
-                ", finish_time=" + finish_time +
-                ", company_code='" + company_code + '\'' +
-                ", trans_name='" + trans_name + '\'' +
-                ", batch_code='" + batch_code + '\'' +
-                ", bill_status=" + bill_status +
-                ", sender_lat='" + sender_lat + '\'' +
-                ", sender_lng='" + sender_lng + '\'' +
-                '}';
+    public int getPay_method() {
+        return pay_method;
+    }
+
+    public void setPay_method(int pay_method) {
+        this.pay_method = pay_method;
+    }
+
+    public int getGive_method() {
+        return give_method;
+    }
+
+    public void setGive_method(int give_method) {
+        this.give_method = give_method;
+    }
+
+    public double getKeepfee() {
+        return keepfee;
+    }
+
+    public void setKeepfee(double keepfee) {
+        this.keepfee = keepfee;
+    }
+
+    public int getWaitnote() {
+        return waitnote;
+    }
+
+    public void setWaitnote(int waitnote) {
+        this.waitnote = waitnote;
     }
 
     public String getCompany_code() {
@@ -347,4 +351,64 @@ public class SysBill_s {
         this.bill_status = bill_status;
     }
 
+    @ApiModelProperty(value = "line_id")
+    private Integer line_id;
+    @ApiModelProperty(value = "out_trade_no")
+    private String out_trade_no;
+    @ApiModelProperty(value = "transaction_id")
+    private String transaction_id;
+    @ApiModelProperty(value = "refundstatus")
+    private Integer refundstatus;
+    @ApiModelProperty(value = "refundcode")
+    private String refundcode;
+    @ApiModelProperty(value = "refund_time")
+    private Date refund_time;
+
+    public Integer getLine_id() {
+        return line_id;
+    }
+
+    public void setLine_id(Integer line_id) {
+        this.line_id = line_id;
+    }
+
+    public String getOut_trade_no() {
+        return out_trade_no;
+    }
+
+    public void setOut_trade_no(String out_trade_no) {
+        this.out_trade_no = out_trade_no;
+    }
+
+    public String getTransaction_id() {
+        return transaction_id;
+    }
+
+    public void setTransaction_id(String transaction_id) {
+        this.transaction_id = transaction_id;
+    }
+
+    public Integer getRefundstatus() {
+        return refundstatus;
+    }
+
+    public void setRefundstatus(Integer refundstatus) {
+        this.refundstatus = refundstatus;
+    }
+
+    public String getRefundcode() {
+        return refundcode;
+    }
+
+    public void setRefundcode(String refundcode) {
+        this.refundcode = refundcode;
+    }
+
+    public Date getRefund_time() {
+        return refund_time;
+    }
+
+    public void setRefund_time(Date refund_time) {
+        this.refund_time = refund_time;
+    }
 }

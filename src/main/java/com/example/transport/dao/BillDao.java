@@ -11,7 +11,7 @@ import java.util.List;
 public interface BillDao {
 
     //新增订单
-    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_id,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng,goodsname,goodsnum,billinfo,sender_procity,sender_detailarea,rec_name,rec_tel,rec_procity,rec_detailarea,price,company_code,create_time,line_id) values(0,#{sysBill.bill_code},#{sysBill.sender_id},#{sysBill.sender_name},#{sysBill.sender_tel},#{sysBill.shop_id},#{sysBill.shop_name},#{sysBill.company_id},#{sysBill.company_name},#{sysBill.trans_id},#{sysBill.trans_name},#{sysBill.batch_code},#{sysBill.bill_status},#{sysBill.sender_lat},#{sysBill.sender_lng},#{sysBill.goodsname},#{sysBill.goodsnum},#{sysBill.billinfo},#{sysBill.sender_procity},#{sysBill.sender_detailarea},#{sysBill.rec_name},#{sysBill.rec_tel},#{sysBill.rec_procity},#{sysBill.rec_detailarea},#{sysBill.price},#{sysBill.company_code},#{sysBill.create_time},#{sysBill.line_id})"})
+    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_id,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng,goodsname,goodsnum,billinfo,sender_procity,sender_detailarea,rec_name,rec_tel,rec_procity,rec_detailarea,price,company_code,create_time,line_id,pay_method,give_method,keepfee,waitnote) values(0,#{sysBill.bill_code},#{sysBill.sender_id},#{sysBill.sender_name},#{sysBill.sender_tel},#{sysBill.shop_id},#{sysBill.shop_name},#{sysBill.company_id},#{sysBill.company_name},#{sysBill.trans_id},#{sysBill.trans_name},#{sysBill.batch_code},#{sysBill.bill_status},#{sysBill.sender_lat},#{sysBill.sender_lng},#{sysBill.goodsname},#{sysBill.goodsnum},#{sysBill.billinfo},#{sysBill.sender_procity},#{sysBill.sender_detailarea},#{sysBill.rec_name},#{sysBill.rec_tel},#{sysBill.rec_procity},#{sysBill.rec_detailarea},#{sysBill.price},#{sysBill.company_code},#{sysBill.create_time},#{sysBill.line_id},#{sysBill.pay_method},#{sysBill.give_method},#{sysBill.keepfee},#{sysBill.waitnote})"})
     @Options(useGeneratedKeys = true,keyProperty = "sysBill.id")
     int insertBill(@Param("sysBill") SysBill sysBill);
 
@@ -38,7 +38,7 @@ public interface BillDao {
     List<SysBill> selectAllUnBills();
 
     //商户更新订单内容
-    @Update({"update sys_bill set sender_name = #{sender_name},sender_tel = #{sender_tel},shop_id=#{shop_id},shop_name=#{shop_name},company_id=#{company_id},company_name=#{company_name},goodsname=#{goodsname},goodsnum=#{goodsnum},batch_code=#{batch_code},sender_lat=#{sender_lat},sender_lng=#{sender_lng},billinfo=#{billinfo},sender_procity=#{sender_procity},sender_detailarea=#{sender_detailarea},rec_name=#{rec_name},rec_tel=#{rec_tel},rec_procity=#{rec_procity},rec_detailarea=#{rec_detailarea},price=#{price},delivery_fee={#delivery_fee},line_id=#{line_id} where id = #{id}"})
+    @Update({"update sys_bill set sender_name = #{sender_name},sender_tel = #{sender_tel},shop_id=#{shop_id},shop_name=#{shop_name},company_id=#{company_id},company_name=#{company_name},goodsname=#{goodsname},goodsnum=#{goodsnum},batch_code=#{batch_code},sender_lat=#{sender_lat},sender_lng=#{sender_lng},billinfo=#{billinfo},sender_procity=#{sender_procity},sender_detailarea=#{sender_detailarea},rec_name=#{rec_name},rec_tel=#{rec_tel},rec_procity=#{rec_procity},rec_detailarea=#{rec_detailarea},price=#{price},line_id=#{line_id},pay_method=#{pay_method},give_method=#{give_method},keepfee=#{keepfee},waitnote=#{waitnote} where id = #{id}"})
     int SenderUpdateBill(SysBill sysBill);
 
     //支付订单

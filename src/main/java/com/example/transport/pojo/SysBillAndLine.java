@@ -337,4 +337,44 @@ public class SysBillAndLine {
 
     private String arriveDetailAddr;
 
+
+
+    private int pay_method;
+    private int give_method;
+    private double keepfee;
+    private int waitnote;
+
+    public int getPay_method() {
+        return pay_method;
+    }
+
+    public void setPay_method(int pay_method) {
+        this.pay_method = pay_method;
+    }
+
+    public int getGive_method() {
+        return give_method;
+    }
+
+    public void setGive_method(int give_method) {
+        this.give_method = give_method;
+    }
+
+    public double getKeepfee() {
+        return keepfee;
+    }
+
+    public void setKeepfee(double keepfee) {
+        this.keepfee = keepfee;
+    }
+
+    public int getWaitnote() {
+        return waitnote;
+    }
+
+    public void setWaitnote(int waitnote) {
+        this.waitnote = waitnote;
+    }
+
+
 }
