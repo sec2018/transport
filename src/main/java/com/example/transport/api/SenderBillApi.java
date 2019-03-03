@@ -540,27 +540,14 @@ public class SenderBillApi {
                 long wxuserid = userService.getWxUserId(openid);
                 boolean flag = billService.deleteSenderUnRecBill(id,wxuserid);
                 if (flag) {
-                    String unbillstr = redisService.get("unbilllist");
-                    if(unbillstr==null || unbillstr==""){
-                        List<SysBill> unbilllist = billService.selectAllUnBills();
-                        try {
-                            unbillstr = JSONUtil.listToJson(unbilllist);
-                            redisService.remove("unbilllist");
-                            redisService.set("unbilllist", unbillstr);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                    List<SysBill> unbilllist = billService.selectAllUnBills();
+                    try {
+                        String unbillstr = JSONUtil.listToJson(unbilllist);
+                        redisService.remove("unbilllist");
+                        redisService.set("unbilllist", unbillstr);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    List<SysBill> unbilllist = JSONUtil.jsonToList(unbillstr,SysBill.class);
-                    for(SysBill sysBill:unbilllist){
-                        if(sysBill.getId() == id){
-                            unbilllist.remove(sysBill);
-                            break;
-                        }
-                    }
-                    String unbillliststr = JSONUtil.listToJson(unbilllist);
-                    redisService.remove("unbilllist");
-                    redisService.set("unbilllist", unbillliststr);
                     r = Common.DeleteSuccess();
                 }else{
                     r = Common.DeleteFailure();
