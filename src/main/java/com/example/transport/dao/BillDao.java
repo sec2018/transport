@@ -11,8 +11,9 @@ import java.util.List;
 public interface BillDao {
 
     //新增订单
-    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_id,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng,goodsname,goodsnum,billinfo,sender_procity,sender_detailarea,rec_name,rec_tel,rec_procity,rec_detailarea,price,company_code,create_time,line_id) values(0,#{bill_code},#{sender_id},#{sender_name},#{sender_tel},#{shop_id},#{shop_name},#{company_id},#{company_name},#{trans_id},#{trans_name},#{batch_code},#{bill_status},#{sender_lat},#{sender_lng},#{goodsname},#{goodsnum},#{billinfo},#{sender_procity},#{sender_detailarea},#{rec_name},#{rec_tel},#{rec_procity},#{rec_detailarea},#{price},#{company_code},#{create_time},#{line_id})"})
-    int insertBill(SysBill sysBill);
+    @Insert({"insert into sys_bill(id,bill_code,sender_id,sender_name,sender_tel,shop_id,shop_name,company_id,company_name,trans_id,trans_name,batch_code,bill_status,sender_lat,sender_lng,goodsname,goodsnum,billinfo,sender_procity,sender_detailarea,rec_name,rec_tel,rec_procity,rec_detailarea,price,company_code,create_time,line_id) values(0,#{sysBill.bill_code},#{sysBill.sender_id},#{sysBill.sender_name},#{sysBill.sender_tel},#{sysBill.shop_id},#{sysBill.shop_name},#{sysBill.company_id},#{sysBill.company_name},#{sysBill.trans_id},#{sysBill.trans_name},#{sysBill.batch_code},#{sysBill.bill_status},#{sysBill.sender_lat},#{sysBill.sender_lng},#{sysBill.goodsname},#{sysBill.goodsnum},#{sysBill.billinfo},#{sysBill.sender_procity},#{sysBill.sender_detailarea},#{sysBill.rec_name},#{sysBill.rec_tel},#{sysBill.rec_procity},#{sysBill.rec_detailarea},#{sysBill.price},#{sysBill.company_code},#{sysBill.create_time},#{sysBill.line_id})"})
+    @Options(useGeneratedKeys = true,keyProperty = "sysBill.id")
+    int insertBill(@Param("sysBill") SysBill sysBill);
 
     //根据sender_id来查询某用户下所有订单
     @Select({"select * from sys_bill where sender_id = #{sender_id} and batch_code != 1"})
@@ -140,7 +141,7 @@ public interface BillDao {
     List<SysBill>  selectBatchBills(@Param("sender_id")long sender_id);
 
     //商户保存提交所下批量订单
-    @Update({"update sys_bill set batch_code=#{batch_code} where sender_id = #{sender_id} and batch_code=1"})
+    @Update({"update sys_bill set batch_code=#{batch_code} where sender_id = #{sender_id} and batch_code='1'"})
     int updateBatchBillsCode(@Param("sender_id")long sender_id,@Param("batch_code")String batch_code);
 
     //管理员查看所有未完成订单

@@ -105,6 +105,10 @@ public class CompanyLinesApi {
     public JsonResult AddOrUpdateCompanyLines(Integer companyid, Integer flag, String lines_json, Integer line_id) {
         JsonResult r = new JsonResult();
         String unbillstr = redisService.get("linemaplist");
+        if(unbillstr==null || unbillstr==""){
+            new CompanyApi().GetAllCompanyLines();
+            unbillstr = redisService.get("linemaplist");
+        }
         List<LineMap> linemaplist = JSONUtil.jsonToList(unbillstr,LineMap.class);
         try {
             //添加线路
@@ -225,6 +229,7 @@ public class CompanyLinesApi {
                 r.setSuccess(false);
             }
             String linemapliststr = JSONUtil.listToJson(linemaplist);
+            redisService.remove("linemaplist");
             redisService.set("linemaplist", linemapliststr);
         } catch (Exception e) {
             r.setCode(Constant.COMPANYLINE_ADDORUPDATEFAILURE.getCode() + "");
@@ -285,6 +290,10 @@ public class CompanyLinesApi {
     public JsonResult DeleteCompanyLines(Integer line_id) {
         JsonResult r = new JsonResult();
         String unbillstr = redisService.get("linemaplist");
+        if(unbillstr==null || unbillstr==""){
+            new CompanyApi().GetAllCompanyLines();
+            unbillstr = redisService.get("linemaplist");
+        }
         List<LineMap> linemaplist = JSONUtil.jsonToList(unbillstr,LineMap.class);
         try {
             int issuccess = companyLinesMapper.deleteByPrimaryKey(line_id);
@@ -334,6 +343,7 @@ public class CompanyLinesApi {
                 r.setSuccess(false);
             }
             String linemapliststr = JSONUtil.listToJson(linemaplist);
+            redisService.remove("linemaplist");
             redisService.set("linemaplist", linemapliststr);
         } catch (Exception e) {
             r.setCode(Constant.COMPANYLINE_DELETEFAILURE.getCode() + "");

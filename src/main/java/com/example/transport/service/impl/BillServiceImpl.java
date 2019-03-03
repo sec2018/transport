@@ -33,6 +33,9 @@ public class BillServiceImpl implements BillService{
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private BillService billService;
+
     @Transactional
     @Override
     public boolean insertBill(SysBill sysBill) {
@@ -41,6 +44,7 @@ public class BillServiceImpl implements BillService{
             if(flag){
                 List<SysBill> unbilllist  = billDao.selectAllUnBills();
                 String unbillliststr = JSONUtil.listToJson(unbilllist);
+                redisService.remove("unbilllist");
                 redisService.set("unbilllist", unbillliststr);
             }
             return flag;
@@ -300,6 +304,16 @@ public class BillServiceImpl implements BillService{
     @Override
     public List<SysBill> selectBillsIn2Mills(String sender_lng, String sender_lat) {
         String unbillstr = redisService.get("unbilllist");
+        if(unbillstr==null || unbillstr==""){
+            List<SysBill> unbilllist = billService.selectAllUnBills();
+            try {
+                unbillstr = JSONUtil.listToJson(unbilllist);
+                redisService.remove("unbilllist");
+                redisService.set("unbilllist", unbillstr);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         List<SysBill> list = JSONUtil.jsonToList(unbillstr,SysBill.class);
         if(list.size()==0){
             list = billDao.selectBillsByLnglat(sender_lng,sender_lat);
@@ -401,6 +415,7 @@ public class BillServiceImpl implements BillService{
         return sysbilllist;
     }
 
+    @Transactional
     @Override
     public boolean updateBatchBillsCode(long sender_id, String batch_code) {
         try{

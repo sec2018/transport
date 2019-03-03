@@ -251,6 +251,16 @@ public class WeiXinPaymentController{
                     boolean flag =  billService.payNotifyBill(new Date(),billid,out_trade_no,transaction_id);
                     if(flag) {
                         String unbillstr = redisService.get("unbilllist");
+                        if(unbillstr==null || unbillstr==""){
+                            List<SysBill> unbilllist = billService.selectAllUnBills();
+                            try {
+                                unbillstr = JSONUtil.listToJson(unbilllist);
+                                redisService.remove("unbilllist");
+                                redisService.set("unbilllist", unbillstr);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
                         List<SysBill> unbilllist = JSONUtil.jsonToList(unbillstr,SysBill.class);
                         for(SysBill sbill : unbilllist){
                             if (sbill.getId() == billid) {
@@ -258,6 +268,7 @@ public class WeiXinPaymentController{
                             }
                         }
                         String unbillliststr = JSONUtil.listToJson(unbilllist);
+                        redisService.remove("unbilllist");
                         redisService.set("unbilllist", unbillliststr);
                     }
 

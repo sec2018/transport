@@ -128,6 +128,7 @@ public class CompanyApi {
         }
         try {
             String linemapliststr = JSONUtil.listToJson(linemaplist);
+            redisService.remove("linemaplist");
             redisService.set("linemaplist", linemapliststr);
         } catch (Exception e) {
             e.printStackTrace();
@@ -747,6 +748,10 @@ public class CompanyApi {
         r.setCode("200");
         r.setMsg("获取物流公司数量成功！");
         String unbillstr = redisService.get("linemaplist");
+        if(unbillstr==null || unbillstr==""){
+            new CompanyApi().GetAllCompanyLines();
+            unbillstr = redisService.get("linemaplist");
+        }
         List<LineMap> linemaplist = JSONUtil.jsonToList(unbillstr,LineMap.class);
         r.setData(linemaplist);
         r.setSuccess(true);

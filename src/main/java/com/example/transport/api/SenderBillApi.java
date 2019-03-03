@@ -155,6 +155,22 @@ public class SenderBillApi {
                 sysBill.setCreate_time(new Date());
                 boolean flag = billService.insertBill(sysBill);
                 if (flag) {
+                    String unbillstr = redisService.get("unbilllist");
+                    if(unbillstr==null || unbillstr==""){
+                        List<SysBill> unbilllist = billService.selectAllUnBills();
+                        try {
+                            unbillstr = JSONUtil.listToJson(unbilllist);
+                            redisService.remove("unbilllist");
+                            redisService.set("unbilllist", unbillstr);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    List<SysBill> unbilllist = JSONUtil.jsonToList(unbillstr,SysBill.class);
+                    unbilllist.add(sysBill);
+                    String unbillliststr = JSONUtil.listToJson(unbilllist);
+                    redisService.remove("unbilllist");
+                    redisService.set("unbilllist", unbillliststr);
                     r.setCode("200");
                     if(batch_code.equals("1")){
                         r.setMsg("保存成功！");
@@ -461,6 +477,22 @@ public class SenderBillApi {
                 sysBill.setLine_id(line_id);
                 boolean flag = billService.SenderUpdateBill(sysBill);
                 if (flag) {
+                    String unbillstr = redisService.get("unbilllist");
+                    if(unbillstr==null || unbillstr==""){
+                        List<SysBill> unbilllist = billService.selectAllUnBills();
+                        try {
+                            unbillstr = JSONUtil.listToJson(unbilllist);
+                            redisService.remove("unbilllist");
+                            redisService.set("unbilllist", unbillstr);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    List<SysBill> unbilllist = JSONUtil.jsonToList(unbillstr,SysBill.class);
+                    unbilllist.add(sysBill);
+                    String unbillliststr = JSONUtil.listToJson(unbilllist);
+                    redisService.remove("unbilllist");
+                    redisService.set("unbilllist", unbillliststr);
                     r = Common.BillUpdateSuccess();
                 }else{
                     r = Common.BillUpdateFailure();
@@ -508,6 +540,27 @@ public class SenderBillApi {
                 long wxuserid = userService.getWxUserId(openid);
                 boolean flag = billService.deleteSenderUnRecBill(id,wxuserid);
                 if (flag) {
+                    String unbillstr = redisService.get("unbilllist");
+                    if(unbillstr==null || unbillstr==""){
+                        List<SysBill> unbilllist = billService.selectAllUnBills();
+                        try {
+                            unbillstr = JSONUtil.listToJson(unbilllist);
+                            redisService.remove("unbilllist");
+                            redisService.set("unbilllist", unbillstr);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    List<SysBill> unbilllist = JSONUtil.jsonToList(unbillstr,SysBill.class);
+                    for(SysBill sysBill:unbilllist){
+                        if(sysBill.getId() == id){
+                            unbilllist.remove(sysBill);
+                            break;
+                        }
+                    }
+                    String unbillliststr = JSONUtil.listToJson(unbilllist);
+                    redisService.remove("unbilllist");
+                    redisService.set("unbilllist", unbillliststr);
                     r = Common.DeleteSuccess();
                 }else{
                     r = Common.DeleteFailure();
@@ -923,6 +976,16 @@ public class SenderBillApi {
                 boolean flag =  billService.payBill(datetime,id);
                 if(flag){
                     String unbillstr = redisService.get("unbilllist");
+                    if(unbillstr==null || unbillstr==""){
+                        List<SysBill> unbilllist = billService.selectAllUnBills();
+                        try {
+                            unbillstr = JSONUtil.listToJson(unbilllist);
+                            redisService.remove("unbilllist");
+                            redisService.set("unbilllist", unbillstr);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                     List<SysBill> unbilllist = JSONUtil.jsonToList(unbillstr,SysBill.class);
                     for(SysBill sb : unbilllist){
                         if(sb.getId() == id){
@@ -930,6 +993,7 @@ public class SenderBillApi {
                         }
                     }
                     String unbillliststr = JSONUtil.listToJson(unbilllist);
+                    redisService.remove("unbilllist");
                     redisService.set("unbilllist", unbillliststr);
                     r.setCode("200");
                     r.setMsg("支付成功！");
@@ -987,16 +1051,14 @@ public class SenderBillApi {
                 Date date = new Date();
                 boolean flag =  billService.finishBill(date,id,company_code,delivery_fee);
                 if(flag){
-
-                    String unbillstr = redisService.get("unbilllist");
-                    List<SysBill> unbilllist = JSONUtil.jsonToList(unbillstr,SysBill.class);
-                    for(SysBill sb : unbilllist){
-                        if(sb.getId() == id){
-                            unbilllist.remove(sb);
-                        }
+                    List<SysBill> unbilllist = billService.selectAllUnBills();
+                    try {
+                        String unbillstr = JSONUtil.listToJson(unbilllist);
+                        redisService.remove("unbilllist");
+                        redisService.set("unbilllist", unbillstr);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    String unbillliststr = JSONUtil.listToJson(unbilllist);
-                    redisService.set("unbilllist", unbillliststr);
                     r.setCode("200");
                     r.setMsg("运单完成！");
                     r.setData(null);
@@ -1117,9 +1179,9 @@ public class SenderBillApi {
         }
         int availablePermits = semaphore.availablePermits();
         if(availablePermits>0){
-            System.out.println("抢单成功！");
+//            System.out.println("抢单成功！");
         }else{
-            System.out.println("抢单失败！");
+//            System.out.println("抢单失败！");
             r.setCode(Constant.BILL_RECEIVEFAILURE.getCode()+"");
             r.setData(null);
             r.setMsg(Constant.BILL_RECEIVEFAILURE.getMsg());
@@ -1143,6 +1205,16 @@ public class SenderBillApi {
                 boolean flag = billService.updateBillSetTrans_id(id,datetime,wxuser.getId(),wxuser.getNickname());
                 if (flag) {
                     String unbillstr = redisService.get("unbilllist");
+                    if(unbillstr==null || unbillstr==""){
+                        List<SysBill> unbilllist = billService.selectAllUnBills();
+                        try {
+                            unbillstr = JSONUtil.listToJson(unbilllist);
+                            redisService.remove("unbilllist");
+                            redisService.set("unbilllist", unbillstr);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                     List<SysBill> unbilllist = JSONUtil.jsonToList(unbillstr,SysBill.class);
                     for(SysBill sb : unbilllist){
                         if(sb.getId() == id){
@@ -1150,7 +1222,9 @@ public class SenderBillApi {
                         }
                     }
                     String unbillliststr = JSONUtil.listToJson(unbilllist);
+                    redisService.remove("unbilllist");
                     redisService.set("unbilllist", unbillliststr);
+                    System.out.println("抢单成功！");
                     r.setCode("200");
                     r.setMsg("抢单成功！");
                     r.setData(null);
@@ -1533,6 +1607,14 @@ public class SenderBillApi {
                 String batch_code = df.format(new Date()) + UUID.randomUUID().toString().substring(0,5);
                 boolean flag = billService.updateBatchBillsCode(wxuserid,batch_code);
                 if (flag) {
+                    List<SysBill> unbilllist = billService.selectAllUnBills();
+                    try {
+                        String unbillstr = JSONUtil.listToJson(unbilllist);
+                        redisService.remove("unbilllist");
+                        redisService.set("unbilllist", unbillstr);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     r.setCode("200");
                     r.setMsg("下单成功！");
                     r.setData(null);
@@ -1625,6 +1707,7 @@ public class SenderBillApi {
                     flag = flag && billService.insertBill(sysBill);
                 }
                 if (flag && billlist.size()>0) {
+                    //是否需要加入redis ？？？
                     r.setCode("200");
                     r.setMsg("下单成功！");
                     r.setData(null);

@@ -36,8 +36,8 @@ public class Common {
         List<SysBill> unbilllist = billService.selectAllUnBills();
         try {
             String unbillliststr = JSONUtil.listToJson(unbilllist);
+            redisService.remove("unbilllist");
             redisService.set("unbilllist", unbillliststr);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
