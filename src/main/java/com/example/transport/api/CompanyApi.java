@@ -129,7 +129,7 @@ public class CompanyApi {
         try {
             String linemapliststr = JSONUtil.listToJson(linemaplist);
             redisService.remove("linemaplist");
-            redisService.set("linemaplist", linemapliststr);
+            redisService.setpersist("linemaplist", linemapliststr);
         } catch (Exception e) {
             e.printStackTrace();
         }
