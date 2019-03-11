@@ -91,8 +91,10 @@ public class CompanyApi {
 //    }
 
     public void GetAllCompanyLines(){
+        List<Integer> companylist = sysCompanyMapper.selectCheckIdList();
         List<LineMap> linemaplist = new ArrayList<>();
         CompanyLinesExample example = new CompanyLinesExample();
+        example.createCriteria().andCompanyIdIn(companylist);
         List<CompanyLines> line = companyLinesMapper.selectByExample(example);
         Map<Integer,String> companylistmap;
         String companyname;
@@ -551,7 +553,7 @@ public class CompanyApi {
     })
     @RequestMapping(value="searchcompany",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<JsonResult> SearchShop(HttpServletRequest request){
+    public ResponseEntity<JsonResult> SearchCompany(HttpServletRequest request){
         JsonResult r = new JsonResult();
         String roleid = request.getHeader("roleid");
         if(!roleid.equals("0") && !roleid.equals("1") && !roleid.equals("4")){
@@ -749,7 +751,7 @@ public class CompanyApi {
         r.setMsg("获取物流公司数量成功！");
         String unbillstr = redisService.get("linemaplist");
         if(unbillstr==null || unbillstr==""){
-            new CompanyApi().GetAllCompanyLines();
+            GetAllCompanyLines();
             unbillstr = redisService.get("linemaplist");
         }
         List<LineMap> linemaplist = JSONUtil.jsonToList(unbillstr,LineMap.class);
@@ -997,4 +999,60 @@ public class CompanyApi {
         }
         return ResponseEntity.ok(r);
     }
+
+    //删除物流公司
+    @ApiOperation(value = "根据id获取物流公司", notes = "根据id获取物流公司")
+    @RequestMapping(value="searchcompanybyid",method = RequestMethod.GET)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "company_id", value = "公司id", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
+    })
+    @ResponseBody
+    public ResponseEntity<JsonResult> GetCompanyById(@RequestParam(value = "company_id")Integer company_id,
+                                                    HttpServletRequest request) {
+
+        String roleid = request.getHeader("roleid");
+        JsonResult r = new JsonResult();
+        if (!roleid.equals("0") && !roleid.equals("1") && !roleid.equals("4")) {
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        String token = request.getHeader("token");
+
+        //超级管理员,PC端
+        if (roleid.equals("0")) {
+            token = getAdminToken();
+            if (!token.equals(token)) {
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
+            } else {
+                SysCompany company = sysCompanyMapper.selectByPrimaryKey(company_id);
+                r.setCode("200");
+                r.setMsg("获取物流公司成功！");
+                r.setData(company);
+                r.setSuccess(true);
+            }
+        } else {
+            r = ConnectRedisCheckToken(token);
+            String tokenvalue = "";
+            try {
+                tokenvalue = r.getData().toString();
+                if (tokenvalue != null) {
+                    SysCompany company = sysCompanyMapper.selectByPrimaryKey(company_id);
+                    r.setCode("200");
+                    r.setMsg("获取物流公司成功！");
+                    r.setData(company);
+                    r.setSuccess(true);
+                }
+            } catch (Exception e) {
+                r = Common.TokenError();
+                e.printStackTrace();
+                return ResponseEntity.ok(r);
+            }
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
 }

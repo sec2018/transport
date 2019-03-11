@@ -48,6 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean insertWxUser(WxUser wxUser) {
+        userDao.setCharsetToUtf8mb4();
         return userDao.insertWxUser(wxUser)==1?true:false;
     }
 

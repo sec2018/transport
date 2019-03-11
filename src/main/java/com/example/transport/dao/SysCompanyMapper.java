@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface SysCompanyMapper {
@@ -35,4 +36,7 @@ public interface SysCompanyMapper {
     int selectCompanyIdbyWxuserid(Long wxuser_id);
 
     SysCompany selectByWxuserid(long wxuser_id);
+
+    @Select({"select company_id from sys_company where companycheckstatus = 1"})
+    List<Integer>  selectCheckIdList();
 }

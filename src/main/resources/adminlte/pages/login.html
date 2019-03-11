@@ -105,8 +105,9 @@
         $("#btnsubmit").click(function () {
             var usrn = document.getElementById("username").value.trim();
             var psw = document.getElementById("password").value.trim();
+            var passwd = "";
             try{
-                psw = DesUtils.encode(psw, secretKey);
+                passwd = DesUtils.encode(psw, secretKey);
             }catch (e){
                 alert("系统维护中......");
                 return;
@@ -115,7 +116,7 @@
             var userinfo = {};
             userinfo.click_type = click_type;
             userinfo.u = usrn;
-            userinfo.p = psw;
+            userinfo.p = passwd;
             $.ajax({
                 url: timestamp("/transport/sublogin"),
                 type: "POST",

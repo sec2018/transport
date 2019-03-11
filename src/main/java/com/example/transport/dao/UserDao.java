@@ -12,6 +12,10 @@ import java.util.List;
  */
 @Mapper
 public interface UserDao {
+
+    @Update("set names utf8mb4")
+    void setCharsetToUtf8mb4();
+
     @Select("select password from sys_user where loginname = #{loginname}")
     String getPasswordByUserName(@Param("loginname") String loginname);
 
