@@ -1,6 +1,5 @@
 package com.example.transport.service.impl;
 
-import com.example.transport.api.Common;
 import com.example.transport.dao.BillDao;
 import com.example.transport.dao.CompanyLinesMapper;
 import com.example.transport.pojo.BillView;

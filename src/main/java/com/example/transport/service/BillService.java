@@ -122,7 +122,7 @@ public interface BillService {
     //管理员查看所有未完成订单
     Map<String, Object> adminSelectunfinishedBill(int startitem,int pagesize);
 
-    //管理员查看所有未完成订单
+    //管理员查看所有已完成订单
     Map<String, Object> adminSelectfinishedBill(int startitem,int pagesize);
 
     //退款订单
