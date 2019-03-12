@@ -10,6 +10,16 @@ public class CompanyBill {
 
     private String company_billcode;
 
+    private String company_name;
+
+    public String getCompany_name() {
+        return company_name;
+    }
+
+    public void setCompany_name(String company_name) {
+        this.company_name = company_name;
+    }
+
     private Integer company_id;
 
     private String shop_name;
@@ -49,6 +59,16 @@ public class CompanyBill {
     private Date rec_time;
 
     private Date finish_time;
+
+    private Date confirm_time;
+
+    public Date getConfirm_time() {
+        return confirm_time;
+    }
+
+    public void setConfirm_time(Date confirm_time) {
+        this.confirm_time = confirm_time;
+    }
 
     public Integer getId() {
         return id;

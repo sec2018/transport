@@ -2,6 +2,7 @@ package com.example.transport.service;
 
 import com.example.transport.pojo.CompanyBill;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -48,4 +49,21 @@ public interface CompanyBillService {
 
     //物流公司查询本公司所有未完成订单
     List<CompanyBill>  selectunfinishedCompanyBillByCompanyId(Integer company_id);
+
+    List<CompanyBill> selectCompanyBillsIn2Mills(String sender_lng, String sender_lat);
+
+    List<CompanyBill> selectAllCompanyUnBills();
+
+    //接单
+    boolean updateCompanyBillSetTrans_id(long id, Date datetime, long trans_id, String trans_name);
+
+    //删除订单,硬删除
+    boolean deleteCompanyUnRecBill(long id);
+
+    //根据id来查询特定订单
+    CompanyBill selectSingleCompanyBill(long id);
+
+    //确认运单揽收
+    boolean confirmCompanyBill(Date pay_time, long id);
+
 }

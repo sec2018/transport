@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
 @RequestMapping("api")
 @Controller
@@ -47,6 +49,7 @@ public class CompanyApi {
     @Autowired
     private UserService userService;
 
+    Semaphore companysemaphore = new Semaphore(1);
 
     @Autowired
     private RedisService redisService;
@@ -716,7 +719,7 @@ public class CompanyApi {
         String tokenvalue = "";
         JsonResult r = new JsonResult();
         int retry = 1;
-        while (retry<=3){
+        while (retry<=5){
             try
             {
                 //业务代码
@@ -731,7 +734,7 @@ public class CompanyApi {
             {
                 //重试
                 retry++;
-                if(retry == 4){
+                if(retry == 6){
                     //记录错误
                     r.setCode(Constant.Redis_TIMEDOWN.getCode()+"");
                     r.setData("");
@@ -1113,6 +1116,7 @@ public class CompanyApi {
                 String bill_code = df.format(new Date()) + UUID.randomUUID().toString().substring(0,5);
                 companyBill.setBill_code(bill_code);
                 companyBill.setCompany_id(sysCompany.getCompanyId());
+                companyBill.setCompany_name(sysCompany.getCompanyName());
                 companyBill.setCompany_billcode(company_code);
                 companyBill.setShop_name(shop_name);
                 companyBill.setTrans_id(-1);
@@ -1577,4 +1581,344 @@ public class CompanyApi {
         return ResponseEntity.ok(r);
     }
 
+
+    //查询所有最近2公里未接订单
+    @ApiOperation(value = "查询所有最近2公里未接公司订单", notes = "查询所有最近2公里未接公司订单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "lng", value = "经度", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "lat", value = "维度", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="get2companyunbills",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> search2Unbills(@RequestParam(value = "lng") String lng,@RequestParam(value = "lat") String lat,HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("3")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+//                List<SysBill> billList = billService.selectBillsByLnglat(lng,lat); // 方法1
+                List<CompanyBill> billList = companyBillService.selectCompanyBillsIn2Mills(lng,lat);   // 方法2
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(billList);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r = Common.SearchError(e);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+    //1,4
+    @ApiOperation(value = "公司运单完成", notes = "公司运单完成")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="finishcompanybill",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<JsonResult> finishBill(@RequestParam(value = "id") long id, HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("3")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                Date date = new Date();
+                boolean flag =  companyBillMapper.finishCompanyBill(date,id)==1?true:false;
+                if(flag){
+                    List<CompanyBill> unbilllist = companyBillService.selectAllCompanyUnBills();
+                    try {
+                        String unbillstr = JSONUtil.listToJson(unbilllist);
+                        redisService.remove("companyunbilllist");
+                        redisService.set("companyunbilllist", unbillstr);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    r.setCode("200");
+                    r.setMsg("运单完成！");
+                    r.setData(null);
+                    r.setSuccess(true);
+                }else{
+                    r.setCode("500");
+                    r.setMsg("完成运单失败！");
+                    r.setData(null);
+                    r.setSuccess(false);
+                }
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r = Common.SearchError(e);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    //1,3
+    @ApiOperation(value = "承运员接公司运单接口", notes = "承运员接公司运单接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="receivecompanybill",method = RequestMethod.POST)
+    @Transactional
+    @ResponseBody
+    public ResponseEntity<JsonResult> updateBillSetTrans_id(@RequestParam(value = "id") long id,HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("3")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
+        int availablePermits = companysemaphore.availablePermits();
+        if(availablePermits>0){
+//            System.out.println("抢单成功！");
+        }else{
+//            System.out.println("抢单失败！");
+            r.setCode(Constant.BILL_RECEIVEFAILURE.getCode()+"");
+            r.setData(null);
+            r.setMsg(Constant.BILL_RECEIVEFAILURE.getMsg());
+            r.setSuccess(false);
+            return ResponseEntity.ok(r);
+        }
+        try {
+            companysemaphore.acquire(1);
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                String openid = tokenvalue.split("\\|")[0];
+                CompanyBill bill = companyBillService.selectSingleCompanyBill(id);
+                if(bill.getTrans_id()!=-1){
+                    r.setCode(Constant.BILL_RECEIVEFAILURE.getCode()+"");
+                    r.setData(null);
+                    r.setMsg(Constant.BILL_RECEIVEFAILURE.getMsg());
+                    r.setSuccess(false);
+                }
+                Date datetime = new Date();
+                WxUser wxuser = userService.getWxUser(openid);
+                boolean flag = companyBillService.updateCompanyBillSetTrans_id(id,datetime,wxuser.getId(),wxuser.getNickname());
+                if (flag) {
+                    String unbillstr = redisService.get("companyunbilllist");
+                    if(unbillstr==null || unbillstr==""){
+                        List<CompanyBill> unbilllist = companyBillService.selectAllCompanyUnBills();
+                        try {
+                            unbillstr = JSONUtil.listToJson(unbilllist);
+                            redisService.remove("companyunbilllist");
+                            redisService.set("companyunbilllist", unbillstr);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    List<CompanyBill> unbilllist = JSONUtil.jsonToList(unbillstr,CompanyBill.class);
+                    for(CompanyBill sb : unbilllist){
+                        if(sb.getId() == id){
+                            sb.setBill_status(2);
+                        }
+                    }
+                    String unbillliststr = JSONUtil.listToJson(unbilllist);
+                    redisService.remove("companyunbilllist");
+                    redisService.set("companyunbilllist", unbillliststr);
+                    System.out.println("抢单成功！");
+                    r.setCode("200");
+                    r.setMsg("抢单成功！");
+                    r.setData(null);
+                    r.setSuccess(true);
+                }
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r.setCode(Constant.BILL_RECEIVEFAILURE.getCode()+"");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg(Constant.BILL_RECEIVEFAILURE.getMsg());
+            r.setSuccess(false);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            e.printStackTrace();
+        }finally {
+            companysemaphore.release(1);
+        }
+        return ResponseEntity.ok(r);
+    }
+
+    //1
+    @ApiOperation(value = "删除未接公司订单接口", notes = "根据id删除公司订单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "query"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="deletecompanybill",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<JsonResult> deleteSenderbill(@RequestParam(value = "id") long id,HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("4")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+//                String openid = tokenvalue.split("\\|")[0];
+//                long wxuserid = userService.getWxUserId(openid);
+                boolean flag = companyBillService.deleteCompanyUnRecBill(id);
+                if (flag) {
+                    List<CompanyBill> unbilllist = companyBillService.selectAllCompanyUnBills();
+                    try {
+                        String unbillstr = JSONUtil.listToJson(unbilllist);
+                        redisService.remove("companyunbilllist");
+                        redisService.set("companyunbilllist", unbillstr);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    r = Common.DeleteSuccess();
+                }else{
+                    r = Common.DeleteFailure();
+                }
+            }else{
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r.setCode(Constant.BILL_DELETEFAILURE.getCode()+"");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg(Constant.BILL_DELETEFAILURE.getMsg());
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    //1,4
+    @ApiOperation(value = "物流公司确认揽收接口", notes = "物流公司确认揽收接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Long",paramType = "header"),
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="confirmconfirmbill",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<JsonResult> payBill(@RequestParam(value = "id") long id,HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        String roleid = request.getHeader("roleid");
+        if(!roleid.equals("1") && !roleid.equals("4")){
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                //先支付
+                Date datetime = new Date();
+                boolean flag =  companyBillService.confirmCompanyBill(datetime,id);
+                if(flag){
+                    String unbillstr = redisService.get("companyunbilllist");
+                    if(unbillstr==null || unbillstr==""){
+                        List<CompanyBill> unbilllist = companyBillService.selectAllCompanyUnBills();
+                        try {
+                            unbillstr = JSONUtil.listToJson(unbilllist);
+                            redisService.remove("companyunbilllist");
+                            redisService.set("companyunbilllist", unbillstr);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    List<CompanyBill> unbilllist = JSONUtil.jsonToList(unbillstr,CompanyBill.class);
+                    for(CompanyBill sb : unbilllist){
+                        if(sb.getId() == id){
+                            sb.setBill_status(3);
+                        }
+                    }
+                    String unbillliststr = JSONUtil.listToJson(unbilllist);
+                    redisService.remove("CompanyBill");
+                    redisService.set("CompanyBill", unbillliststr);
+                    r.setCode("200");
+                    r.setMsg("揽收成功！");
+                    r.setData(null);
+                    r.setSuccess(true);
+                }else{
+                    r.setCode("500");
+                    r.setMsg("揽收错误！");
+                    r.setData(null);
+                    r.setSuccess(false);
+                }
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r = Common.SearchError(e);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
 }
