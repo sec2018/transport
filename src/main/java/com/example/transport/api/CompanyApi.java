@@ -8,8 +8,10 @@ import com.example.transport.model.SysCompanyExample;
 import com.example.transport.pojo.*;
 import com.example.transport.service.*;
 import com.example.transport.service.Constant;
+import com.example.transport.util.ImageUtil;
 import com.example.transport.util.JSONUtil;
 import com.example.transport.util.JsonResult;
+import com.example.transport.util.graphicsutils;
 import com.example.transport.util.redis.RedisService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -25,13 +27,13 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sun.misc.BASE64Encoder;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Semaphore;
@@ -1855,7 +1857,7 @@ public class CompanyApi {
             @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
     })
-    @RequestMapping(value="confirmconfirmbill",method = RequestMethod.POST)
+    @RequestMapping(value="confirmcompanybill",method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<JsonResult> payBill(@RequestParam(value = "id") long id,HttpServletRequest request){
         JsonResult r = new JsonResult();
@@ -1921,4 +1923,94 @@ public class CompanyApi {
         }
         return ResponseEntity.ok(r);
     }
+
+
+    //得到img
+    @ApiOperation(value = "获取运单图片", notes = "获取运单图片")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "订单id", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "token", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="getcompanybillimg",method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<JsonResult> getImg(@RequestParam(value = "id") Integer id,HttpServletRequest request){
+        JsonResult r = new JsonResult();
+        String token = request.getHeader("token");
+        r = ConnectRedisCheckToken(token);
+        String tokenvalue = "";
+        try{
+            tokenvalue = r.getData().toString();
+        }catch (Exception e) {
+            r = Common.TokenError();
+            e.printStackTrace();
+            return ResponseEntity.ok(r);
+        }
+        try {
+            if(tokenvalue!=""){
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                redisService.expire(token, Constant.expire.getExpirationTime());
+                CompanyBill bill = companyBillMapper.selectByPrimaryKey(id);
+                SysCompany sysCompany = sysCompanyMapper.selectByPrimaryKey(bill.getCompany_id());
+
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String create_time = formatter.format(bill.getCreate_time());
+                String finish_time = formatter.format(bill.getFinish_time());
+                String bigtitle = bill.getCompany_name()+"托运单";
+                List<List<List<String>>> allValue = new ArrayList<>();
+                List<String> content1 = Arrays.asList(new String[]{bill.getRec_name(),bill.getRec_tel(),bill.getRec_procity(),bill.getRec_detailarea()});
+                List<String> content2 = Arrays.asList(new String[]{bill.getCompany_name(),sysCompany.getCompanyName(),bill.getCompany_procity(),bill.getCompany_detailarea()});
+                List<String> content3 = Arrays.asList(new String[]{bill.getCompany_billcode(),bill.getGoodsname(),bill.getShop_name(),bill.getBillinfo(),create_time});
+                List<String> h4 = Arrays.asList(new String[]{"承运员","数量","代收运费","托运号","完成时间"});
+                List<String> content4 = Arrays.asList(new String[]{bill.getTrans_name(),bill.getGoodsnum()+"",bill.getPrice()+"",bill.getBill_code(),finish_time});
+                List<List<String>> contentArray1 = new ArrayList<>();
+                contentArray1.add(content1);
+                List<List<String>> contentArray2 = new ArrayList<>();
+                contentArray2.add(content2);
+                List<List<String>> contentArray3 = new ArrayList<>();
+                contentArray3.add(content3);
+                contentArray3.add(h4);
+                contentArray3.add(content4);
+
+                allValue.add(contentArray1);
+                allValue.add(contentArray2);
+                allValue.add(contentArray3);
+
+                List<String[]> headTitles = new ArrayList<>();
+                String[] h1 = new String[]{"姓名","电话","省市区","详细地址"};
+                String[] h2 = new String[]{"物流","电话","省市区","详细地址"};
+                String[] h3 = new String[]{"运单号","品名","店铺名称","备注","下单时间"};
+                headTitles.add(h1);
+                headTitles.add(h2);
+                headTitles.add(h3);
+
+                List<String> titles = new ArrayList<>();
+                titles.add("收件人信息");
+                titles.add("寄件人信息");
+                titles.add("运单信息");
+                BufferedImage image = graphicsutils.graphicsGeneration(allValue,titles,headTitles ,"",4,bigtitle);
+                //旋转90度
+                image = ImageUtil.rotateImage(image,90);
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();//io流
+                ImageIO.write(image, "png", baos);//写入流中
+                byte[] bytes = baos.toByteArray();//转换成字节
+                BASE64Encoder encoder = new BASE64Encoder();
+                String png_base64 =  encoder.encodeBuffer(bytes).trim();//转换成base64串
+                png_base64 = png_base64.replaceAll("\n", "").replaceAll("\r", "");//删除 \r\n
+
+                r.setCode("200");
+                r.setMsg("查询成功！");
+                r.setData(png_base64);
+                r.setSuccess(true);
+            }else{
+                r = Common.TokenError();
+                ResponseEntity.ok(r);
+            }
+        } catch (Exception e) {
+            r = Common.SearchError(e);
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(r);
+    }
+
 }
