@@ -1,6 +1,5 @@
 package com.example.transport.config;
 
-import com.example.transport.api.Common;
 import com.example.transport.pojo.Constant;
 import com.example.transport.pojo.User;
 import com.example.transport.service.SysUserTokenService;

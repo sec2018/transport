@@ -491,7 +491,7 @@ public class CompanyLinesApi {
         String tokenvalue = "";
         JsonResult r = new JsonResult();
         int retry = 1;
-        while (retry <= 3) {
+        while (retry <= 5) {
             try {
                 //业务代码
                 tokenvalue = redisService.get(token);
