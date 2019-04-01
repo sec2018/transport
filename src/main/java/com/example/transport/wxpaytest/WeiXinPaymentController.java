@@ -39,7 +39,7 @@ public class WeiXinPaymentController{
     private static final long serialVersionUID = 1L;
     private final String mch_id = Constant.WX_SHOP_ID;//商户号
     private final String spbill_create_ip = "192.168.100.100";//终端IP
-    private String notify_url = "https://wzjshuye.cn:8882/transport/api/paycallback";//通知地址
+    private String notify_url = "https://wzjshuye.cn:8560/transport/api/paycallback";//通知地址
     private final String trade_type = "JSAPI";//交易类型
     private final String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";//统一下单API接口链接
     private final String key = Constant.WX_SHOP_KEY; // 商户支付密钥
