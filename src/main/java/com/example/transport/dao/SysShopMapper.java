@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface SysShopMapper {
@@ -32,5 +33,6 @@ public interface SysShopMapper {
 
     int updateByPrimaryKey(SysShop record);
 
+    @Select("select * from sys_shop where wxuser_id = #{wxuser_id}")
     SysShop selectByWxuserid(long wxuser_id);
 }

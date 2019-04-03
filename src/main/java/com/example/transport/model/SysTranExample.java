@@ -224,6 +224,76 @@ public class SysTranExample {
             return (Criteria) this;
         }
 
+        public Criteria andTranNameIsNull() {
+            addCriterion("tran_name is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameIsNotNull() {
+            addCriterion("tran_name is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameEqualTo(String value) {
+            addCriterion("tran_name =", value, "tranName");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameNotEqualTo(String value) {
+            addCriterion("tran_name <>", value, "tranName");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameGreaterThan(String value) {
+            addCriterion("tran_name >", value, "tranName");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameGreaterThanOrEqualTo(String value) {
+            addCriterion("tran_name >=", value, "tranName");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameLessThan(String value) {
+            addCriterion("tran_name <", value, "tranName");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameLessThanOrEqualTo(String value) {
+            addCriterion("tran_name <=", value, "tranName");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameLike(String value) {
+            addCriterion("tran_name like", value, "tranName");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameNotLike(String value) {
+            addCriterion("tran_name not like", value, "tranName");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameIn(List<String> values) {
+            addCriterion("tran_name in", values, "tranName");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameNotIn(List<String> values) {
+            addCriterion("tran_name not in", values, "tranName");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameBetween(String value1, String value2) {
+            addCriterion("tran_name between", value1, value2, "tranName");
+            return (Criteria) this;
+        }
+
+        public Criteria andTranNameNotBetween(String value1, String value2) {
+            addCriterion("tran_name not between", value1, value2, "tranName");
+            return (Criteria) this;
+        }
+
         public Criteria andTranTelIsNull() {
             addCriterion("tran_tel is null");
             return (Criteria) this;

@@ -5,15 +5,18 @@ public class SysTran {
 
     private Long wxuserId;
 
+    private String tranName;
+
     private String tranTel;
 
     private String idFrontUrl;
 
     private String idBackUrl;
 
-    public SysTran(Integer id, Long wxuserId, String tranTel, String idFrontUrl, String idBackUrl) {
+    public SysTran(Integer id, Long wxuserId, String tranName, String tranTel, String idFrontUrl, String idBackUrl) {
         this.id = id;
         this.wxuserId = wxuserId;
+        this.tranName = tranName;
         this.tranTel = tranTel;
         this.idFrontUrl = idFrontUrl;
         this.idBackUrl = idBackUrl;
@@ -37,6 +40,14 @@ public class SysTran {
 
     public void setWxuserId(Long wxuserId) {
         this.wxuserId = wxuserId;
+    }
+
+    public String getTranName() {
+        return tranName;
+    }
+
+    public void setTranName(String tranName) {
+        this.tranName = tranName == null ? null : tranName.trim();
     }
 
     public String getTranTel() {

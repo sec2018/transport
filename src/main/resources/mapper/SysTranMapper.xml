@@ -5,6 +5,7 @@
     <constructor >
       <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="wxuser_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <arg column="tran_name" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="tran_tel" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="id_front_url" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="id_back_url" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -69,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, wxuser_id, tran_tel, id_front_url, id_back_url
+    id, wxuser_id, tran_name, tran_tel, id_front_url, id_back_url
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.example.transport.model.SysTranExample" >
     select
@@ -102,10 +103,12 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.example.transport.pojo.SysTran" >
-    insert into sys_tran (id, wxuser_id, tran_tel, 
-      id_front_url, id_back_url)
-    values (#{id,jdbcType=INTEGER}, #{wxuserId,jdbcType=BIGINT}, #{tranTel,jdbcType=VARCHAR}, 
-      #{idFrontUrl,jdbcType=VARCHAR}, #{idBackUrl,jdbcType=VARCHAR})
+    insert into sys_tran (id, wxuser_id, tran_name, 
+      tran_tel, id_front_url, id_back_url
+      )
+    values (#{id,jdbcType=INTEGER}, #{wxuserId,jdbcType=BIGINT}, #{tranName,jdbcType=VARCHAR}, 
+      #{tranTel,jdbcType=VARCHAR}, #{idFrontUrl,jdbcType=VARCHAR}, #{idBackUrl,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.example.transport.pojo.SysTran" >
     insert into sys_tran
@@ -115,6 +118,9 @@
       </if>
       <if test="wxuserId != null" >
         wxuser_id,
+      </if>
+      <if test="tranName != null" >
+        tran_name,
       </if>
       <if test="tranTel != null" >
         tran_tel,
@@ -132,6 +138,9 @@
       </if>
       <if test="wxuserId != null" >
         #{wxuserId,jdbcType=BIGINT},
+      </if>
+      <if test="tranName != null" >
+        #{tranName,jdbcType=VARCHAR},
       </if>
       <if test="tranTel != null" >
         #{tranTel,jdbcType=VARCHAR},
@@ -159,6 +168,9 @@
       <if test="record.wxuserId != null" >
         wxuser_id = #{record.wxuserId,jdbcType=BIGINT},
       </if>
+      <if test="record.tranName != null" >
+        tran_name = #{record.tranName,jdbcType=VARCHAR},
+      </if>
       <if test="record.tranTel != null" >
         tran_tel = #{record.tranTel,jdbcType=VARCHAR},
       </if>
@@ -177,6 +189,7 @@
     update sys_tran
     set id = #{record.id,jdbcType=INTEGER},
       wxuser_id = #{record.wxuserId,jdbcType=BIGINT},
+      tran_name = #{record.tranName,jdbcType=VARCHAR},
       tran_tel = #{record.tranTel,jdbcType=VARCHAR},
       id_front_url = #{record.idFrontUrl,jdbcType=VARCHAR},
       id_back_url = #{record.idBackUrl,jdbcType=VARCHAR}
@@ -189,6 +202,9 @@
     <set >
       <if test="wxuserId != null" >
         wxuser_id = #{wxuserId,jdbcType=BIGINT},
+      </if>
+      <if test="tranName != null" >
+        tran_name = #{tranName,jdbcType=VARCHAR},
       </if>
       <if test="tranTel != null" >
         tran_tel = #{tranTel,jdbcType=VARCHAR},
@@ -205,6 +221,7 @@
   <update id="updateByPrimaryKey" parameterType="com.example.transport.pojo.SysTran" >
     update sys_tran
     set wxuser_id = #{wxuserId,jdbcType=BIGINT},
+      tran_name = #{tranName,jdbcType=VARCHAR},
       tran_tel = #{tranTel,jdbcType=VARCHAR},
       id_front_url = #{idFrontUrl,jdbcType=VARCHAR},
       id_back_url = #{idBackUrl,jdbcType=VARCHAR}

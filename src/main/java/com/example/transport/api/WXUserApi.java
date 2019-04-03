@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.transport.dao.SysCompanyMapper;
 import com.example.transport.dao.SysShopMapper;
+import com.example.transport.dao.SysTranMapper;
 import com.example.transport.pojo.SysCompany;
 import com.example.transport.pojo.SysShop;
+import com.example.transport.pojo.SysTran;
 import com.example.transport.pojo.WxUser;
 import com.example.transport.service.Constant;
 import com.example.transport.service.UserService;
@@ -64,6 +66,9 @@ public class WXUserApi {
 
     @Autowired
     private SysShopMapper sysShopMapper;
+
+    @Autowired
+    private SysTranMapper sysTranMapper;
 
     //region 策略1
 //    @RequestMapping("wxlogin")
@@ -239,10 +244,11 @@ public class WXUserApi {
 //                    }
                     int userroleid = wxUser.getRoleid();
                     jsonObject.put("role", userroleid);
+                    SysTran sysTran = sysTranMapper.selectByWxuserid(wxUser.getId());
                     SysShop sysShop = sysShopMapper.selectByWxuserid(wxUser.getId());
                     SysCompany sysCompany = sysCompanyMapper.selectByWxuserid(wxUser.getId());
                     if(roleid.equals(2+"")){
-                        if(sysShop==null && sysCompany==null){
+                        if(sysShop==null && sysCompany==null && sysTran==null){
                             jsonObject.put("role", 2);
                             wxUser.setRoleid(2);
                             wxUser.setTimestamp(new Date());
@@ -260,7 +266,7 @@ public class WXUserApi {
                         }
                     }else if(roleid.equals(4+"")){
 
-                        if(sysShop==null && sysCompany==null){
+                        if(sysShop==null && sysCompany==null && sysTran==null){
                             jsonObject.put("role", 4);
                             wxUser.setRoleid(4);
                             wxUser.setTimestamp(new Date());
@@ -277,7 +283,7 @@ public class WXUserApi {
                             return ResponseEntity.ok(r);
                         }
                     }else if(roleid.equals(3+"")){
-                        if(sysShop==null && sysCompany==null){
+                        if(sysShop==null && sysCompany==null && sysTran==null){
                             jsonObject.put("role", 3);
                             wxUser.setRoleid(3);
                             wxUser.setTimestamp(new Date());
@@ -285,6 +291,13 @@ public class WXUserApi {
                             if(flag){
                                 logger.info("更新成功！");
                             }
+                            r.setCode(Constant.RoleTran_ERROR.getCode()+"");
+                            r.setMsg(Constant.RoleTran_ERROR.getMsg());
+                            jsonObject.put("isfirst", true);     //此data为token
+                            jsonObject.put("userinfo",wxUser);
+                            r.setData(jsonObject);
+                            r.setSuccess(false);
+                            return ResponseEntity.ok(r);
                         }
                     }
                     if(wxUser.getTrancheckstatus()==2){
@@ -341,8 +354,17 @@ public class WXUserApi {
                         r.setData(jsonObject);
                         r.setSuccess(false);
                         return ResponseEntity.ok(r);
-                    }else if(roleid.equals("4")){
-
+                    }
+                    else if(roleid.equals("3")){
+                        r.setCode(Constant.RoleTran_ERROR.getCode()+"");
+                        r.setMsg(Constant.RoleTran_ERROR.getMsg());
+                        jsonObject.put("isfirst", true);
+                        jsonObject.put("userinfo",wxUser);
+                        r.setData(jsonObject);
+                        r.setSuccess(false);
+                        return ResponseEntity.ok(r);
+                    }
+                    else if(roleid.equals("4")){
 //                    SysCompanyExample example = new SysCompanyExample();
 //                    SysCompanyExample.Criteria criteria = example.createCriteria();
 //                    criteria.andWxuserIdEqualTo(wx_user_id);
