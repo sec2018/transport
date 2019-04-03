@@ -30,3 +30,5 @@
 /log/myspringboot.log
 /src/main/java/com/example/transport/service/Constant.java
 /src/main/resources/doc
+/src/main/resources/mybatis-generator.properties
+/src/main/resources/generatorConfig.xml
