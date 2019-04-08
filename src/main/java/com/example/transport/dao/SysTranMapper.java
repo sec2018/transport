@@ -32,6 +32,5 @@ public interface SysTranMapper {
 
     int updateByPrimaryKey(SysTran record);
 
-    @Select("select * from sys_tran where wxuser_id = #{wxuser_id}")
     SysTran selectByWxuserid(long wxuser_id);
 }

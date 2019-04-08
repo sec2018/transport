@@ -33,6 +33,5 @@ public interface SysShopMapper {
 
     int updateByPrimaryKey(SysShop record);
 
-    @Select("select * from sys_shop where wxuser_id = #{wxuser_id}")
     SysShop selectByWxuserid(long wxuser_id);
 }

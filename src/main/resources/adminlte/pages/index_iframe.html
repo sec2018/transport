@@ -494,12 +494,12 @@
             },
             {
                 id: "9002",
-                text: "运单查询",
+                text: "用户管理",
                 icon: "fa fa-edit",
                 children: [
                     {
                         id: "90021",
-                        text: "承运员报表",
+                        text: "承运员管理",
                         url: "UI/userbaobiao.html",
                         targetType: "iframe-tab",
                         icon: "fa fa-circle-o",
@@ -507,7 +507,7 @@
                     },
                     {
                         id: "90022",
-                        text: "公司报表",
+                        text: "公司管理",
                         url: "UI/companybaobiao.html",
                         targetType: "iframe-tab",
                         icon: "fa fa-circle-o",
@@ -515,43 +515,68 @@
                     },
                     {
                         id: "90023",
-                        text: "商户报表",
+                        text: "商户管理",
                         url: "UI/shopbaobiao.html",
                         targetType: "iframe-tab",
                         icon: "fa fa-circle-o",
                         urlType: 'abosulte'
-                    },
+                    }
+                ]
+            },
+            {
+                id: "9003",
+                text: "运单管理",
+                icon: "fa fa-edit",
+                children: [
                     {
-                        id: "90024",
-                        text: "商户未完成订单报表",
-                        url: "UI/unfinishbaobiao.html",
+                        id: "90031",
+                        text: "商户下单报表",
+                        url: "https://www.baidu.com",
                         targetType: "iframe-tab",
                         icon: "fa fa-circle-o",
-                        urlType: 'abosulte'
+                        children: [
+                            {
+                                id: "900311",
+                                text: "已完成运单",
+                                url: "UI/finishbaobiao.html",
+                                targetType: "iframe-tab",
+                                icon: "fa fa-circle-o",
+                                urlType: 'abosulte'
+                            },
+                            {
+                                id: "900312",
+                                text: "未完成运单",
+                                url: "UI/unfinishbaobiao.html",
+                                targetType: "iframe-tab",
+                                icon: "fa fa-circle-o",
+                                urlType: 'abosulte'
+                            }
+                        ]
                     },
                     {
-                        id: "90025",
-                        text: "商户已完成订单报表",
-                        url: "UI/finishbaobiao.html",
+                        id: "90032",
+                        text: "物流下单报表",
+                        url: "https://www.baidu.com",
                         targetType: "iframe-tab",
                         icon: "fa fa-circle-o",
-                        urlType: 'abosulte'
-                    },
-                    {
-                        id: "90026",
-                        text: "公司未完成订单报表",
-                        url: "UI/unfinishcompanybaobiao.html",
-                        targetType: "iframe-tab",
-                        icon: "fa fa-circle-o",
-                        urlType: 'abosulte'
-                    },
-                    {
-                        id: "90027",
-                        text: "公司已完成订单报表",
-                        url: "UI/finishcompanybaobiao.html",
-                        targetType: "iframe-tab",
-                        icon: "fa fa-circle-o",
-                        urlType: 'abosulte'
+                        children: [
+                            {
+                                id: "900321",
+                                text: "已完成运单",
+                                url: "UI/finishcompanybaobiao.html",
+                                targetType: "iframe-tab",
+                                icon: "fa fa-circle-o",
+                                urlType: 'abosulte'
+                            },
+                            {
+                                id: "900322",
+                                text: "未完成运单",
+                                url: "UI/unfinishcompanybaobiao.html",
+                                targetType: "iframe-tab",
+                                icon: "fa fa-circle-o",
+                                urlType: 'abosulte'
+                            }
+                        ]
                     }
                 ]
             }

@@ -35,7 +35,6 @@ public interface SysCompanyMapper {
 
     int selectCompanyIdbyWxuserid(Long wxuser_id);
 
-    @Select("select * from sys_shop where wxuser_id = #{wxuser_id}")
     SysCompany selectByWxuserid(long wxuser_id);
 
     @Select({"select company_id from sys_company where companycheckstatus = 1"})

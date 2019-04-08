@@ -71,8 +71,8 @@ $(function () {
                             "defaultContent": "",
                             "width": "1px"
                         },
-                        { "data": "company_name","width":"140px"},
-                        { "data": "bill_code" },
+                        { "data": "company_name"},
+                        { "data": "bill_code" ,"width":"140px"},
                         { "data": "shop_name" },
                         { "data": "rec_name" },
                         { "data": "rec_tel" },

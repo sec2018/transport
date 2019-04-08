@@ -227,4 +227,11 @@
       id_back_url = #{idBackUrl,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByWxuserid" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from sys_tran
+    where wxuser_id = #{wxuser_id,jdbcType=BIGINT}
+  </select>
 </mapper>
