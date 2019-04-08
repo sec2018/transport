@@ -63,9 +63,9 @@ $(function () {
                     dom: 'Bfrtip',
                     "processing": true,
                     "columns": [
-                        { "data": "company_id"},
+                        { "data": "company_id","width":"40px"},
                         { "data": "company_name" },
-                        { "data": "nickname" },
+                        { "data": "nickname" ,"width":"110px"},
                         { "data": "company_tel" },
                         { "data": "line" },
                         { "data": "company_procity","width":"140px"},

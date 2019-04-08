@@ -101,6 +101,9 @@ public class CompanyApi {
 
     public void GetAllCompanyLines(){
         List<Integer> companylist = sysCompanyMapper.selectCheckIdList();
+        if(companylist.size()==0){
+            return;
+        }
         List<LineMap> linemaplist = new ArrayList<>();
         CompanyLinesExample example = new CompanyLinesExample();
         example.createCriteria().andCompanyIdIn(companylist);
