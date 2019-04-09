@@ -380,6 +380,7 @@ public class ShopApi {
                 smap.put("shop_tel", ss.getShopTel());
                 smap.put("shop_procity", ss.getShopProcity());
                 smap.put("shop_detailarea", ss.getShopDetailarea());
+                smap.put("shop_url", ss.getShopUrl());
 
                 switch (ss.getShopcheckstatus()) {
                     case 0:

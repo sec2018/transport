@@ -9,6 +9,9 @@ import com.example.transport.util.redis.RedisService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,8 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import sun.misc.BASE64Encoder;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -265,5 +274,65 @@ public class UserApi {
             e.printStackTrace();
         }
         return ResponseEntity.ok(r);
+    }
+
+    //角色0,1
+    @ApiOperation(value = "前端显示图片", notes = "前端显示图片")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "imagename", value = "图片名称", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
+    })
+    @RequestMapping(value="adminshowimage",method = RequestMethod.POST,produces = "image/jpeg;chartset=UTF-8")
+    @ResponseBody
+    public String showPhoto(@RequestParam(value = "imagename",required = true)String imagename, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            response.reset();
+            String path="";
+            String roleid = request.getHeader("roleid");
+            switch (roleid){
+                case "2":
+                    path = "D:/transportimage/shopimages/"+ imagename;
+                    break;
+                case "3":
+                    path = "D:/transportimage/tranimages/"+ imagename;
+                    break;
+                case "4":
+                    path = "D:/transportimage/companyimages/"+ imagename;
+                    break;
+            }
+            // 以byte流的方式打开文件 d:\1.gif
+            FileInputStream hFile;
+            hFile = new FileInputStream(path);
+            //得到文件大小
+            int i=hFile.available();
+            byte data[]=new byte[i];
+            //读数据
+            hFile.read(data);
+//            String extension = FilenameUtils.getExtension(path);
+//            boolean isJPG = StringUtils.isBlank(extension) || extension.equalsIgnoreCase("jpg");
+//            extension = isJPG ? "jpeg" : extension;
+//            response.setContentType("image/".concat(extension).concat(";charset=UTF-8"));
+//            response.setHeader("Content-Type","image/jpeg");
+//            //得到向客户端输出二进制数据的对象
+//            OutputStream toClient=response.getOutputStream();
+//            //输出数据
+//            toClient.write(data);
+//            toClient.flush();
+//            toClient.close();
+//            hFile.close();
+
+            BASE64Encoder encoder = new BASE64Encoder();
+            String png_base64 =  encoder.encodeBuffer(data);//转换成base64串
+            png_base64 = png_base64.replaceAll("\n", "").replaceAll("\r", "");//删除 \r\n
+            return png_base64;
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "failed";
     }
 }

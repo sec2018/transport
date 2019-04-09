@@ -24,7 +24,7 @@ $(function () {
                 return;
             }else{
                 for(var i = 0;i<data.data.length;i++){
-                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow("+ data.data[i].shop_id + ",\""+ data.data[i].shopcheckstatus + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>";
+                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow("+ data.data[i].shop_id + ",\""+ data.data[i].shopcheckstatus + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>&nbsp;&nbsp;<a href='javascript:void(0);'onclick='ShowImage(\""+ data.data[i].shop_url + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 营业执照</a>";
                 }
                 viewdata = $.extend(true,[],data.data);
                 var dt = $('#datatable').DataTable({
@@ -66,14 +66,14 @@ $(function () {
                     dom: 'Bfrtip',
                     "processing": true,
                     "columns": [
-                        { "data": "shop_id"},
+                        { "data": "shop_id","width":"40px" },
                         { "data": "shop_name" },
-                        { "data": "nickname" },
+                        { "data": "nickname", "width":"70px" },
                         { "data": "shop_tel" },
                         { "data": "shop_procity","width":"140px" },
                         { "data": "shop_detailarea","width":"190px" },
                         { "data": "shopcheckstatus"},
-                        { "data": "action" }
+                        { "data": "action" ,"width":"120px" }
                     ],
                     buttons: [
                         'pageLength',
@@ -137,6 +137,26 @@ function checkThisRow(id,checkstatus) {
     }
     $('#myModal').modal('toggle');
     checkshopid = id;
+}
+
+function ShowImage(shop_url) {
+    var shopsenddata = {};
+    shopsenddata.imagename = shop_url;
+    $.ajax({
+        url: "/transport/api/adminshowimage",
+        method: "POST",
+        data: shopsenddata,
+        beforeSend: function(request) {
+            request.setRequestHeader("roleid", "2");
+            request.setRequestHeader("token", window.localStorage.getItem("transport_token"));
+        },
+        success: function (data) {
+            var newwin = window.open();
+            var myimg = newwin.document.createElement("img");
+            myimg.src = "data:image/png;base64,"+data;
+            newwin.document.body.appendChild(myimg);
+        }
+    });
 }
 
 
