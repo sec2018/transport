@@ -142,21 +142,21 @@ function checkThisRow(id,checkstatus) {
 function ShowImage(shop_url) {
     var shopsenddata = {};
     shopsenddata.imagename = shop_url;
+    shopsenddata.roleid = "2";
+    var newwin = window.open();
     $.ajax({
         url: "/transport/api/adminshowimage",
-        method: "POST",
+        method: "GET",
         data: shopsenddata,
-        beforeSend: function(request) {
-            request.setRequestHeader("roleid", "2");
-            request.setRequestHeader("token", window.localStorage.getItem("transport_token"));
-        },
-        success: function (data) {
-            var newwin = window.open();
+        // beforeSend: function(request) {
+        //     request.setRequestHeader("roleid", "2");
+        //     request.setRequestHeader("token", window.localStorage.getItem("transport_token"));
+        // },
+        success: function (res) {
             var myimg = newwin.document.createElement("img");
-            myimg.src = "data:image/png;base64,"+data;
+            myimg.setAttribute('style','width:600px;display:block;margin:20px auto;')
+            myimg.src = "data:image/png;base64,"+res.data;
             newwin.document.body.appendChild(myimg);
         }
     });
 }
-
-

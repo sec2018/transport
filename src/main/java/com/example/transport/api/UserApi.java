@@ -280,18 +280,17 @@ public class UserApi {
     @ApiOperation(value = "前端显示图片", notes = "前端显示图片")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "imagename", value = "图片名称", required = true, dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
-            @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
+            @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "query")
     })
-    @RequestMapping(value="adminshowimage",method = RequestMethod.POST,produces = "image/jpeg;chartset=UTF-8")
+//    @RequestMapping(value="adminshowimage",method = RequestMethod.GET,produces = "image/jpeg;chartset=UTF-8")
+    @RequestMapping(value="adminshowimage",method = RequestMethod.GET)
     @ResponseBody
-    public String showPhoto(@RequestParam(value = "imagename",required = true)String imagename, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<JsonResult> showPhoto(@RequestParam(value = "imagename",required = true)String imagename, @RequestParam(value = "roleid",required = true)String roleid, HttpServletResponse response) {
+        JsonResult r = new JsonResult();
         try {
-            request.setCharacterEncoding("UTF-8");
             response.setCharacterEncoding("UTF-8");
             response.reset();
             String path="";
-            String roleid = request.getHeader("roleid");
             switch (roleid){
                 case "2":
                     path = "D:/transportimage/shopimages/"+ imagename;
@@ -327,12 +326,17 @@ public class UserApi {
             BASE64Encoder encoder = new BASE64Encoder();
             String png_base64 =  encoder.encodeBuffer(data);//转换成base64串
             png_base64 = png_base64.replaceAll("\n", "").replaceAll("\r", "");//删除 \r\n
-            return png_base64;
-
-
+            r.setCode("200");
+            r.setData(png_base64);
+            r.setMsg("获取图片成功！");
+            r.setSuccess(true);
         } catch (Exception e) {
             e.printStackTrace();
+            r.setCode("500");
+            r.setData(null);
+            r.setMsg("获取图片失败！");
+            r.setSuccess(true);
         }
-        return "failed";
+        return ResponseEntity.ok(r);
     }
 }
