@@ -10,6 +10,7 @@
       <arg column="wxuser_id" jdbcType="BIGINT" javaType="java.lang.Long" />
       <arg column="shop_tel" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="shopcheckstatus" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="shop_url" jdbcType="VARCHAR" javaType="java.lang.String" />
     </constructor>
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -71,7 +72,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    shop_id, shop_name, shop_procity, shop_detailarea, wxuser_id, shop_tel, shopcheckstatus
+    shop_id, shop_name, shop_procity, shop_detailarea, wxuser_id, shop_tel, shopcheckstatus, 
+    shop_url
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.example.transport.model.SysShopExample" >
     select
@@ -106,10 +108,10 @@
   <insert id="insert" parameterType="com.example.transport.pojo.SysShop" >
     insert into sys_shop (shop_id, shop_name, shop_procity, 
       shop_detailarea, wxuser_id, shop_tel, 
-      shopcheckstatus)
+      shopcheckstatus, shop_url)
     values (#{shopId,jdbcType=INTEGER}, #{shopName,jdbcType=VARCHAR}, #{shopProcity,jdbcType=VARCHAR}, 
       #{shopDetailarea,jdbcType=VARCHAR}, #{wxuserId,jdbcType=BIGINT}, #{shopTel,jdbcType=VARCHAR}, 
-      #{shopcheckstatus,jdbcType=INTEGER})
+      #{shopcheckstatus,jdbcType=INTEGER}, #{shopUrl,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.example.transport.pojo.SysShop" >
     insert into sys_shop
@@ -135,6 +137,9 @@
       <if test="shopcheckstatus != null" >
         shopcheckstatus,
       </if>
+      <if test="shopUrl != null" >
+        shop_url,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="shopId != null" >
@@ -157,6 +162,9 @@
       </if>
       <if test="shopcheckstatus != null" >
         #{shopcheckstatus,jdbcType=INTEGER},
+      </if>
+      <if test="shopUrl != null" >
+        #{shopUrl,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -190,6 +198,9 @@
       <if test="record.shopcheckstatus != null" >
         shopcheckstatus = #{record.shopcheckstatus,jdbcType=INTEGER},
       </if>
+      <if test="record.shopUrl != null" >
+        shop_url = #{record.shopUrl,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -203,7 +214,8 @@
       shop_detailarea = #{record.shopDetailarea,jdbcType=VARCHAR},
       wxuser_id = #{record.wxuserId,jdbcType=BIGINT},
       shop_tel = #{record.shopTel,jdbcType=VARCHAR},
-      shopcheckstatus = #{record.shopcheckstatus,jdbcType=INTEGER}
+      shopcheckstatus = #{record.shopcheckstatus,jdbcType=INTEGER},
+      shop_url = #{record.shopUrl,jdbcType=VARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -229,6 +241,9 @@
       <if test="shopcheckstatus != null" >
         shopcheckstatus = #{shopcheckstatus,jdbcType=INTEGER},
       </if>
+      <if test="shopUrl != null" >
+        shop_url = #{shopUrl,jdbcType=VARCHAR},
+      </if>
     </set>
     where shop_id = #{shopId,jdbcType=INTEGER}
   </update>
@@ -239,7 +254,8 @@
       shop_detailarea = #{shopDetailarea,jdbcType=VARCHAR},
       wxuser_id = #{wxuserId,jdbcType=BIGINT},
       shop_tel = #{shopTel,jdbcType=VARCHAR},
-      shopcheckstatus = #{shopcheckstatus,jdbcType=INTEGER}
+      shopcheckstatus = #{shopcheckstatus,jdbcType=INTEGER},
+      shop_url = #{shopUrl,jdbcType=VARCHAR}
     where shop_id = #{shopId,jdbcType=INTEGER}
   </update>
 

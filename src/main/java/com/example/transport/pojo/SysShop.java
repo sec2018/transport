@@ -15,7 +15,9 @@ public class SysShop {
 
     private Integer shopcheckstatus;
 
-    public SysShop(Integer shopId, String shopName, String shopProcity, String shopDetailarea, Long wxuserId, String shopTel, Integer shopcheckstatus) {
+    private String shopUrl;
+
+    public SysShop(Integer shopId, String shopName, String shopProcity, String shopDetailarea, Long wxuserId, String shopTel, Integer shopcheckstatus, String shopUrl) {
         this.shopId = shopId;
         this.shopName = shopName;
         this.shopProcity = shopProcity;
@@ -23,6 +25,7 @@ public class SysShop {
         this.wxuserId = wxuserId;
         this.shopTel = shopTel;
         this.shopcheckstatus = shopcheckstatus;
+        this.shopUrl = shopUrl;
     }
 
     public SysShop() {
@@ -83,5 +86,13 @@ public class SysShop {
 
     public void setShopcheckstatus(Integer shopcheckstatus) {
         this.shopcheckstatus = shopcheckstatus;
+    }
+
+    public String getShopUrl() {
+        return shopUrl;
+    }
+
+    public void setShopUrl(String shopUrl) {
+        this.shopUrl = shopUrl == null ? null : shopUrl.trim();
     }
 }

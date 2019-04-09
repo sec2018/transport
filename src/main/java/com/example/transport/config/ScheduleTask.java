@@ -1,8 +1,14 @@
 package com.example.transport.config;
 
 import com.example.transport.dao.SysCompanyMapper;
+import com.example.transport.dao.SysShopMapper;
+import com.example.transport.dao.SysTranMapper;
 import com.example.transport.model.SysCompanyExample;
+import com.example.transport.model.SysShopExample;
+import com.example.transport.model.SysTranExample;
 import com.example.transport.pojo.SysCompany;
+import com.example.transport.pojo.SysShop;
+import com.example.transport.pojo.SysTran;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +36,14 @@ public class ScheduleTask {
     @Autowired
     private SysCompanyMapper sysCompanyMapper;
 
+    @Autowired
+    private SysShopMapper sysShopMapper;
+
+    @Autowired
+    private SysTranMapper sysTranMapper;
 
     @Transactional
-    @Scheduled(cron = "10 53 9 * * ?")   //每天17点07分10秒触发任务
+    @Scheduled(cron = "10 53 22 * * ?")   //每天22点53分10秒触发任务
 //    @Scheduled(fixedRate = 50)
     public void FormatLicenceUrl() {
 
@@ -44,20 +55,78 @@ public class ScheduleTask {
             licence_url = sc.getLicenceUrl();
             if(licence_url.length()>15){
                 try {
-                    licence_url = ResourceUtils.getURL("classpath:").getPath()+"companyimages/"+licence_url;
+//                    licence_url = ResourceUtils.getURL("classpath:").getPath()+"companyimages/"+licence_url;
+                    licence_url = "D:/transportimage/companyimages/"+licence_url;
                     new_licence_url = sc.getCompanyId()+"";
                     licence_url = FixFileName(licence_url,new_licence_url);
                     System.out.println(licence_url);
                     //修改数据库
                     sc.setLicenceUrl(new_licence_url+".png");
                     sysCompanyMapper.updateByPrimaryKey(sc);
-                } catch (FileNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 }
             }
         }
-
+        SysShopExample shopexample = new SysShopExample();
+        List<SysShop> listshop = sysShopMapper.selectByExample(shopexample);
+        for(SysShop sc : listshop){
+            licence_url = sc.getShopUrl();
+            if(licence_url.length()>15){
+                try {
+//                    licence_url = ResourceUtils.getURL("classpath:").getPath()+"companyimages/"+licence_url;
+                    licence_url = "D:/transportimage/shopimages/"+licence_url;
+                    new_licence_url = sc.getShopId()+"";
+                    licence_url = FixFileName(licence_url,new_licence_url);
+                    System.out.println(licence_url);
+                    //修改数据库
+                    sc.setShopUrl(new_licence_url+".png");
+                    sysShopMapper.updateByPrimaryKey(sc);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                }
+            }
+        }
+        SysTranExample tranexample = new SysTranExample();
+        List<SysTran> listtran = sysTranMapper.selectByExample(tranexample);
+        String front_url = "";
+        String new_front_url = "";
+        String back_url = "";
+        String new_back_url = "";
+        for(SysTran sc : listtran){
+            front_url = sc.getIdFrontUrl();
+            back_url = sc.getIdBackUrl();
+            if(front_url.length()>15){
+                try {
+                    front_url = "D:/transportimage/tranimages/"+front_url;
+                    new_front_url = sc.getIdFrontUrl()+"_front";
+                    front_url = FixFileName(front_url,new_front_url);
+                    System.out.println(front_url);
+                    //修改数据库
+                    sc.setIdFrontUrl(new_front_url+".png");
+                    sysTranMapper.updateByPrimaryKey(sc);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                }
+            }
+            if(back_url.length()>15){
+                try {
+                    back_url = "D:/transportimage/tranimages/"+back_url;
+                    new_back_url = sc.getIdBackUrl()+"_back";
+                    back_url = FixFileName(back_url,new_back_url);
+                    System.out.println(back_url);
+                    //修改数据库
+                    sc.setIdBackUrl(new_back_url+".png");
+                    sysTranMapper.updateByPrimaryKey(sc);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                }
+            }
+        }
     }
 
     /**

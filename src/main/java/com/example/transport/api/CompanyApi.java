@@ -900,7 +900,8 @@ public class CompanyApi {
                         // 文件上传的最终保存路径
                         //target/class里面
                         String filefinalname = UUID.randomUUID().toString()+".png";
-                        String finalimagePath = ResourceUtils.getURL("classpath:").getPath()+"companyimages/"+ filefinalname;
+//                        String finalimagePath = ResourceUtils.getURL("classpath:").getPath()+"companyimages/"+ filefinalname;
+                        String finalimagePath = "D:/transportimage/companyimages/"+ filefinalname;
                         File outFile = new File(finalimagePath);
                         if (outFile.getParentFile() != null || !outFile.getParentFile().isDirectory()) {
                             // 创建父文件夹

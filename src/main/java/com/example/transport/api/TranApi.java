@@ -2,23 +2,31 @@ package com.example.transport.api;
 
 import com.example.transport.dao.SysTranMapper;
 import com.example.transport.pojo.SysTran;
+import com.example.transport.pojo.User;
 import com.example.transport.service.Constant;
 import com.example.transport.service.SysTranService;
+import com.example.transport.service.SysUserTokenService;
 import com.example.transport.service.UserService;
 import com.example.transport.util.JsonResult;
 import com.example.transport.util.redis.RedisService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.UUID;
 
 /**
  * Created by WangZJ on 2019/4/3.
@@ -39,6 +47,9 @@ public class TranApi {
 
     @Autowired
     private SysTranService sysTranService;
+
+    @Autowired
+    private SysUserTokenService sysUserTokenService;
 
     //角色1,2
     @ApiOperation(value = "添加或修改承运员", notes = "添加或修改承运员")
@@ -154,6 +165,161 @@ public class TranApi {
     }
 
 
+    //点击上传图片按钮，返回路径接口
+    @ApiOperation(value = "承运员上传身份证正面", notes = "承运员上传身份证正面")
+    @PostMapping(value="/tranfrontimage",headers="content-type=multipart/form-data")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
+    })
+    @ResponseBody
+    public ResponseEntity<JsonResult> TranUploadFrontImage(@ApiParam(value="imagefile",required=true)
+                                                              MultipartFile imagefile, HttpServletRequest request){
+
+        String roleid = request.getHeader("roleid");
+        JsonResult r = new JsonResult();
+        if (!roleid.equals("0") && !roleid.equals("1") && !roleid.equals("3")) {
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        String token = request.getHeader("token");
+
+        //超级管理员,PC端
+        if (roleid.equals("0")) {
+            token = getAdminToken();
+            if (!token.equals(token)) {
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
+            } else {
+                r = TranUploadImage(imagefile,1);
+            }
+        } else {
+            r = ConnectRedisCheckToken(token);
+            String tokenvalue = "";
+            try {
+                tokenvalue = r.getData().toString();
+                if (tokenvalue != null) {
+                    r = TranUploadImage(imagefile,1);
+                }
+            } catch (Exception e) {
+                r = Common.TokenError();
+                e.printStackTrace();
+                return ResponseEntity.ok(r);
+            }
+        }
+        return ResponseEntity.ok(r);
+    }
+
+    //点击上传图片按钮，返回路径接口
+    @ApiOperation(value = "承运员上传身份证反面", notes = "承运员上传身份证反面")
+    @PostMapping(value="/tranbackimage",headers="content-type=multipart/form-data")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
+            @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")
+    })
+    @ResponseBody
+    public ResponseEntity<JsonResult> TranUploadBackImage(@ApiParam(value="imagefile",required=true)
+                                                                   MultipartFile imagefile, HttpServletRequest request){
+
+        String roleid = request.getHeader("roleid");
+        JsonResult r = new JsonResult();
+        if (!roleid.equals("0") && !roleid.equals("1") && !roleid.equals("3")) {
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        String token = request.getHeader("token");
+
+        //超级管理员,PC端
+        if (roleid.equals("0")) {
+            token = getAdminToken();
+            if (!token.equals(token)) {
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
+            } else {
+                r = TranUploadImage(imagefile,2);
+            }
+        } else {
+            r = ConnectRedisCheckToken(token);
+            String tokenvalue = "";
+            try {
+                tokenvalue = r.getData().toString();
+                if (tokenvalue != null) {
+                    r = TranUploadImage(imagefile,2);
+                }
+            } catch (Exception e) {
+                r = Common.TokenError();
+                e.printStackTrace();
+                return ResponseEntity.ok(r);
+            }
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    public JsonResult TranUploadImage(MultipartFile imagefile,Integer flag){
+        JsonResult r = new JsonResult();
+        try {
+            FileOutputStream fileOutputStream = null;
+            InputStream inputStream = null;
+            try {
+                if (imagefile != null) {
+                    String fileName = imagefile.getOriginalFilename();
+                    if (StringUtils.isNotBlank(fileName)) {
+                        // 文件上传的最终保存路径
+                        String filefinalname = "";
+                        if(flag == 1){
+                            //正面
+                            filefinalname = "front_"+UUID.randomUUID().toString()+".png";
+                            r.setMsg("上传身份证正面成功！");
+                        }else if(flag == 2){
+                            filefinalname = "back_"+UUID.randomUUID().toString()+".png";
+                            r.setMsg("上传身份证反面成功！");
+                        }
+                        String finalimagePath = "D:/transportimage/tranimages/"+ filefinalname;
+                        File outFile = new File(finalimagePath);
+                        if (outFile.getParentFile() != null || !outFile.getParentFile().isDirectory()) {
+                            // 创建父文件夹
+                            outFile.getParentFile().mkdirs();
+                        }
+                        fileOutputStream = new FileOutputStream(outFile);
+                        inputStream = imagefile.getInputStream();
+                        IOUtils.copy(inputStream, fileOutputStream);
+                        r.setCode("200");
+//                        r.setData(outFile.getAbsolutePath());
+                        r.setData(filefinalname);
+                        r.setSuccess(true);
+                    }
+                } else {
+                    r.setCode(Constant.TRAN_UPLOADIMAGEFAILURE.getCode()+"");
+                    r.setMsg(Constant.TRAN_UPLOADIMAGEFAILURE.getMsg());
+                    r.setSuccess(false);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                r.setCode(Constant.TRAN_UPLOADIMAGEFAILURE.getCode()+"");
+                r.setMsg(Constant.TRAN_UPLOADIMAGEFAILURE.getMsg());
+                r.setSuccess(false);
+            } finally {
+                if (fileOutputStream != null) {
+                    try {
+                        fileOutputStream.flush();
+                        fileOutputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            r.setCode(Constant.TRAN_UPLOADIMAGEFAILURE.getCode()+"");
+            r.setData(e.getClass().getName() + ":" + e.getMessage());
+            r.setMsg(Constant.TRAN_UPLOADIMAGEFAILURE.getMsg());
+            r.setSuccess(false);
+            e.printStackTrace();
+        }
+        return r;
+    }
+
+
     public JsonResult ConnectRedisCheckToken(String token) {
         String tokenvalue = "";
         JsonResult r = new JsonResult();
@@ -181,5 +347,11 @@ public class TranApi {
             }
         }
         return r;
+    }
+
+    public String getAdminToken() {
+        User user = userService.getUserByLoginName("system");
+        String admintoken = sysUserTokenService.getToken(user.getId());
+        return admintoken;
     }
 }

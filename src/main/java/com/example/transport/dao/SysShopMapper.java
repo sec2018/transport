@@ -1,13 +1,12 @@
 package com.example.transport.dao;
 
 import com.example.transport.model.SysShopExample;
-import com.example.transport.pojo.SysShop;
 
 import java.util.List;
 
+import com.example.transport.pojo.SysShop;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface SysShopMapper {

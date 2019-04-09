@@ -64,6 +64,6 @@
                              targetProject="src/main/java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
-        <table tableName="sys_tran"></table>
+        <table tableName="sys_shop"></table>
     </context>
 </generatorConfiguration>
