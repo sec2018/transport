@@ -599,7 +599,7 @@ public class CompanyApi {
                     String openid = tokenvalue.split("\\|")[0];
                     long wxuserid = userService.getWxUserId(openid);
                     SysCompany sysCompany = sysCompanyMapper.selectByWxuserid(wxuserid);
-                    sysCompany.setLicenceUrl("/companyimages/"+sysCompany.getLicenceUrl());
+                    sysCompany.setLicenceUrl(sysCompany.getLicenceUrl());
                     r.setCode("200");
                     r.setMsg("查询物流公司成功！");
                     r.setData(sysCompany);

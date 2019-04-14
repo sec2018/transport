@@ -300,7 +300,7 @@ public class WXUserApi {
                             return ResponseEntity.ok(r);
                         }
                     }
-                    if(wxUser.getTrancheckstatus()==2){
+                    if(wxUser.getTrancheckstatus()==0){
                         jsonObject.put("status",false);
                         r.setCode("200");
                         r.setMsg("请等待审核通过后登录！");
@@ -308,7 +308,16 @@ public class WXUserApi {
                         r.setData(jsonObject);
                         r.setSuccess(true);
                         return ResponseEntity.ok(r);
-                    }else{
+                    }else if(wxUser.getTrancheckstatus()==2){
+                        jsonObject.put("status",false);
+                        r.setCode("200");
+                        r.setMsg("审核不通过，请修改注册信息！");
+                        jsonObject.put("userinfo",wxUser);
+                        r.setData(jsonObject);
+                        r.setSuccess(true);
+                        return ResponseEntity.ok(r);
+                    }
+                    else{
                         logger.info("该用户为已通过认证的老用户！");
                     }
                 }else{
@@ -321,7 +330,7 @@ public class WXUserApi {
                     wxUser.setOpenid(WxUserInfo.getString("openId"));
                     wxUser.setNickname(WxUserInfo.getString("nickName"));
                     wxUser.setLanguage(WxUserInfo.getString("language"));
-                    wxUser.setTrancheckstatus(2);
+                    wxUser.setTrancheckstatus(0);
                     wxUser.setRoleid(Integer.parseInt(roleid));
                     wxUser.setTimestamp(new Date());
                     boolean flag = userService.insertWxUser(wxUser);

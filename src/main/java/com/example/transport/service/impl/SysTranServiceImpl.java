@@ -32,7 +32,7 @@ public class SysTranServiceImpl implements SysTranService{
         try{
             boolean flag1 =  sysTranMapper.updateByPrimaryKey(record)==1?true:false;
             WxUser wxUser = userService.getWxUserById(record.getWxuserId());
-            wxUser.setTrancheckstatus(2);                             //需重新审核
+            wxUser.setTrancheckstatus(0);                             //需重新审核
             boolean flag2 = userService.updateWxUser(wxUser);
             if(flag1 && flag2){
                 return true;

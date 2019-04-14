@@ -101,7 +101,7 @@ public class TranApi {
                     if (flag) {
                         r.setCode("200");
                         r.setMsg("添加承运员成功！");
-                        r.setData(null);
+                        r.setData(sysTran);
                         r.setSuccess(true);
                     } else {
                         r.setCode(Constant.TRAN_ADDFAILURE.getCode() + "");
@@ -123,7 +123,7 @@ public class TranApi {
         } else {
             //修改
             try {
-                if (tokenvalue != "" && roleid.equals("2")) {
+                if (tokenvalue != "" && roleid.equals("3")) {
                     redisService.expire(token, Constant.expire.getExpirationTime());
                     String openid = tokenvalue.split("\\|")[0];
                     long wxuserid = userService.getWxUserId(openid);
@@ -158,6 +158,65 @@ public class TranApi {
                 r.setData(e.getClass().getName() + ":" + e.getMessage());
                 r.setMsg(Constant.SHOP_UPDATEFAILURE.getMsg());
                 r.setSuccess(false);
+                e.printStackTrace();
+            }
+        }
+        return ResponseEntity.ok(r);
+    }
+
+
+    //角色1,3
+    @ApiOperation(value = "查询承运员", notes = "查询承运员")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleid", value = "roleid", required = true, dataType = "String", paramType = "header"),
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "header")
+    })
+    @RequestMapping(value = "searchtran", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<JsonResult> SearchShop(HttpServletRequest request) {
+        JsonResult r = new JsonResult();
+        String roleid = request.getHeader("roleid");
+        if (!roleid.equals("0") && !roleid.equals("1") && !roleid.equals("3")) {
+            r = Common.RoleError();
+            return ResponseEntity.ok(r);
+        }
+        String token = request.getHeader("token");
+
+        //超级管理员,PC端
+        if (roleid.equals("0")) {
+            token = getAdminToken();
+            if (!token.equals(token)) {
+                r = Common.TokenError();
+                return ResponseEntity.ok(r);
+            } else {
+                //查询所有？
+            }
+        } else {
+            r = ConnectRedisCheckToken(token);
+            String tokenvalue = "";
+            try {
+                tokenvalue = r.getData().toString();
+            } catch (Exception e) {
+                r = Common.TokenError();
+                e.printStackTrace();
+                return ResponseEntity.ok(r);
+            }
+            try {
+                if (tokenvalue != "") {
+                    redisService.expire(token, Constant.expire.getExpirationTime());
+                    String openid = tokenvalue.split("\\|")[0];
+                    long wxuserid = userService.getWxUserId(openid);
+                    SysTran sysTran = sysTranMapper.selectByWxuserid(wxuserid);
+                    r.setCode("200");
+                    r.setMsg("查询承运员成功！");
+                    r.setData(sysTran);
+                    r.setSuccess(true);
+                } else {
+                    r = Common.TokenError();
+                    ResponseEntity.ok(r);
+                }
+            } catch (Exception e) {
+                r = Common.SearchError(e);
                 e.printStackTrace();
             }
         }
