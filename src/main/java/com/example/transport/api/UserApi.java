@@ -1,5 +1,6 @@
 package com.example.transport.api;
 
+import com.example.transport.dao.SysTranMapper;
 import com.example.transport.pojo.*;
 import com.example.transport.service.Constant;
 import com.example.transport.service.SysUserTokenService;
@@ -44,6 +45,9 @@ public class UserApi {
 
     @Autowired
     private SysUserTokenService sysUserTokenService;
+
+    @Autowired
+    private SysTranMapper sysTranMapper;
 
     @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
     @ApiImplicitParams({
@@ -135,7 +139,7 @@ public class UserApi {
             Map<String,Object> umap = null;
             for(WxUser wu : userlist){
                 umap = new HashMap<String,Object>();
-                umap.put("id",wu.getId());
+                umap.put("wxuserid",wu.getId());
                 umap.put("nickname",wu.getNickname());
                 umap.put("gender",wu.getGender()==1?"男":"女");
                 umap.put("city",wu.getCity());
@@ -159,6 +163,11 @@ public class UserApi {
                         break;
                 }
                 umap.put("trancheckstatus",trancheckstatus);
+                SysTran sysTran = sysTranMapper.selectByWxuserid(wu.getId());
+                umap.put("id",sysTran.getId());
+                umap.put("trantel",sysTran.getTranTel());
+                umap.put("fronturl",sysTran.getIdFrontUrl());
+                umap.put("backurl",sysTran.getIdBackUrl());
                 umaplist.add(umap);
             }
             r.setCode("200");

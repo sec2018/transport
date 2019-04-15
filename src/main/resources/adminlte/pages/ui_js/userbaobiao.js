@@ -22,7 +22,7 @@ $(function () {
             }else{
                 for(var i = 0;i<data.data.length;i++){
                     data.data[i].timestamp = timetrans(data.data[i].timestamp).replace('T'," ");
-                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow(\""+ data.data[i].avatarurl + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 头像</a>&nbsp;&nbsp;<a href='javascript:void(0);'onclick='checkThisUser(\""+ data.data[i].id + "\",\""+ data.data[i].trancheckstatus + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>";
+                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow(\""+ data.data[i].avatarurl + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 头像</a>&nbsp;&nbsp;<a href='javascript:void(0);'onclick='checkThisUser(\""+ data.data[i].id + "\",\""+ data.data[i].trancheckstatus + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>&nbsp;&nbsp;<a href='javascript:void(0);'onclick='ShowImage(\""+ data.data[i].fronturl + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 身份正面</a>&nbsp;&nbsp;<a href='javascript:void(0);'onclick='ShowImage(\""+ data.data[i].backurl + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 身份反面</a>"
                 }
                 viewdata = $.extend(true,[],data.data);
                 var dt = $('#datatable').DataTable({
@@ -70,8 +70,9 @@ $(function () {
                         { "data": "province" },
                         { "data": "city" },
                         { "data": "timestamp","width":"140px" },
+                        {"data": "trantel"},
                         { "data": "trancheckstatus"},
-                        { "data": "action" }
+                        { "data": "action","width":"220px"  }
                     ],
                     buttons: [
                         'pageLength',
@@ -157,4 +158,26 @@ function checkThisUser(id,checkstatus) {
     }
     $('#userModal').modal('toggle');
     checkuserid = id;
+}
+
+function ShowImage(url) {
+    var shopsenddata = {};
+    shopsenddata.imagename = url;
+    shopsenddata.roleid = "3";
+    var newwin = window.open();
+    $.ajax({
+        url: "/transport/api/adminshowimage",
+        method: "GET",
+        data: shopsenddata,
+        // beforeSend: function(request) {
+        //     request.setRequestHeader("roleid", "2");
+        //     request.setRequestHeader("token", window.localStorage.getItem("transport_token"));
+        // },
+        success: function (res) {
+            var myimg = newwin.document.createElement("img");
+            myimg.setAttribute('style', 'width:600px;display:block;margin:20px auto;')
+            myimg.src = "data:image/png;base64," + res.data;
+            newwin.document.body.appendChild(myimg);
+        }
+    });
 }

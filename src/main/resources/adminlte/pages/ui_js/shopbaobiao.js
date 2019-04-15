@@ -71,7 +71,7 @@ $(function () {
                         { "data": "nickname", "width":"70px" },
                         { "data": "shop_tel" },
                         { "data": "shop_procity","width":"140px" },
-                        { "data": "shop_detailarea","width":"190px" },
+                        { "data": "shop_detailarea","width":"230px" },
                         { "data": "shopcheckstatus"},
                         { "data": "action" ,"width":"120px" }
                     ],

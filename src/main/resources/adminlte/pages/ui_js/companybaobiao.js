@@ -21,7 +21,7 @@ $(function () {
                 return;
             }else{
                 for(var i = 0;i<data.data.length;i++){
-                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow("+ data.data[i].company_id + ",\""+ data.data[i].companycheckstatus + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>";
+                    data.data[i].action = "<a href='javascript:void(0);'onclick='checkThisRow("+ data.data[i].company_id + ",\""+ data.data[i].companycheckstatus + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 审核</a>&nbsp;&nbsp;<a href='javascript:void(0);'onclick='ShowImage(\""+ data.data[i].licence_url + "\")'  class='down btn btn-default btn-xs'><i class='fa fa-arrow-down'></i> 营业执照</a>";
                 }
                 viewdata = $.extend(true,[],data.data);
                 var dt = $('#datatable').DataTable({
@@ -188,4 +188,26 @@ function checkThisRow(id,checkstatus) {
     }
     $('#myModal').modal('toggle');
     checkcompanyid = id;
+}
+
+function ShowImage(licence_url) {
+    var shopsenddata = {};
+    shopsenddata.imagename = licence_url;
+    shopsenddata.roleid = "4";
+    var newwin = window.open();
+    $.ajax({
+        url: "/transport/api/adminshowimage",
+        method: "GET",
+        data: shopsenddata,
+        // beforeSend: function(request) {
+        //     request.setRequestHeader("roleid", "2");
+        //     request.setRequestHeader("token", window.localStorage.getItem("transport_token"));
+        // },
+        success: function (res) {
+            var myimg = newwin.document.createElement("img");
+            myimg.setAttribute('style','width:600px;display:block;margin:20px auto;')
+            myimg.src = "data:image/png;base64,"+res.data;
+            newwin.document.body.appendChild(myimg);
+        }
+    });
 }
