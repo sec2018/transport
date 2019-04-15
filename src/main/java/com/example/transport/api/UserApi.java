@@ -228,7 +228,7 @@ public class UserApi {
     //角色0,1
     @ApiOperation(value = "审核承运员", notes = "审核承运员")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "承运员id", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "userid", value = "承运员id", required = true, dataType = "Integer",paramType = "query"),
             @ApiImplicitParam(name = "ispass", value = "是否通过审核", required = true, dataType = "Boolean",paramType = "query"),
             @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "header"),
             @ApiImplicitParam(name = "roleid", value = "用户角色", required = true, dataType = "String",paramType = "header")

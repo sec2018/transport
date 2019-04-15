@@ -96,11 +96,13 @@ public class ShopApi {
                     sysShop.setShopDetailarea(shop_detailarea);
                     redisService.expire(token, Constant.expire.getExpirationTime());
                     String openid = tokenvalue.split("\\|")[0];
-                    long wxuserid = userService.getWxUserId(openid);
-                    sysShop.setWxuserId(wxuserid);
+                    WxUser wxuser = userService.getWxUser(openid);
+                    sysShop.setWxuserId(wxuser.getId());
                     sysShop.setShopcheckstatus(0);              //0代表需要审核，1代表审核通过
                     boolean flag = sysShopMapper.insert(sysShop) == 1 ? true : false;
-                    if (flag) {
+                    wxuser.setTrancheckstatus(0);
+                    boolean flag1 = userService.updateWxUser(wxuser);
+                    if (flag && flag1) {
                         r.setCode("200");
                         r.setMsg("添加商铺成功！");
                         r.setData(null);
@@ -129,6 +131,7 @@ public class ShopApi {
                     redisService.expire(token, Constant.expire.getExpirationTime());
                     String openid = tokenvalue.split("\\|")[0];
                     long wxuserid = userService.getWxUserId(openid);
+
                     SysShop sysShop = sysShopMapper.selectByPrimaryKey(shopid);
                     sysShop.setShopName(shopname);
                     sysShop.setShopTel(shop_tel);
@@ -137,7 +140,10 @@ public class ShopApi {
                     sysShop.setShopDetailarea(shop_detailarea);
                     sysShop.setShopcheckstatus(0);    //修改以后需重新审核
                     boolean flag = sysShopMapper.updateByPrimaryKey(sysShop) == 1 ? true : false;
-                    if (flag) {
+                    WxUser wxuser = userService.getWxUserById(sysShop.getWxuserId());
+                    wxuser.setTrancheckstatus(0);
+                    boolean flag1 = userService.updateWxUser(wxuser);
+                    if (flag && flag1) {
                         r.setCode("200");
                         r.setMsg("修改商铺成功！");
                         r.setData(null);

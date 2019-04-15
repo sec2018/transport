@@ -263,6 +263,13 @@ public class WXUserApi {
                             r.setData(jsonObject);
                             r.setSuccess(false);
                             return ResponseEntity.ok(r);
+                        }else if(sysShop!=null && wxUser.getTrancheckstatus() == 0){
+                            jsonObject.put("status",false);
+                            r.setCode("200");
+                            r.setMsg("请等待审核通过后登录！");
+                            jsonObject.put("userinfo",wxUser);
+                            r.setData(jsonObject);
+                            r.setSuccess(true);
                         }
                     }else if(roleid.equals(4+"")){
 
@@ -281,6 +288,13 @@ public class WXUserApi {
                             r.setData(jsonObject);
                             r.setSuccess(false);
                             return ResponseEntity.ok(r);
+                        }else if(sysCompany!=null && wxUser.getTrancheckstatus() == 0){
+                            jsonObject.put("status",false);
+                            r.setCode("200");
+                            r.setMsg("请等待审核通过后登录！");
+                            jsonObject.put("userinfo",wxUser);
+                            r.setData(jsonObject);
+                            r.setSuccess(true);
                         }
                     }else if(roleid.equals(3+"")){
                         if(sysShop==null && sysCompany==null && sysTran==null){

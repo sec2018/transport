@@ -71,7 +71,7 @@ $(function () {
                         { "data": "company_procity","width":"140px"},
                         { "data": "company_tel"},
                         { "data": "companycheckstatus"},
-                        { "data": "action" }
+                        { "data": "action" ,"width":"140px"}
                     ],
                     buttons: [
                         'pageLength',

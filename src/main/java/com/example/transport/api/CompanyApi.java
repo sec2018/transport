@@ -371,7 +371,10 @@ public class CompanyApi {
                     return r;
                 }
                 boolean flag = companyService.insert(sysCompany,companyLines);
-                if(flag){
+                WxUser wxUser = userService.getWxUserById(sysCompany.getWxuserId());
+                wxUser.setTrancheckstatus(0);
+                boolean flag1 = userService.updateWxUser(wxUser);
+                if(flag && flag1){
                     r.setCode("200");
                     r.setMsg("添加物流公司成功！");
                     r.setData(null);
@@ -412,7 +415,10 @@ public class CompanyApi {
                 companyLines.setArriveAddr(arrive_addr);
                 companyLines.setArriveTel(arrive_tel);
                 boolean flag = companyService.updateByPrimaryKey(sysCompany,companyLines);
-                if(flag){
+                WxUser wxUser = userService.getWxUserById(sysCompany.getWxuserId());
+                wxUser.setTrancheckstatus(0);
+                boolean flag1 = userService.updateWxUser(wxUser);
+                if(flag && flag1){
                     r.setCode("200");
                     r.setMsg("修改物流公司成功！");
                     r.setData(null);
